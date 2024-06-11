@@ -41,7 +41,10 @@ class _ReservationPageState extends State<ReservationPage> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text('Upcoming Reservations',style: TextStyle(fontWeight: FontWeight.bold),),
+        ),
         Expanded(
           child: isLoading
               ? Center(child: CircularProgressIndicator())
@@ -68,7 +71,7 @@ class _ReservationPageState extends State<ReservationPage> {
                             title: Text(
                               items[index],
                               textAlign: TextAlign.center,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(fontWeight: FontWeight.normal),
                             ),
                             onTap: () {
                               // Handle item click
