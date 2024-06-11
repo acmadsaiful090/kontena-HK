@@ -1,11 +1,14 @@
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
+
+// Import your pages
 import 'package:kontena_hk/presentation/lost_found_page/lost_found_page.dart';
 import 'package:kontena_hk/presentation/profile_page.dart/profile_page.dart';
 import 'package:kontena_hk/presentation/reservation_page/reservation_page.dart';
-import 'dart:convert';
 
 class HomePage extends StatefulWidget {
   @override
@@ -28,11 +31,33 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  String _formatDateTime(DateTime dateTime) {
+    final DateFormat formatter = DateFormat('EEEE, d MMMM yyyy', 'id');
+    return formatter.format(dateTime);
+  }
+
   @override
   Widget build(BuildContext context) {
+    initializeDateFormatting('id', null);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Kontena HK'),
+        title: Column(
+          children: [
+            Image.asset(
+              'assets/image/logo-kontena.png',
+              height: 45,
+            ),
+            Text(
+              _formatDateTime(DateTime.now()),
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
       ),
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
@@ -85,10 +110,12 @@ class _HomeContentState extends State<HomeContent> {
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
+      if (mounted) {
       setState(() {
         items = data.map((item) => item['title'] as String).toList();
         isLoading = false;
       });
+      }
     } else {
       throw Exception('Failed to load items');
     }
@@ -104,14 +131,17 @@ class _HomeContentState extends State<HomeContent> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(16.0),
           child: TextField(
             decoration: InputDecoration(
+              filled: true,
+              fillColor: Colors.white,
               hintText: 'Search...',
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
               ),
-              suffixIcon: Icon(Icons.search),
+              prefixIcon: Icon(Icons.search),
             ),
           ),
         ),
@@ -124,33 +154,38 @@ class _HomeContentState extends State<HomeContent> {
                     return Column(
                       children: [
                         Container(
-                          height: 100, // Set the desired height here
-                          child: Stack(
-                            children: [
-                              Center(
-                                child: ListTile(
-                                  title: Center(child: Text(items[index])),
-                                  onTap: () {
-                                    // Handle item click
-                                  },
-                                ),
-                              ),
-                              Positioned(
-                                top: 8,
-                                right: 8,
-                                child: Container(
-                                  width: 20,
-                                  height: 20,
-                                  decoration: BoxDecoration(
-                                    color: getRandomColor(),
-                                    shape: BoxShape.rectangle,
-                                  ),
-                                ),
+                          margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 8,
+                                offset: Offset(0, 4),
                               ),
                             ],
                           ),
+                          child: ListTile(
+                            contentPadding: EdgeInsets.all(16),
+                            title: Text(
+                              items[index],
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            onTap: () {
+                              // Handle item click
+                            },
+                            trailing: Container(
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                color: getRandomColor(),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
                         ),
-                        Divider(),
                       ],
                     );
                   },

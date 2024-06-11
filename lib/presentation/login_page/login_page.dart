@@ -62,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.all(32.0),
-              height: MediaQuery.of(context).size.height * 0.45,
+              height: MediaQuery.of(context).size.height * 0.43,
               decoration: BoxDecoration(
                 color: Colors.grey.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
