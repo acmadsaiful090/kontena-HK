@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:kontena_hk/presentation/lost_found_page/lost_found_add_page.dart';
+
 class LostFoundPage extends StatefulWidget {
   @override
   _LostFoundPageState createState() => _LostFoundPageState();
@@ -92,7 +94,10 @@ class _LostFoundPageState extends State<LostFoundPage> {
         height: 60,
         child: FloatingActionButton(
           onPressed: () {
-            // Handle FAB click
+            Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => LostFoundAddPage()),
+          );
           },
           child: Icon(Icons.add, size: 36, color: Colors.white),
           shape: RoundedRectangleBorder(
