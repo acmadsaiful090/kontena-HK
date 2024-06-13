@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:kontena_hk/presentation/home_page/detail_room_page.dart';
 
 // Import your pages
 import 'package:kontena_hk/presentation/lost_found_page/lost_found_page.dart';
@@ -111,10 +112,10 @@ class _HomeContentState extends State<HomeContent> {
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       if (mounted) {
-      setState(() {
-        items = data.map((item) => item['title'] as String).toList();
-        isLoading = false;
-      });
+        setState(() {
+          items = data.map((item) => item['title'] as String).toList();
+          isLoading = false;
+        });
       }
     } else {
       throw Exception('Failed to load items');
@@ -154,7 +155,8 @@ class _HomeContentState extends State<HomeContent> {
                     return Column(
                       children: [
                         Container(
-                          margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          margin:
+                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
@@ -174,7 +176,11 @@ class _HomeContentState extends State<HomeContent> {
                               style: TextStyle(fontWeight: FontWeight.bold),
                             ),
                             onTap: () {
-                              // Handle item click
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => DetailRoomPage(data : items[index])),
+                              );
                             },
                             trailing: Container(
                               width: 24,
