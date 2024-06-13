@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kontena_hk/presentation/lost_found_page/lost_found_add_page.dart';
 
 class DetailRoomPage extends StatefulWidget {
   final String data;
@@ -17,9 +18,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Room Details'),
-      ),
+      appBar: AppBar(),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
@@ -145,7 +144,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Choose next status',
+                'Choose Next Status',
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -167,22 +166,23 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                 },
               ),
               SizedBox(height: 10),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cancel',
+                      style: TextStyle(
+                          fontFamily: 'OpenSans',
+                          color: Colors.white,
+                          fontSize: 14)),
                 ),
               ),
             ],
@@ -208,7 +208,6 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
             ),
             TextButton(
               onPressed: () {
-                // Implement your update status logic here
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
                 setState(() {
@@ -249,7 +248,10 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                 title: Text('Lost & Found'),
                 onTap: () {
                   print('Lost & Found reported');
-                  Navigator.of(context).pop();
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LostFoundAddPage()));
                 },
               ),
               ListTile(
@@ -261,22 +263,23 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                 },
               ),
               SizedBox(height: 10),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text(
-                  'Cancel',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cancel',
+                      style: TextStyle(
+                          fontFamily: 'OpenSans',
+                          color: Colors.white,
+                          fontSize: 14)),
                 ),
               ),
             ],
