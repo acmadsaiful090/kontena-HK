@@ -42,6 +42,7 @@ class _HomePageState extends State<HomePage> {
     initializeDateFormatting('id', null);
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         title: Column(
           children: [
             Image.asset(
@@ -96,13 +97,17 @@ class HomeContent extends StatefulWidget {
 
 class _HomeContentState extends State<HomeContent> {
   List<String> items = [];
+  List<String> filteredItems = [];
   bool isLoading = true;
   final Random random = Random();
+  final TextEditingController _searchController = TextEditingController();
+  List<String> selectedFilters = [];
 
   @override
   void initState() {
     super.initState();
     fetchItems();
+    _searchController.addListener(_filterItems);
   }
 
   Future<void> fetchItems() async {
@@ -114,12 +119,115 @@ class _HomeContentState extends State<HomeContent> {
       if (mounted) {
         setState(() {
           items = data.map((item) => item['title'] as String).toList();
+          filteredItems = items;
           isLoading = false;
         });
       }
     } else {
       throw Exception('Failed to load items');
     }
+  }
+
+  void _filterItems() {
+    setState(() {
+      filteredItems = items
+          .where((item) =>
+              item
+                  .toLowerCase()
+                  .contains(_searchController.text.toLowerCase()) &&
+              (selectedFilters.isEmpty ||
+                  selectedFilters.any((filter) => item.contains(filter))))
+          .toList();
+    });
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+  }
+
+  void _showFilterSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Container(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Filters',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  CheckboxListTile(
+                    title: Text('Filter 1'),
+                    value: selectedFilters.contains('Filter 1'),
+                    onChanged: (bool? value) {
+                      setState(() {
+                        if (value == true) {
+                          selectedFilters.add('Filter 1');
+                        } else {
+                          selectedFilters.remove('Filter 1');
+                        }
+                      });
+                      _filterItems();
+                    },
+                  ),
+                  CheckboxListTile(
+                    title: Text('Filter 2'),
+                    value: selectedFilters.contains('Filter 2'),
+                    onChanged: (bool? value) {
+                      setState(() {
+                        if (value == true) {
+                          selectedFilters.add('Filter 2');
+                        } else {
+                          selectedFilters.remove('Filter 2');
+                        }
+                      });
+                      _filterItems();
+                    },
+                  ),
+                  CheckboxListTile(
+                    title: Text('Filter 3'),
+                    value: selectedFilters.contains('Filter 3'),
+                    onChanged: (bool? value) {
+                      setState(() {
+                        if (value == true) {
+                          selectedFilters.add('Filter 3');
+                        } else {
+                          selectedFilters.remove('Filter 3');
+                        }
+                      });
+                      _filterItems();
+                    },
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF27ae60),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Apply Filter',
+                          style: TextStyle(
+                              fontFamily: 'OpenSans',
+                              color: Colors.white,
+                              fontSize: 14)),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   Color getRandomColor() {
@@ -129,75 +237,95 @@ class _HomeContentState extends State<HomeContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: TextField(
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
-              hintText: 'Search...',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              prefixIcon: Icon(Icons.search),
+    return RefreshIndicator(
+      onRefresh: fetchItems,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white,
+                      hintText: 'Search...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                      prefixIcon: Icon(Icons.search),
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.clear),
+                        onPressed: _clearSearch,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                IconButton(
+                  icon: Icon(Icons.filter_list),
+                  onPressed: _showFilterSheet,
+                ),
+              ],
             ),
           ),
-        ),
-        Expanded(
-          child: isLoading
-              ? Center(child: CircularProgressIndicator())
-              : ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        Container(
-                          margin:
-                              EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 8,
-                                offset: Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: ListTile(
-                            contentPadding: EdgeInsets.all(16),
-                            title: Text(
-                              items[index],
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontWeight: FontWeight.bold),
+          Expanded(
+            child: isLoading
+                ? Center(child: CircularProgressIndicator())
+                : ListView.builder(
+                    itemCount: filteredItems.length,
+                    itemBuilder: (context, index) {
+                      return Column(
+                        children: [
+                          Container(
+                            margin:
+                                EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12,
+                                  blurRadius: 8,
+                                  offset: Offset(0, 4),
+                                ),
+                              ],
                             ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => DetailRoomPage(data : items[index])),
-                              );
-                            },
-                            trailing: Container(
-                              width: 24,
-                              height: 24,
-                              decoration: BoxDecoration(
-                                color: getRandomColor(),
-                                shape: BoxShape.circle,
+                            child: ListTile(
+                              contentPadding: EdgeInsets.all(16),
+                              title: Text(
+                                filteredItems[index],
+                                textAlign: TextAlign.center,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => DetailRoomPage(
+                                          data: filteredItems[index])),
+                                );
+                              },
+                              trailing: Container(
+                                width: 24,
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  color: getRandomColor(),
+                                  shape: BoxShape.circle,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-        ),
-      ],
+                        ],
+                      );
+                    },
+                  ),
+          ),
+        ],
+      ),
     );
   }
 }

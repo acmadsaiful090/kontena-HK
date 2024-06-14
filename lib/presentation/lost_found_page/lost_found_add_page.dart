@@ -61,6 +61,7 @@ class _LostFoundAddPageState extends State<LostFoundAddPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
        
       ),
       body: SingleChildScrollView(

@@ -18,12 +18,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> fetchUserData() async {
     // Simulate fetching user data and app version
-    await Future.delayed(Duration(seconds: 2));
+    await Future.delayed(Duration(milliseconds: 100));
     if (mounted) {
       setState(() {
-        username = "User"; // Replace with actual user data fetching logic
-        phone = "081234567890"; // Replace with actual user data fetching logic
-        appVersion = "2.0.0"; // Replace with actual app version fetching logic
+        username = "User"; 
+        phone = "081234567890";
+        appVersion = "2.0.0"; 
       });
     }
   }
@@ -46,7 +46,7 @@ class _ProfilePageState extends State<ProfilePage> {
               CircleAvatar(
                 radius: 50,
                 backgroundImage: NetworkImage(
-                  'https://www.gravatar.com/avatar/placeholder', // Replace with actual image URL
+                  'https://www.gravatar.com/avatar/placeholder',
                 ),
               ),
               SizedBox(height: 16),
@@ -118,7 +118,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 100),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.3),
                       SizedBox(
                         width: containerWidth,
                         child: ElevatedButton(
@@ -129,7 +129,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                           onPressed: () {
-                            print("log out");
+                           Navigator.pushReplacementNamed(context, '/');
                           },
                           child: Text(
                             'Log Out',

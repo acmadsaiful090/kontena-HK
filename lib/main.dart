@@ -11,7 +11,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Kontena HK',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.light(),
+        
         fontFamily: 'OpenSans',
       ),
       initialRoute: '/',

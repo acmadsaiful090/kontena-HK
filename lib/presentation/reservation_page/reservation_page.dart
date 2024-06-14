@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-
 class ReservationPage extends StatefulWidget {
   @override
   _ReservationPageState createState() => _ReservationPageState();
@@ -12,7 +11,6 @@ class ReservationPage extends StatefulWidget {
 class _ReservationPageState extends State<ReservationPage> {
   List<String> items = [];
   bool isLoading = true;
-
 
   @override
   void initState() {
@@ -27,10 +25,10 @@ class _ReservationPageState extends State<ReservationPage> {
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       if (mounted) {
-      setState(() {
-        items = data.map((item) => item['title'] as String).toList();
-        isLoading = false;
-      });
+        setState(() {
+          items = data.map((item) => item['title'] as String).toList();
+          isLoading = false;
+        });
       }
     } else {
       throw Exception('Failed to load items');
@@ -39,52 +37,58 @@ class _ReservationPageState extends State<ReservationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text('Upcoming Reservations',style: TextStyle(fontWeight: FontWeight.bold),),
-        ),
-        Expanded(
-          child: isLoading
-              ? Center(child: CircularProgressIndicator())
-              : ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 8,
-                                offset: Offset(0, 4),
+    return RefreshIndicator(
+        onRefresh: fetchItems,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'Upcoming Reservations',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+            Expanded(
+              child: isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 8,
+                                    offset: Offset(0, 4),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                          child: ListTile(
-                            contentPadding: EdgeInsets.all(16),
-                            title: Text(
-                              items[index],
-                              textAlign: TextAlign.center,
-                              style: TextStyle(fontWeight: FontWeight.normal),
+                              child: ListTile(
+                                contentPadding: EdgeInsets.all(16),
+                                title: Text(
+                                  items[index],
+                                  textAlign: TextAlign.center,
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.normal),
+                                ),
+                                onTap: () {
+                                  // Handle item click
+                                },
+                              ),
                             ),
-                            onTap: () {
-                              // Handle item click
-                            },
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-        ),
-      ],
-    );
+                          ],
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ));
   }
 }
-
