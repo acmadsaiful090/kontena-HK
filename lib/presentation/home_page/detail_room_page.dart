@@ -5,15 +5,28 @@ import 'package:kontena_hk/presentation/lost_found_page/lost_found_add_page.dart
 
 class DetailRoomPage extends StatefulWidget {
   final String data;
+  final String status;
 
-  DetailRoomPage({required this.data});
+  DetailRoomPage({required this.data, required this.status });
 
   @override
   _DetailRoomPageState createState() => _DetailRoomPageState();
 }
 
 class _DetailRoomPageState extends State<DetailRoomPage> {
-  late String Status = 'OCCUPIED CLEANING';
+  late String nextStatus = 'OCCUPIED CLEANING';
+  late String currentStatus = widget.status;
+
+  String getStatus() {
+    if(currentStatus == "OD") return "OCCUPIED_DIRTY";
+    if(currentStatus == "OC") return "OCCUPIED_CLEANING";
+    if(currentStatus == "VD") return "VACANT_DIRTY";
+    if(currentStatus == "VC") return "VACANT_CLEANING";
+    if(currentStatus == "VR") return "VACANT_READY";
+    return currentStatus;
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +69,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                                 ),
                                 SizedBox(height: 5),
                                 Text(
-                                  widget.data,
+                                  getStatus(),
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Color(0xFF7f8c8d),
@@ -90,7 +103,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                             ),
                           ),
                           Text(
-                            Status,
+                            nextStatus,
                             style: TextStyle(
                               fontSize: 16,
                               color: Color(0xFF3498db),
@@ -212,7 +225,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
                 setState(() {
-                  Status = status;
+                  nextStatus = status;
                 });
                 print("Status updated to $status");
               },

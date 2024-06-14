@@ -22,7 +22,7 @@ class _HomePageState extends State<HomePage> {
 
   static List<Widget> _widgetOptions = <Widget>[
     HomeContent(),
-    ReservationPage(),
+    // ReservationPage(),
     LostFoundPage(),
     ProfilePage(),
   ];
@@ -68,12 +68,12 @@ class _HomePageState extends State<HomePage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: 'Room',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.business),
-            label: 'Reservation',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.business),
+          //   label: 'Reservation',
+          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.volunteer_activism),
             label: 'Lost & Found',
@@ -120,10 +120,8 @@ class _HomeContentState extends State<HomeContent> {
       if (mounted) {
         setState(() {
           items = data
-              .map((item) => {
-                    'title': item['id'],
-                    'body': item['title'] as String
-                  })
+              .map((item) =>
+                  {'title': item['id'], 'body': item['title'] as String})
               .toList();
           filteredItems = items;
           isLoading = false;
@@ -138,7 +136,8 @@ class _HomeContentState extends State<HomeContent> {
     setState(() {
       filteredItems = items
           .where((item) =>
-              item['title']!.toString()
+              item['title']!
+                  .toString()
                   .toLowerCase()
                   .contains(_searchController.text.toLowerCase()) &&
               (selectedFilters.isEmpty ||
@@ -237,9 +236,18 @@ class _HomeContentState extends State<HomeContent> {
     );
   }
 
-  Color getRandomColor() {
-    List<Color> colors = [Colors.green, Colors.red, Colors.blue];
-    return colors[random.nextInt(3)];
+  String getRandomStatus() {
+    List<String> status = ['OC', 'OD', 'VD', 'VC', 'VR'];
+    return status[random.nextInt(5)];
+  }
+
+  Color getColorForLabel(String label) {
+    if (label == "OC") return Colors.red;
+    if (label == "OD") return Colors.red;
+    if (label == "VD") return Colors.green;
+    if (label == "VC") return Colors.blue;
+    if (label == "VR") return Colors.blue;
+    return Colors.transparent;
   }
 
   @override
@@ -285,6 +293,8 @@ class _HomeContentState extends State<HomeContent> {
                 : ListView.builder(
                     itemCount: filteredItems.length,
                     itemBuilder: (context, index) {
+                      final label = getRandomStatus();
+                      final color = getColorForLabel(label);
                       return Column(
                         children: [
                           Container(
@@ -308,25 +318,49 @@ class _HomeContentState extends State<HomeContent> {
                                 textAlign: TextAlign.left,
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
-                              subtitle: Text(
-                                filteredItems[index]['body']!,
-                                textAlign: TextAlign.left,
+                              subtitle: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    filteredItems[index]['body']!,
+                                    textAlign: TextAlign.left,
+                                  ),
+                                  Text(
+                                    "Guest :" +
+                                        filteredItems[index]['title']!
+                                            .toString(),
+                                    textAlign: TextAlign.left,
+                                  )
+                                ],
                               ),
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => DetailRoomPage(
-                                          data: filteredItems[index]
-                                              ['body']!.toString())),
+                                            data: filteredItems[index]['body']!
+                                                .toString(),
+                                            status: label,
+                                          )),
                                 );
                               },
                               trailing: Container(
-                                width: 24,
-                                height: 24,
+                                width: 40,
+                                height: 40,
                                 decoration: BoxDecoration(
-                                  color: getRandomColor(),
+                                  color: color,
                                   shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    label,
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 18,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
