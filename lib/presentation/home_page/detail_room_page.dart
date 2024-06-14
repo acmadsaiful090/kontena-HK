@@ -65,6 +65,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                               ],
                             ),
                           ),
+                          SizedBox(width: 2),
                           GestureDetector(
                             onTap: () {
                               _showReportDialog();

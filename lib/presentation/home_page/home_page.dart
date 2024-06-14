@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -96,8 +97,8 @@ class HomeContent extends StatefulWidget {
 }
 
 class _HomeContentState extends State<HomeContent> {
-  List<String> items = [];
-  List<String> filteredItems = [];
+  List<Map<String, dynamic>> items = [];
+  List<Map<String, dynamic>> filteredItems = [];
   bool isLoading = true;
   final Random random = Random();
   final TextEditingController _searchController = TextEditingController();
@@ -118,7 +119,12 @@ class _HomeContentState extends State<HomeContent> {
       final List<dynamic> data = json.decode(response.body);
       if (mounted) {
         setState(() {
-          items = data.map((item) => item['title'] as String).toList();
+          items = data
+              .map((item) => {
+                    'title': item['id'],
+                    'body': item['title'] as String
+                  })
+              .toList();
           filteredItems = items;
           isLoading = false;
         });
@@ -132,11 +138,12 @@ class _HomeContentState extends State<HomeContent> {
     setState(() {
       filteredItems = items
           .where((item) =>
-              item
+              item['title']!.toString()
                   .toLowerCase()
                   .contains(_searchController.text.toLowerCase()) &&
               (selectedFilters.isEmpty ||
-                  selectedFilters.any((filter) => item.contains(filter))))
+                  selectedFilters
+                      .any((filter) => item['title']!.contains(filter))))
           .toList();
     });
   }
@@ -281,8 +288,8 @@ class _HomeContentState extends State<HomeContent> {
                       return Column(
                         children: [
                           Container(
-                            margin:
-                                EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                            margin: EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 16),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
@@ -297,16 +304,21 @@ class _HomeContentState extends State<HomeContent> {
                             child: ListTile(
                               contentPadding: EdgeInsets.all(16),
                               title: Text(
-                                filteredItems[index],
+                                filteredItems[index]['title']!.toString(),
                                 textAlign: TextAlign.center,
                                 style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Text(
+                                filteredItems[index]['body']!,
+                                textAlign: TextAlign.center,
                               ),
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => DetailRoomPage(
-                                          data: filteredItems[index])),
+                                          data: filteredItems[index]
+                                              ['body']!.toString())),
                                 );
                               },
                               trailing: Container(
