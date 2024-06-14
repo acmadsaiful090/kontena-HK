@@ -305,12 +305,12 @@ class _HomeContentState extends State<HomeContent> {
                               contentPadding: EdgeInsets.all(16),
                               title: Text(
                                 filteredItems[index]['title']!.toString(),
-                                textAlign: TextAlign.center,
+                                textAlign: TextAlign.left,
                                 style: TextStyle(fontWeight: FontWeight.bold),
                               ),
                               subtitle: Text(
                                 filteredItems[index]['body']!,
-                                textAlign: TextAlign.center,
+                                textAlign: TextAlign.left,
                               ),
                               onTap: () {
                                 Navigator.push(
