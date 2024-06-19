@@ -142,7 +142,7 @@ class _HomeContentState extends State<HomeContent> {
                   .contains(_searchController.text.toLowerCase()) &&
               (selectedFilters.isEmpty ||
                   selectedFilters
-                      .any((filter) => item['title']!.contains(filter))))
+                      .any((filter) => item['title']!.toString().contains(filter))))
           .toList();
     });
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kontena_hk/presentation/home_page/home_page.dart';
 import 'package:kontena_hk/presentation/login_page/login_page.dart';
+import 'package:kontena_hk/presentation/splash_screen/splash_screen.dart';
 void main() {
   runApp(MyApp());
 }
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => LoginPage(),
+        '/': (context) => SplashScreenPage(),
         '/home': (context) => HomePage(),
       },
     );

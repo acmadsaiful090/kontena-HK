@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -28,8 +29,13 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  void logout() {
+  void logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('phone');
+    await prefs.remove('password');
     // Implement logout functionality here
+    Navigator.pushReplacementNamed(context, '/');
+
     print("User logged out");
   }
 
@@ -129,7 +135,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                           onPressed: () {
-                           Navigator.pushReplacementNamed(context, '/');
+                            logout();
                           },
                           child: Text(
                             'Log Out',

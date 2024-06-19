@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class LoginPage extends StatefulWidget {
   @override
@@ -11,10 +13,13 @@ class _LoginPageState extends State<LoginPage> {
   bool _isPasswordVisible = false;
   String _errorMessage = '';
 
-  void _simulateLogin() {
+  void _simulateLogin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       if (_phoneController.text == '1234567890' &&
           _passwordController.text == 'password') {
+        prefs.setString('phone', _phoneController.text);
+        prefs.setString('password', _passwordController.text);
         _errorMessage = '';
         Navigator.pushReplacementNamed(context, '/home');
       } else {
