@@ -112,37 +112,36 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Future<void> fetchItems() async {
-    final response =
-        await http.get(Uri.parse('https://jsonplaceholder.typicode.com/posts'));
+    await Future.delayed(Duration(seconds: 1)); // Simulate network delay
+    final List<Map<String, dynamic>> data = List.generate(10, (index) {
+      final status = getRandomStatus();
+      return {
+        'guestName': status == 'OC' || status == 'OD' ? 'Guest ${index + 1}' : null,
+        'roomStatus': status,
+        'roomNumber': 'Room ${100 + index}',
+        'roomType': index % 2 == 0 ? 'Single' : 'Double',
+        'expectedGuest': status == 'VR' ? 'Expected Guest' : null,
+      };
+    });
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      if (mounted) {
-        setState(() {
-          items = data
-              .map((item) =>
-                  {'title': item['id'], 'body': item['title'] as String})
-              .toList();
-          filteredItems = items;
-          isLoading = false;
-        });
-      }
-    } else {
-      throw Exception('Failed to load items');
-    }
+    setState(() {
+      items = data;
+      filteredItems = items;
+      isLoading = false;
+    });
   }
 
   void _filterItems() {
     setState(() {
       filteredItems = items
           .where((item) =>
-              item['title']!
+              item['guestName']!
                   .toString()
                   .toLowerCase()
                   .contains(_searchController.text.toLowerCase()) &&
               (selectedFilters.isEmpty ||
                   selectedFilters
-                      .any((filter) => item['title']!.toString().contains(filter))))
+                      .any((filter) => item['guestName']!.toString().contains(filter))))
           .toList();
     });
   }
@@ -293,7 +292,7 @@ class _HomeContentState extends State<HomeContent> {
                 : ListView.builder(
                     itemCount: filteredItems.length,
                     itemBuilder: (context, index) {
-                      final label = getRandomStatus();
+                      final label = filteredItems[index]['roomStatus'];
                       final color = getColorForLabel(label);
                       return Column(
                         children: [
@@ -314,24 +313,31 @@ class _HomeContentState extends State<HomeContent> {
                             child: ListTile(
                               contentPadding: EdgeInsets.all(16),
                               title: Text(
-                                filteredItems[index]['title']!.toString(),
-                                textAlign: TextAlign.left,
-                                style: TextStyle(fontWeight: FontWeight.bold),
-                              ),
+                                    '${filteredItems[index]['roomNumber']}',
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),
+                                  ),
                               subtitle: Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    filteredItems[index]['body']!,
+                                    'Room Type: ${filteredItems[index]['roomType']}',
                                     textAlign: TextAlign.left,
                                   ),
                                   Text(
-                                    "Guest :" +
-                                        filteredItems[index]['title']!
-                                            .toString(),
-                                    textAlign: TextAlign.left,
-                                  )
+                                filteredItems[index]['guestName'] != null
+                                    ? filteredItems[index]['guestName']!
+                                        .toString()
+                                    : filteredItems[index]['expectedGuest'] != null
+                                        ? filteredItems[index]['expectedGuest']!
+                                            .toString()
+                                        : 'No Guest',
+                                textAlign: TextAlign.left,
+                                style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),
+                                
+                              ),
+                                  
                                 ],
                               ),
                               onTap: () {
@@ -339,8 +345,7 @@ class _HomeContentState extends State<HomeContent> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => DetailRoomPage(
-                                            data: filteredItems[index]['body']!
-                                                .toString(),
+                                            data: filteredItems[index]['roomNumber'] + ' - ' + filteredItems[index]['roomType'],
                                             status: label,
                                           )),
                                 );
