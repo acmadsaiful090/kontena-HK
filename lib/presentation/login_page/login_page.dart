@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:kontena_hk/api/auth.dart' as auth;
 
 class LoginPage extends StatefulWidget {
   @override
@@ -13,19 +13,35 @@ class _LoginPageState extends State<LoginPage> {
   bool _isPasswordVisible = false;
   String _errorMessage = '';
 
-  void _simulateLogin() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      if (_phoneController.text == '1234567890' &&
-          _passwordController.text == 'password') {
-        prefs.setString('phone', _phoneController.text);
-        prefs.setString('password', _passwordController.text);
-        _errorMessage = '';
+  Future<void> _handleLogin() async {
+    final username = _phoneController.text;
+    final password = _passwordController.text;
+
+    // Create the login request
+    final loginRequest = auth.LoginRequest(username: username, password: password);
+
+    try {
+      // Call the login API
+      final response = await auth.login(loginRequest);
+
+      // Check if the response contains the expected success message
+      if (response['message'] == 'Logged In') {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString('username', username);
+        prefs.setString('password', password);
+
+        // Navigate to the home page upon successful login
         Navigator.pushReplacementNamed(context, '/home');
       } else {
-        _errorMessage = 'Invalid phone number or password';
+        setState(() {
+          _errorMessage = 'Invalid username or password';
+        });
       }
-    });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Invalid username or password';
+      });
+    }
   }
 
   @override
@@ -46,24 +62,22 @@ class _LoginPageState extends State<LoginPage> {
             Align(
               alignment: Alignment.topRight,
               child: Image.asset(
-                'assets/image/logo-kontena.png', // Make sure to replace with the actual path to your logo
-                height: 80, // Set the desired height
+                'assets/image/logo-kontena.png',
+                height: 80,
               ),
             ),
             Align(
               alignment: Alignment.centerRight,
               child: Text(
-                      'House Keeping',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.normal,
-                        fontFamily: 'OpenSans',
-                      ),
-                      textAlign: TextAlign.left,
-                    ),
+                'House Keeping',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.normal,
+                  fontFamily: 'OpenSans',
+                ),
+                textAlign: TextAlign.left,
+              ),
             ),
-            // Logo
-
             SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.all(32.0),
@@ -99,7 +113,6 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   SizedBox(height: 16),
-
                   TextField(
                     controller: _phoneController,
                     decoration: InputDecoration(
@@ -147,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onPressed: _simulateLogin,
+                      onPressed: _handleLogin,
                       child: Text('Login',
                           style: TextStyle(
                               fontFamily: 'OpenSans',

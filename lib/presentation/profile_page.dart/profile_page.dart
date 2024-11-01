@@ -30,12 +30,10 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('phone');
-    await prefs.remove('password');
-    // Implement logout functionality here
-    Navigator.pushReplacementNamed(context, '/');
-
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.clear(); // Clear all stored data if other data should be removed
+  // Optionally, implement API call to log out from the server if needed
+  Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
     print("User logged out");
   }
 

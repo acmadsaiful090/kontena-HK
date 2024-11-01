@@ -6,7 +6,9 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kontena_hk/presentation/home_page/detail_room_page.dart';
-
+import 'package:kontena_hk/api/data/room_api.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:kontena_hk/models/room.dart';
 // Import your pages
 import 'package:kontena_hk/presentation/lost_found_page/lost_found_page.dart';
 import 'package:kontena_hk/presentation/profile_page.dart/profile_page.dart';
@@ -110,41 +112,64 @@ class _HomeContentState extends State<HomeContent> {
     fetchItems();
     _searchController.addListener(_filterItems);
   }
+Future<void> fetchItems() async {
+  setState(() {
+    isLoading = true; // Start loading immediately
+  });
 
-  Future<void> fetchItems() async {
-    await Future.delayed(Duration(seconds: 1)); // Simulate network delay
-    final List<Map<String, dynamic>> data = List.generate(10, (index) {
-      final status = getRandomStatus();
-      return {
-        'guestName': status == 'OC' || status == 'OD' ? 'Guest ${index + 1}' : null,
-        'roomStatus': status,
-        'roomNumber': 'Room ${100 + index}',
-        'roomType': index % 2 == 0 ? 'Single' : 'Double',
-        'expectedGuest': status == 'VR' ? 'Expected Guest' : null,
-      };
-    });
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final cookie = prefs.getString('session_cookie');
 
+    if (cookie == null) {
+      throw Exception('No session cookie found. Please log in again.');
+    }
+
+    final request = RoomRequest(
+      cookie: cookie,
+      fields: '["*"]', 
+    );
+    final response = await requestItem(requestQuery: request);
     setState(() {
-      items = data;
+        if (response is List) {
+      items = response.map((roomData) {
+        return {
+          'name': roomData['name']?.toString() ?? '',
+          'room_name': roomData['room_name']?.toString() ?? '',
+          'room_number': roomData['room_number']?.toString() ?? '',
+          'room_type_name': roomData['room_type_name']?.toString() ?? '',
+          'status': roomData['status']?.toString() ?? '',
+        };
+      }).toList();
       filteredItems = items;
-      isLoading = false;
+    } else {
+      throw Exception('Unexpected response format');
+    }
+      print('dataku: ${items.length}, items: $items');
+      isLoading = false; 
     });
-  }
-
-  void _filterItems() {
+  } catch (e) {
     setState(() {
-      filteredItems = items
-          .where((item) =>
-              item['guestName']!
-                  .toString()
-                  .toLowerCase()
-                  .contains(_searchController.text.toLowerCase()) &&
-              (selectedFilters.isEmpty ||
-                  selectedFilters
-                      .any((filter) => item['guestName']!.toString().contains(filter))))
-          .toList();
+      isLoading = false; 
+      print(e); 
     });
   }
+}
+
+void _filterItems() {
+  setState(() {
+    String searchText = _searchController.text.toLowerCase(); 
+
+    // Filter items based on the search text against the relevant fields
+    filteredItems = items.where((item) {
+      return item['room_name']?.toString().toLowerCase().contains(searchText) == true ||
+             item['room_type_name']?.toString().toLowerCase().contains(searchText) == true ||
+             item['name']?.toString().toLowerCase().contains(searchText) == true ||
+             item['status']?.toString().toLowerCase().contains(searchText) == true;
+    }).toList();
+  });
+}
+
 
   void _clearSearch() {
     _searchController.clear();
@@ -286,19 +311,22 @@ class _HomeContentState extends State<HomeContent> {
               ],
             ),
           ),
-          Expanded(
-            child: isLoading
-                ? Center(child: CircularProgressIndicator())
+         Expanded(
+             child: isLoading
+            ? Center(child: CircularProgressIndicator())
+            : filteredItems.isEmpty 
+                ? Center(child: Text('No rooms found.')) 
                 : ListView.builder(
                     itemCount: filteredItems.length,
                     itemBuilder: (context, index) {
-                      final label = filteredItems[index]['roomStatus'];
-                      final color = getColorForLabel(label);
+                      // Update the labels based on your actual data keys
+                      final label = filteredItems[index]['status']; // Changed to use 'status'
+                      final color = getColorForLabel(label); // Assuming this function exists
+
                       return Column(
                         children: [
                           Container(
-                            margin: EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 16),
+                            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
@@ -313,41 +341,37 @@ class _HomeContentState extends State<HomeContent> {
                             child: ListTile(
                               contentPadding: EdgeInsets.all(16),
                               title: Text(
-                                    '${filteredItems[index]['roomNumber']}',
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),
-                                  ),
+                                '${filteredItems[index]['room_name']}', // Changed to 'room_name'
+                                textAlign: TextAlign.left,
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                              ),
                               subtitle: Column(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Room Type: ${filteredItems[index]['roomType']}',
+                                    'Room Type: ${filteredItems[index]['room_type_name']}', // Changed to 'room_type_name'
                                     textAlign: TextAlign.left,
                                   ),
                                   Text(
-                                filteredItems[index]['guestName'] != null
-                                    ? filteredItems[index]['guestName']!
-                                        .toString()
-                                    : filteredItems[index]['expectedGuest'] != null
-                                        ? filteredItems[index]['expectedGuest']!
+                                    filteredItems[index]['name'] != null // Change this as per your data
+                                        ? filteredItems[index]['name']!
                                             .toString()
-                                        : 'No Guest',
-                                textAlign: TextAlign.left,
-                                style: TextStyle(fontWeight: FontWeight.bold,fontSize: 18),
-                                
-                              ),
-                                  
+                                        : 'No Guest', // Adjust if you want to show different guest information
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                                  ),
                                 ],
                               ),
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => DetailRoomPage(
-                                            data: filteredItems[index]['roomNumber'] + ' - ' + filteredItems[index]['roomType'],
-                                            status: label,
-                                          )),
+                                    builder: (context) => DetailRoomPage(
+                                      data: filteredItems[index]['room_name'] + ' - ' + filteredItems[index]['room_type_name'], // Adjusted for clarity
+                                      status: label,
+                                    ),
+                                  ),
                                 );
                               },
                               trailing: Container(
