@@ -52,6 +52,7 @@ Future<Map<String, dynamic>> login(LoginRequest requestBody) async {
 Future<void> _saveCookie(String cookie) async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.setString('session_cookie', cookie);
+
 }
 
 

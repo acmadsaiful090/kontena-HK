@@ -18,21 +18,16 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> fetchUserData() async {
-    // Simulate fetching user data and app version
-    await Future.delayed(Duration(milliseconds: 100));
-    if (mounted) {
-      setState(() {
-        username = "User"; 
-        phone = "081234567890";
-        appVersion = "2.0.0"; 
-      });
-    }
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      username = prefs.getString('username') ?? "John Doe";
+      phone = prefs.getString('phone') ?? "01234567890";
+    });
   }
 
   void logout() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.clear(); // Clear all stored data if other data should be removed
-  // Optionally, implement API call to log out from the server if needed
+  await prefs.clear();
   Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
     print("User logged out");
   }

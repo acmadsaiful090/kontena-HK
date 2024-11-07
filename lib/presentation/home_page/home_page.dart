@@ -112,64 +112,94 @@ class _HomeContentState extends State<HomeContent> {
     fetchItems();
     _searchController.addListener(_filterItems);
   }
-Future<void> fetchItems() async {
-  setState(() {
-    isLoading = true; // Start loading immediately
-  });
 
-  try {
-    final prefs = await SharedPreferences.getInstance();
-    final cookie = prefs.getString('session_cookie');
-
-    if (cookie == null) {
-      throw Exception('No session cookie found. Please log in again.');
-    }
-
-    final request = RoomRequest(
-      cookie: cookie,
-      fields: '["*"]', 
-    );
-    final response = await requestItem(requestQuery: request);
+  Future<void> fetchItems() async {
     setState(() {
-        if (response is List) {
-      items = response.map((roomData) {
-        return {
-          'name': roomData['name']?.toString() ?? '',
-          'room_name': roomData['room_name']?.toString() ?? '',
-          'room_number': roomData['room_number']?.toString() ?? '',
-          'room_type_name': roomData['room_type_name']?.toString() ?? '',
-          'status': roomData['status']?.toString() ?? '',
-        };
-      }).toList();
-      filteredItems = items;
-    } else {
-      throw Exception('Unexpected response format');
-    }
-      print('dataku: ${items.length}, items: $items');
-      isLoading = false; 
+      isLoading = true; // Start loading immediately
     });
-  } catch (e) {
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cookie = prefs.getString('session_cookie');
+      if (cookie == null) {
+        throw Exception('No session cookie found. Please log in again.');
+      }
+      final request = RoomRequest(
+        cookie: cookie,
+        fields: '["*"]',
+      );
+      final response = await requestItem(requestQuery: request);
+      setState(() {
+        if (response is List) {
+          items = response.map((roomData) {
+            return {
+              'name': roomData['name']?.toString() ?? '',
+              'room_name': roomData['room_name']?.toString() ?? '',
+              'room_type_name': roomData['room_type_name']?.toString() ?? '',
+              'status': roomData['room_status']?.toString() ?? '',
+              'can_clean': roomData['can_clean'] ?? 0,
+              'can_check': roomData['can_check'] ?? 0,
+              'is_damaged': roomData['is_damaged'] ?? 0,
+            };
+          }).toList();
+          filteredItems = items;
+        } else {
+          throw Exception('Unexpected response format');
+        }
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        print(e);
+      });
+    }
+  }
+  
+
+String? getFirstFieldWithOneAtIndex(int index) {
+  if (index < 0 || index >= filteredItems.length) {
+    print('Index di luar batas');
+    return null;
+  }
+  final roomData = filteredItems[index];
+  Map<String, int> fields = {
+    'can_clean': roomData['can_clean'] ?? 0,
+    'can_check': roomData['can_check'] ?? 0,
+    'is_damaged': roomData['is_damaged'] ?? 0,
+  };
+
+  for (var entry in fields.entries) {
+    if (entry.value == 1) {
+      return entry.key;
+    }
+  }
+
+  return null; 
+}
+
+
+  void _filterItems() {
     setState(() {
-      isLoading = false; 
-      print(e); 
+      String searchText = _searchController.text.toLowerCase();
+      filteredItems = items.where((item) {
+        return item['room_name']
+                    ?.toString()
+                    .toLowerCase()
+                    .contains(searchText) ==
+                true ||
+            item['room_type_name']
+                    ?.toString()
+                    .toLowerCase()
+                    .contains(searchText) ==
+                true ||
+            item['name']?.toString().toLowerCase().contains(searchText) ==
+                true ||
+            item['status']?.toString().toLowerCase().contains(searchText) ==
+                true;
+      }).toList();
     });
   }
-}
-
-void _filterItems() {
-  setState(() {
-    String searchText = _searchController.text.toLowerCase(); 
-
-    // Filter items based on the search text against the relevant fields
-    filteredItems = items.where((item) {
-      return item['room_name']?.toString().toLowerCase().contains(searchText) == true ||
-             item['room_type_name']?.toString().toLowerCase().contains(searchText) == true ||
-             item['name']?.toString().toLowerCase().contains(searchText) == true ||
-             item['status']?.toString().toLowerCase().contains(searchText) == true;
-    }).toList();
-  });
-}
-
 
   void _clearSearch() {
     _searchController.clear();
@@ -260,10 +290,10 @@ void _filterItems() {
     );
   }
 
-  String getRandomStatus() {
-    List<String> status = ['OC', 'OD', 'VD', 'VC', 'VR'];
-    return status[random.nextInt(5)];
-  }
+  // String getRandomStatus() {
+  //   List<String> status = ['OC', 'OD', 'VD', 'VC', 'VR'];
+  //   return status[random.nextInt(5)];
+  // }
 
   Color getColorForLabel(String label) {
     if (label == "OC") return Colors.red;
@@ -311,93 +341,102 @@ void _filterItems() {
               ],
             ),
           ),
-         Expanded(
-             child: isLoading
-            ? Center(child: CircularProgressIndicator())
-            : filteredItems.isEmpty 
-                ? Center(child: Text('No rooms found.')) 
-                : ListView.builder(
-                    itemCount: filteredItems.length,
-                    itemBuilder: (context, index) {
-                      // Update the labels based on your actual data keys
-                      final label = filteredItems[index]['status']; // Changed to use 'status'
-                      final color = getColorForLabel(label); // Assuming this function exists
+          Expanded(
+            child: isLoading
+                ? Center(child: CircularProgressIndicator())
+                : filteredItems.isEmpty
+                    ? Center(child: Text('No rooms found.'))
+                    : ListView.builder(
+                        itemCount: filteredItems.length,
+                        itemBuilder: (context, index) {
+                          final label = filteredItems[index]['status'];
+                          final color = getColorForLabel(label);
 
-                      return Column(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black12,
-                                  blurRadius: 8,
-                                  offset: Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: ListTile(
-                              contentPadding: EdgeInsets.all(16),
-                              title: Text(
-                                '${filteredItems[index]['room_name']}', // Changed to 'room_name'
-                                textAlign: TextAlign.left,
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                              ),
-                              subtitle: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Room Type: ${filteredItems[index]['room_type_name']}', // Changed to 'room_type_name'
-                                    textAlign: TextAlign.left,
-                                  ),
-                                  Text(
-                                    filteredItems[index]['name'] != null // Change this as per your data
-                                        ? filteredItems[index]['name']!
-                                            .toString()
-                                        : 'No Guest', // Adjust if you want to show different guest information
-                                    textAlign: TextAlign.left,
-                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                                  ),
-                                ],
-                              ),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => DetailRoomPage(
-                                      data: filteredItems[index]['room_name'] + ' - ' + filteredItems[index]['room_type_name'], // Adjusted for clarity
-                                      status: label,
-                                    ),
-                                  ),
-                                );
-                              },
-                              trailing: Container(
-                                width: 40,
-                                height: 40,
+                          return Column(
+                            children: [
+                              Container(
+                                margin: EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 16),
                                 decoration: BoxDecoration(
-                                  color: color,
-                                  shape: BoxShape.circle,
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black12,
+                                      blurRadius: 8,
+                                      offset: Offset(0, 4),
+                                    ),
+                                  ],
                                 ),
-                                child: Center(
-                                  child: Text(
-                                    label,
+                                child: ListTile(
+                                  contentPadding: EdgeInsets.all(16),
+                                  title: Text(
+                                    '${filteredItems[index]['room_name']}',
+                                    textAlign: TextAlign.left,
                                     style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20),
+                                  ),
+                                  subtitle: Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Room Type: ${filteredItems[index]['room_type_name']}',
+                                        textAlign: TextAlign.left,
+                                      ),
+                                      Text(
+                                        filteredItems[index]['name'] !=
+                                                null // Change this as per your data
+                                            ? filteredItems[index]['name']!
+                                                .toString()
+                                            : 'No Guest',
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18),
+                                      ),
+                                    ],
+                                  ),
+                                 onTap: () {
+                                    String? fieldWithOne = getFirstFieldWithOneAtIndex(index);
+
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => DetailRoomPage(
+                                          data: filteredItems[index]['name'],
+                                          status: label,
+                                          detail: fieldWithOne ?? '',
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  trailing: Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: color,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        label,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w900,
+                                          fontSize: 18,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
+                            ],
+                          );
+                        },
+                      ),
           ),
         ],
       ),

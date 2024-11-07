@@ -1,33 +1,48 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kontena_hk/api/data/room_task_api.dart';
 import 'package:kontena_hk/presentation/lost_found_page/lost_found_add_page.dart';
+import 'package:kontena_hk/api/data/room_api.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailRoomPage extends StatefulWidget {
   final String data;
   final String status;
-
-  DetailRoomPage({required this.data, required this.status });
+  final String detail;
+  
+  DetailRoomPage({required this.data, required this.status,required this.detail});
 
   @override
   _DetailRoomPageState createState() => _DetailRoomPageState();
 }
 
+
+
 class _DetailRoomPageState extends State<DetailRoomPage> {
   late String nextStatus = 'OCCUPIED CLEANING';
   late String currentStatus = widget.status;
+  late String detail = widget.detail;
+  bool isCleanEnabled = false;
+  bool isCheckEnabled = false;
+  bool isDamageEnabled = false;
 
+  void checkFieldsInDetail() {
+    setState(() {
+      isCleanEnabled = widget.detail.contains('can_clean');
+      isCheckEnabled = widget.detail.contains('can_check');
+      isDamageEnabled = widget.detail.contains('is_damaged');
+    });
+  }
   String getStatus() {
-    if(currentStatus == "OD") return "OCCUPIED_DIRTY";
-    if(currentStatus == "OC") return "OCCUPIED_CLEANING";
-    if(currentStatus == "VD") return "VACANT_DIRTY";
-    if(currentStatus == "VC") return "VACANT_CLEANING";
-    if(currentStatus == "VR") return "VACANT_READY";
+    if (currentStatus == "OD") return "OCCUPIED_DIRTY";
+    if (currentStatus == "OC") return "OCCUPIED_CLEANING";
+    if (currentStatus == "VD") return "VACANT_DIRTY";
+    if (currentStatus == "VC") return "VACANT_CLEANING";
+    if (currentStatus == "VR") return "VACANT_READY";
     return currentStatus;
   }
-
-
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,6 +126,55 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                           ),
                         ],
                       ),
+
+                      SizedBox(height: 24),
+                    // Text(
+                    //   'Maintenance for: ${widget.detail}', 
+                    //   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    // ),
+                    // SizedBox(height: 20),
+                    if (widget.detail.contains('can_clean'))
+                      CheckboxListTile(
+                        title: Text('Clean'),
+                        value: isCleanEnabled,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            isCleanEnabled = value!;
+                          });
+                          if (isCleanEnabled) {
+                            //createRoomTask('Clean');
+                          }
+                        },
+                      ),
+                    SizedBox(height: 10),
+                    if (widget.detail.contains('can_check'))
+                      CheckboxListTile(
+                        title: Text('Check'),
+                        value: isCheckEnabled,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            isCheckEnabled = value!;
+                          });
+                          if (isCheckEnabled) {
+                            //createRoomTask('Check');
+                          }
+                        },
+                      ),
+                    SizedBox(height: 10),
+                    if (widget.detail.contains('is_damaged'))
+                      CheckboxListTile(
+                        title: Text('Damage'),
+                        value: isDamageEnabled,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            isDamageEnabled = value!;
+                          });
+                          if (isDamageEnabled) {
+                            //createRoomTask('Damage');
+                          }
+                        },
+                      ),
+                    SizedBox(height: 24),
                       Spacer(),
                       SizedBox(
                         width: double.infinity,
@@ -144,7 +208,6 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
       ),
     );
   }
-
   void _showUpdateStatusDialog() {
     showModalBottomSheet(
       context: context,
@@ -205,7 +268,6 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
       },
     );
   }
-
   void _showConfirmationDialog(String status) {
     showDialog(
       context: context,
@@ -227,7 +289,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                 setState(() {
                   nextStatus = status;
                 });
-                print("Status updated to $status");
+                _sendStatusRequest();
               },
               child: Text('Yes'),
             ),
@@ -236,7 +298,28 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
       },
     );
   }
+  void _sendStatusRequest() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cookie = prefs.getString('session_cookie');
+    if (cookie == null) {
+      print('Cookie not found. Please log in again.');
+      return;
+    }
+    try {
+      CreateRoomTaskRequest request = CreateRoomTaskRequest(
+        cookie: cookie,
+        purpose: 'Clean',
+        room: widget.data,
+        employee: 'HR-EMP-00003',
+      );
+      final response = await requestRoomTask(requestQuery: request);
 
+      print('Room task successfully created');
+      print('Response: $response');
+    } catch (e) {
+      print('Failed to send status: $e');
+    }
+  }
   void _showReportDialog() {
     showModalBottomSheet(
       context: context,

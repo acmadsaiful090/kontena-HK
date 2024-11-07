@@ -16,21 +16,14 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _handleLogin() async {
     final username = _phoneController.text;
     final password = _passwordController.text;
-
-    // Create the login request
     final loginRequest = auth.LoginRequest(username: username, password: password);
 
     try {
-      // Call the login API
       final response = await auth.login(loginRequest);
-
-      // Check if the response contains the expected success message
       if (response['message'] == 'Logged In') {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('username', username);
         prefs.setString('password', password);
-
-        // Navigate to the home page upon successful login
         Navigator.pushReplacementNamed(context, '/home');
       } else {
         setState(() {

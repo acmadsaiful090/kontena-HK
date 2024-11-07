@@ -17,9 +17,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
     if (phone.isNotEmpty && password.isNotEmpty) {
       Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => HomePage()));
-      print('Saved phone: $phone, Saved password: $password');
     } else {
-      print('test');
       Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (context) => LoginPage()));
     }
