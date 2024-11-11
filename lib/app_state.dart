@@ -14,11 +14,8 @@ class AppState extends ChangeNotifier {
   static void reset() {
     _instance = AppState._internal();
   }
-
   late SharedPreferences _prefs;
-
   SharedPreferences get prefs => _prefs;
-
   Future<void> initializeState() async {
     _prefs = await SharedPreferences.getInstance();
     notifyListeners();
