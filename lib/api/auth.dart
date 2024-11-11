@@ -1,24 +1,21 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:kontena_hk/app_state.dart';
 
 class LoginRequest {
   final String username;
   final String password;
-
   LoginRequest({
     required this.username,
     required this.password,
   });
-
   static const String thunderAppHeader = 'JC-CORP-3.0.0';
-
   Map<String, String> get headers => {
         'thunderapp': thunderAppHeader,
         'Access-Control-Allow-Credentials': 'true',
         'Access-Control-Allow-Headers': '*',
       };
-
   Map<String, dynamic> get body => {
         'usr': username,
         'pwd': password,
@@ -52,9 +49,6 @@ Future<Map<String, dynamic>> login(LoginRequest requestBody) async {
 Future<void> _saveCookie(String cookie) async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.setString('session_cookie', cookie);
-
 }
-
-
 // forgot password
 // reset password

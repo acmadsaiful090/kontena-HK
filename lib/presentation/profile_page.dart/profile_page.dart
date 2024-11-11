@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:kontena_hk/app_state.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -27,9 +25,15 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+  void logout() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  await prefs.clear();
+  Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+    print("User logged out");
+  }
+
   @override
   Widget build(BuildContext context) {
-    final appState = Provider.of<AppState>(context);
     return Scaffold(
       body: Center(
         child: Padding(
@@ -123,9 +127,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                           ),
-                          onPressed: () async {
-                            await appState.logout();
-                            Navigator.pushReplacementNamed(context, '/');
+                          onPressed: () {
+                            logout();
                           },
                           child: Text(
                             'Log Out',

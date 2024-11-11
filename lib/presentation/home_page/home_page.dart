@@ -169,7 +169,6 @@ String? getFirstFieldWithOneAtIndex(int index) {
       return entry.key;
     }
   }
-
   return null; 
 }
   void _filterItems() {

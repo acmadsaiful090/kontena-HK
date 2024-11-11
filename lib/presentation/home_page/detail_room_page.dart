@@ -317,7 +317,6 @@ void _sendStatusRequest() async {
     print('Failed to send status: $e');
   }
 }
-
   void _showReportDialog() {
     showModalBottomSheet(
       context: context,
