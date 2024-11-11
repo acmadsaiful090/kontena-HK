@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:kontena_hk/presentation/home_page/home_page.dart';
-import 'package:kontena_hk/presentation/login_page/login_page.dart';
-import 'package:kontena_hk/presentation/splash_screen/splash_screen.dart';
-void main() {
-  runApp(MyApp());
+import 'package:kontena_hk/routes/app_routes.dart';
+import 'package:kontena_hk/app_state.dart';
+import 'package:provider/provider.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final appState = AppState();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => appState),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -13,14 +23,11 @@ class MyApp extends StatelessWidget {
       title: 'Kontena HK',
       theme: ThemeData(
         colorScheme: ColorScheme.light(),
-        
         fontFamily: 'OpenSans',
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => SplashScreenPage(),
-        '/home': (context) => HomePage(),
-      },
+      initialRoute: AppRoutes.splashScreen, 
+      routes: AppRoutes.routes, 
+      debugShowCheckedModeBanner: false,
     );
   }
 }

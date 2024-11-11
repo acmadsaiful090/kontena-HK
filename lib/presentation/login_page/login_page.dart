@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:kontena_hk/api/auth.dart' as auth;
+import 'package:kontena_hk/app_state.dart';
+
 
 class LoginPage extends StatefulWidget {
   @override
@@ -13,29 +15,6 @@ class _LoginPageState extends State<LoginPage> {
   bool _isPasswordVisible = false;
   String _errorMessage = '';
 
-  Future<void> _handleLogin() async {
-    final username = _phoneController.text;
-    final password = _passwordController.text;
-    final loginRequest = auth.LoginRequest(username: username, password: password);
-
-    try {
-      final response = await auth.login(loginRequest);
-      if (response['message'] == 'Logged In') {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString('username', username);
-        prefs.setString('password', password);
-        Navigator.pushReplacementNamed(context, '/home');
-      } else {
-        setState(() {
-          _errorMessage = 'Invalid username or password';
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Invalid username or password';
-      });
-    }
-  }
 
   @override
   void dispose() {
@@ -153,7 +132,20 @@ class _LoginPageState extends State<LoginPage> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      onPressed: _handleLogin,
+                     onPressed: () async {
+                        final appState = Provider.of<AppState>(context, listen: false);
+                        try {
+                          await appState.login(
+                            _phoneController.text,
+                            _passwordController.text,
+                          );
+                          Navigator.pushReplacementNamed(context, '/home');
+                        } catch (e) {
+                          setState(() {
+                            _errorMessage = 'Invalid username or password';
+                          });
+                        }
+                      },
                       child: Text('Login',
                           style: TextStyle(
                               fontFamily: 'OpenSans',

@@ -8,7 +8,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:kontena_hk/presentation/home_page/detail_room_page.dart';
 import 'package:kontena_hk/api/data/room_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:kontena_hk/models/room.dart';
 // Import your pages
 import 'package:kontena_hk/presentation/lost_found_page/lost_found_page.dart';
 import 'package:kontena_hk/presentation/profile_page.dart/profile_page.dart';
@@ -115,7 +114,7 @@ class _HomeContentState extends State<HomeContent> {
 
   Future<void> fetchItems() async {
     setState(() {
-      isLoading = true; // Start loading immediately
+      isLoading = true; 
     });
 
     try {
@@ -155,11 +154,8 @@ class _HomeContentState extends State<HomeContent> {
       });
     }
   }
-  
-
 String? getFirstFieldWithOneAtIndex(int index) {
   if (index < 0 || index >= filteredItems.length) {
-    print('Index di luar batas');
     return null;
   }
   final roomData = filteredItems[index];
@@ -168,7 +164,6 @@ String? getFirstFieldWithOneAtIndex(int index) {
     'can_check': roomData['can_check'] ?? 0,
     'is_damaged': roomData['is_damaged'] ?? 0,
   };
-
   for (var entry in fields.entries) {
     if (entry.value == 1) {
       return entry.key;
@@ -177,8 +172,6 @@ String? getFirstFieldWithOneAtIndex(int index) {
 
   return null; 
 }
-
-
   void _filterItems() {
     setState(() {
       String searchText = _searchController.text.toLowerCase();
@@ -200,7 +193,7 @@ String? getFirstFieldWithOneAtIndex(int index) {
       }).toList();
     });
   }
-
+  
   void _clearSearch() {
     _searchController.clear();
   }
@@ -399,9 +392,8 @@ String? getFirstFieldWithOneAtIndex(int index) {
                                       ),
                                     ],
                                   ),
-                                 onTap: () {
+                                  onTap: () {
                                     String? fieldWithOne = getFirstFieldWithOneAtIndex(index);
-
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(

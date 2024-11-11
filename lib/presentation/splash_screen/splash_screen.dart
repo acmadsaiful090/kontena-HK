@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kontena_hk/presentation/home_page/home_page.dart';
-import 'package:kontena_hk/presentation/login_page/login_page.dart';
-import 'package:kontena_hk/presentation/lost_found_page/lost_found_add_page.dart';
+import 'package:kontena_hk/routes/app_routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreenPage extends StatefulWidget {
@@ -15,11 +13,9 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
     String phone = prefs.getString('phone') ?? '';
     String password = prefs.getString('password') ?? '';
     if (phone.isNotEmpty && password.isNotEmpty) {
-      Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => HomePage()));
+      Navigator.pushReplacementNamed(context, AppRoutes.home);
     } else {
-      Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LoginPage()));
+      Navigator.pushReplacementNamed(context, AppRoutes.login);
     }
   }
 
@@ -37,8 +33,8 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
       backgroundColor: Colors.white,
       body: Center(
         child: Image.asset(
-          'assets/image/logo-kontena.png', // Make sure to replace with the actual path to your logo
-          height: 80, // Set the desired height
+          'assets/image/logo-kontena.png', 
+          height: 80, 
         ),
       ),
     );
