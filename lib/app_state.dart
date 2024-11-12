@@ -4,13 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AppState extends ChangeNotifier {
   static AppState _instance = AppState._internal();
-
   factory AppState() {
     return _instance;
   }
-
   AppState._internal();
-
   static void reset() {
     _instance = AppState._internal();
   }
@@ -20,14 +17,25 @@ class AppState extends ChangeNotifier {
     _prefs = await SharedPreferences.getInstance();
     notifyListeners();
   }
-
   void update(VoidCallback callback) {
     callback();
     notifyListeners();
   }
-
   String formatDateTime(DateTime dateTime) {
     final DateFormat formatter = DateFormat('dd-MM-yyyy HH:mm');
     return formatter.format(dateTime);
+  }
+  Map<String, dynamic>? _employeeData;
+
+  Map<String, dynamic>? get employeeData => _employeeData;
+
+  void setEmployeeData(Map<String, dynamic> data) {
+    _employeeData = data;
+    notifyListeners(); 
+  }
+
+  void clearEmployeeData() {
+    _employeeData = null;
+    notifyListeners();
   }
 }

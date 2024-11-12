@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kontena_hk/api/data/room_task_api.dart';
-import 'package:kontena_hk/api/data/get_room_task.dart';
 import 'package:kontena_hk/presentation/lost_found_page/lost_found_add_page.dart';
 import 'package:kontena_hk/api/data/room_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -301,25 +300,39 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
       },
     );
   }
+
   void _sendStatusRequest() async {
     final prefs = await SharedPreferences.getInstance();
     final cookie = prefs.getString('session_cookie');
+    print('Cookie: $cookie');
     if (cookie == null) {
       print('Cookie not found. Please log in again.');
       return;
     }
-    try {
-      CreateRoomTaskRequest request = CreateRoomTaskRequest(
-        cookie: cookie,
-        purpose: 'Clean',
-        room: widget.data,
-        employee: 'HR-EMP-00003',
-      );
-      final response = await requestRoomTask(requestQuery: request);
-      print('Room task successfully created');
-    } catch (e) {
-      print('Failed to send status: $e');
+    String purpose;
+    if (isCleanEnabled) {
+      purpose = 'Clean';
+    } else if (isCheckEnabled) {
+      purpose = 'Check';
+    } else if (isDamageEnabled) {
+      purpose = 'Maintain';
+    } else {
+      print('No purpose selected.');
+      return;
     }
+    print(purpose);
+    // try {
+    //   CreateRoomTaskRequest request = CreateRoomTaskRequest(
+    //     cookie: cookie,
+    //     purpose: purpose,
+    //     room: widget.data,
+    //     employee: 'HR-EMP-00003',
+    //   );
+    //   final response = await requestRoomTask(requestQuery: request);
+    //   print('Room task successfully created with purpose: $purpose');
+    // } catch (e) {
+    //   print('Failed to send status: $e');
+    // }
   }
 
   void _showReportDialog() {
