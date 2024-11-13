@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kontena_hk/app_state.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -17,13 +19,17 @@ class _ProfilePageState extends State<ProfilePage> {
     fetchUserData();
   }
 
-  Future<void> fetchUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      username = prefs.getString('username') ?? "John Doe";
-      phone = prefs.getString('phone') ?? "01234567890";
-    });
-  }
+ Future<void> fetchUserData() async {
+  final appState = Provider.of<AppState>(context, listen: false);
+  String username = appState.dataUser?['employee_name'] ?? 'John Doe';
+  String phone = appState.dataUser?['cell_number'] ?? '01234567890';
+
+  setState(() {
+    this.username = username;
+    this.phone = phone;
+  });
+}
+
 
   void logout() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
