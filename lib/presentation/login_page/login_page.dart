@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:kontena_hk/api/auth.dart' as auth;
+import 'package:jc_housekeeping/api/auth.dart' as auth;
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -16,7 +18,8 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _handleLogin() async {
     final username = _phoneController.text;
     final password = _passwordController.text;
-    final loginRequest = auth.LoginRequest(username: username, password: password);
+    final loginRequest =
+        auth.LoginRequest(username: username, password: password);
 
     try {
       final response = await auth.login(loginRequest);
@@ -36,6 +39,7 @@ class _LoginPageState extends State<LoginPage> {
       });
     }
   }
+
   @override
   void dispose() {
     _phoneController.dispose();
@@ -54,8 +58,9 @@ class _LoginPageState extends State<LoginPage> {
             Align(
               alignment: Alignment.topRight,
               child: Image.asset(
-                'assets/image/logo-kontena.png',
-                height: 80,
+                'assets/image/logo-jccorp.png',
+                height: 165,
+                width: 165,
               ),
             ),
             Align(

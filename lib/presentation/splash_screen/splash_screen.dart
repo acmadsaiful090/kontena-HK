@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kontena_hk/routes/app_routes.dart';
+import 'package:jc_housekeeping/routes/app_routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreenPage extends StatefulWidget {
@@ -23,7 +23,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
   void initState() {
     super.initState();
     Future.delayed(Duration(seconds: 2), () {
-    _loadCredentials();
+      _loadCredentials();
     });
   }
 
@@ -33,8 +33,8 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
       backgroundColor: Colors.white,
       body: Center(
         child: Image.asset(
-          'assets/image/logo-kontena.png', 
-          height: 80, 
+          'assets/image/logo-kontena.png',
+          height: 80,
         ),
       ),
     );

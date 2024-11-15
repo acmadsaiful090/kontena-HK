@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kontena_hk/routes/app_routes.dart';
-import 'package:kontena_hk/app_state.dart';
+import 'package:jc_housekeeping/routes/app_routes.dart';
+import 'package:jc_housekeeping/app_state.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -25,8 +25,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.light(),
         fontFamily: 'OpenSans',
       ),
-      initialRoute: AppRoutes.splashScreen, 
-      routes: AppRoutes.routes, 
+      initialRoute: AppRoutes.splashScreen,
+      routes: AppRoutes.routes,
       debugShowCheckedModeBanner: false,
     );
   }

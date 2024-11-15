@@ -5,13 +5,13 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:kontena_hk/presentation/home_page/detail_room_page.dart';
-import 'package:kontena_hk/api/data/room_api.dart';
+import 'package:jc_housekeeping/presentation/home_page/detail_room_page.dart';
+import 'package:jc_housekeeping/api/data/room_api.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 // Import your pages
-import 'package:kontena_hk/presentation/lost_found_page/lost_found_page.dart';
-import 'package:kontena_hk/presentation/profile_page.dart/profile_page.dart';
-import 'package:kontena_hk/presentation/reservation_page/reservation_page.dart';
+import 'package:jc_housekeeping/presentation/lost_found_page/lost_found_page.dart';
+import 'package:jc_housekeeping/presentation/profile_page.dart/profile_page.dart';
+import 'package:jc_housekeeping/presentation/reservation_page/reservation_page.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -114,7 +114,7 @@ class _HomeContentState extends State<HomeContent> {
 
   Future<void> fetchItems() async {
     setState(() {
-      isLoading = true; 
+      isLoading = true;
     });
 
     try {
@@ -154,23 +154,25 @@ class _HomeContentState extends State<HomeContent> {
       });
     }
   }
-String? getFirstFieldWithOneAtIndex(int index) {
-  if (index < 0 || index >= filteredItems.length) {
+
+  String? getFirstFieldWithOneAtIndex(int index) {
+    if (index < 0 || index >= filteredItems.length) {
+      return null;
+    }
+    final roomData = filteredItems[index];
+    Map<String, int> fields = {
+      'can_clean': roomData['can_clean'] ?? 0,
+      'can_check': roomData['can_check'] ?? 0,
+      'is_damaged': roomData['is_damaged'] ?? 0,
+    };
+    for (var entry in fields.entries) {
+      if (entry.value == 1) {
+        return entry.key;
+      }
+    }
     return null;
   }
-  final roomData = filteredItems[index];
-  Map<String, int> fields = {
-    'can_clean': roomData['can_clean'] ?? 0,
-    'can_check': roomData['can_check'] ?? 0,
-    'is_damaged': roomData['is_damaged'] ?? 0,
-  };
-  for (var entry in fields.entries) {
-    if (entry.value == 1) {
-      return entry.key;
-    }
-  }
-  return null; 
-}
+
   void _filterItems() {
     setState(() {
       String searchText = _searchController.text.toLowerCase();
@@ -192,7 +194,7 @@ String? getFirstFieldWithOneAtIndex(int index) {
       }).toList();
     });
   }
-  
+
   void _clearSearch() {
     _searchController.clear();
   }
@@ -392,7 +394,8 @@ String? getFirstFieldWithOneAtIndex(int index) {
                                     ],
                                   ),
                                   onTap: () {
-                                    String? fieldWithOne = getFirstFieldWithOneAtIndex(index);
+                                    String? fieldWithOne =
+                                        getFirstFieldWithOneAtIndex(index);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
