@@ -7,6 +7,10 @@ import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:jc_housekeeping/presentation/home_page/detail_room_page.dart';
 import 'package:jc_housekeeping/api/data/room_api.dart';
+import 'package:jc_housekeeping/app_state.dart';
+import 'package:jc_housekeeping/api/Employee_api.dart';
+import 'package:provider/provider.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 // Import your pages
 import 'package:jc_housekeeping/presentation/lost_found_page/lost_found_page.dart';
@@ -110,6 +114,46 @@ class _HomeContentState extends State<HomeContent> {
     super.initState();
     fetchItems();
     _searchController.addListener(_filterItems);
+    fatchEmployee();
+  }
+
+  Map<String, dynamic>? dataUser;
+  Future<void> fatchEmployee() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cookie = prefs.getString('session_cookie');
+    if (cookie == null) {
+      throw Exception('No session cookie found. Please log in again.');
+    }
+    final request = EmployeeDetailRequest(
+      cookie: cookie,
+      fields: '["*"]',
+    );
+    final response = await requestEmployee(requestQuery: request);
+    setState(() {
+      if (response is List) {
+        items = response.map((EmpData) {
+          return {
+            'name': EmpData['name']?.toString() ?? '',
+            'cell_number': EmpData['cell_number']?.toString() ?? '',
+            'first_name': EmpData['first_name']?.toString() ?? '',
+            'employee_name': EmpData['employee_name']?.toString() ?? '',
+            'prefered_email': EmpData['prefered_email']?.toString() ?? '',
+          };
+        }).toList();
+        var targetItem = items.firstWhere(
+            (item) => item['prefered_email'] == 'othkkontena@gmail.com');
+        if (targetItem.isNotEmpty) {
+          dataUser = targetItem;
+          Provider.of<AppState>(context, listen: false).setDataUser(targetItem);
+        } else {
+          print(
+              'Data dengan prefered_email "othkkontena@gmail.com" tidak ditemukan.');
+        }
+      } else {
+        throw Exception('Unexpected response format');
+      }
+      isLoading = false;
+    });
   }
 
   Future<void> fetchItems() async {

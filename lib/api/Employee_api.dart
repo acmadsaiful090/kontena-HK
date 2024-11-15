@@ -1,25 +1,20 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class UserDetailRequest {
+class EmployeeDetailRequest {
   final String cookie;
-  final String id;
   final String? fields;
   final String? limitStart;
   final int? limit;
   final String? filters;
-  // late http.Client client;
 
-  UserDetailRequest({
+  EmployeeDetailRequest({
     required this.cookie,
-    required this.id,
     this.fields,
     this.limit,
     this.limitStart,
     this.filters,
-  }) {
-    // client = http.Client();
-  }
+  });
 
   Map<String, dynamic> formatRequest() {
     Map<String, dynamic> requestMap = {};
@@ -48,19 +43,16 @@ class UserDetailRequest {
       'Cookie': cookie,
     };
   }
-
-  String paramID() {
-    return id;
-  }
 }
 
 String queryParams(Map<String, dynamic> map) =>
     map.entries.map((e) => '${e.key}=${e.value}').join('&');
 
-Future<Map<String, dynamic>> requestuser(
-    {required UserDetailRequest requestQuery}) async {
+Future<List<dynamic>> requestEmployee({
+  required EmployeeDetailRequest requestQuery,
+}) async {
   String url =
-      'https://erp2.hotelkontena.com/api/resource/User/${requestQuery.paramID()}?${queryParams(requestQuery.formatRequest())}';
+      'https://erp2.hotelkontena.com/api/resource/Employee?${queryParams(requestQuery.formatRequest())}';
 
   final response = await http.get(
     Uri.parse(url),
@@ -78,25 +70,3 @@ Future<Map<String, dynamic>> requestuser(
     throw Exception('System unknown error code ${response.statusCode}');
   }
 }
-
-// void cancelRequest(ItemRequest requestQuery) {
-//   requestQuery.client.close();
-// }
-
-// Example of using the cancellation function
-// void main() async {
-//   final requestQuery = ItemRequest(cookie: 'your_token_here');
-//   final future = requestItem(requestQuery: requestQuery);
-
-//   // Cancel the request after 5 seconds (as an example)
-//   Future.delayed(Duration(seconds: 5), () {
-//     cancelRequest(requestQuery);
-//   });
-
-//   try {
-//     final result = await future;
-//     print(result);
-//   } catch (e) {
-//     print('Error: $e');
-//   }
-// }

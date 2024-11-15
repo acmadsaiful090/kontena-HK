@@ -3,6 +3,20 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppState extends ChangeNotifier {
+  Map<String, dynamic>? _dataUser;
+  Map<String, String>? _cookieData;
+
+  Map<String, String>? get cookieData => _cookieData;
+
+  void setCookieData(Map<String, String> newCookie) {
+    _cookieData = newCookie;
+    notifyListeners();
+  }
+  Map<String, dynamic>? get dataUser => _dataUser;
+  void setDataUser(Map<String, dynamic>? newData) {
+    _dataUser = newData;
+    notifyListeners();
+  }
   static AppState _instance = AppState._internal();
   factory AppState() {
     return _instance;
