@@ -33,8 +33,8 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
       backgroundColor: Colors.white,
       body: Center(
         child: Image.asset(
-          'assets/image/logo-kontena.png',
-          height: 80,
+          'assets/image/logo_housekeeping.png',
+          height: 200,
         ),
       ),
     );

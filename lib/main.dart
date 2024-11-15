@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Kontena HK',
+      title: 'JC HouseKeeping',
       theme: ThemeData(
         colorScheme: ColorScheme.light(),
         fontFamily: 'OpenSans',

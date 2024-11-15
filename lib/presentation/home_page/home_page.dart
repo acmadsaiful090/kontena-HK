@@ -1,8 +1,5 @@
-import 'dart:ffi';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:jc_housekeeping/presentation/home_page/detail_room_page.dart';
@@ -15,7 +12,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 // Import your pages
 import 'package:jc_housekeeping/presentation/lost_found_page/lost_found_page.dart';
 import 'package:jc_housekeeping/presentation/profile_page.dart/profile_page.dart';
-import 'package:jc_housekeeping/presentation/reservation_page/reservation_page.dart';
 
 class HomePage extends StatefulWidget {
   @override

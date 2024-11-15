@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "kontena_hk" "\0"
+            VALUE "FileDescription", "kontena_hk_2" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "kontena_hk" "\0"
+            VALUE "InternalName", "kontena_hk_2" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "kontena_hk.exe" "\0"
-            VALUE "ProductName", "kontena_hk" "\0"
+            VALUE "OriginalFilename", "kontena_hk_2.exe" "\0"
+            VALUE "ProductName", "kontena_hk_2" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

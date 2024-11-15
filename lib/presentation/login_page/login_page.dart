@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jc_housekeeping/utils/theme.helper.dart';
 import 'package:jc_housekeeping/api/auth.dart' as auth;
 
 class LoginPage extends StatefulWidget {
@@ -27,7 +28,9 @@ class _LoginPageState extends State<LoginPage> {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         prefs.setString('username', username);
         prefs.setString('password', password);
-        Navigator.pushReplacementNamed(context, '/home');
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/home');
+        }
       } else {
         setState(() {
           _errorMessage = 'Invalid username or password';
@@ -58,28 +61,28 @@ class _LoginPageState extends State<LoginPage> {
             Align(
               alignment: Alignment.topRight,
               child: Image.asset(
-                'assets/image/logo-jccorp.png',
-                height: 165,
-                width: 165,
+                'assets/image/logo_housekeeping.png',
+                height: 200,
+                width: 200,
               ),
             ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                'House Keeping',
-                style: TextStyle(
-                  fontSize: 10,
-                  fontWeight: FontWeight.normal,
-                  fontFamily: 'OpenSans',
-                ),
-                textAlign: TextAlign.left,
-              ),
-            ),
+            // Align(
+            //   alignment: Alignment.centerRight,
+            //   child: Text(
+            //     'House Keeping',
+            //     style: TextStyle(
+            //       fontSize: 10,
+            //       fontWeight: FontWeight.normal,
+            //       fontFamily: 'OpenSans',
+            //     ),
+            //     textAlign: TextAlign.left,
+            //   ),
+            // ),
             SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.all(32.0),
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.1),
+                color: theme.colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -152,13 +155,13 @@ class _LoginPageState extends State<LoginPage> {
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF27ae60),
+                        backgroundColor: theme.colorScheme.primary,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(4),
                         ),
                       ),
                       onPressed: _handleLogin,
-                      child: Text('Login',
+                      child: Text('LOG IN',
                           style: TextStyle(
                               fontFamily: 'OpenSans',
                               color: Colors.white,
