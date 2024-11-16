@@ -2,23 +2,29 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:jc_housekeeping/api/data/room_task_api.dart';
+import 'package:jc_housekeeping/functions/status_room_color.dart';
 import 'package:jc_housekeeping/presentation/lost_found_page/lost_found_add_page.dart';
-import 'package:jc_housekeeping/api/data/room_api.dart';
+import 'package:jc_housekeeping/api/data/room_api.dart' as callRoom;
+import 'package:jc_housekeeping/utils/theme.helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jc_housekeeping/app_state.dart';
 import 'package:provider/provider.dart';
 
 class DetailRoomPage extends StatefulWidget {
   final String data;
+  final String title;
   final String status;
   final String detail;
+  final dynamic dataRoom;
 
   const DetailRoomPage({
+    required this.title,
     required this.data,
     required this.status,
     required this.detail,
-    Key? key,
-  }) : super(key: key);
+    required this.dataRoom,
+    super.key,
+  });
 
   @override
   _DetailRoomPageState createState() => _DetailRoomPageState();
@@ -62,23 +68,6 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
     });
   }
 
-  String getStatus() {
-    switch (currentStatus) {
-      case "OD":
-        return "OCCUPIED_DIRTY";
-      case "OC":
-        return "OCCUPIED_CLEANING";
-      case "VD":
-        return "VACANT_DIRTY";
-      case "VC":
-        return "VACANT_CLEANING";
-      case "VR":
-        return "VACANT_READY";
-      default:
-        return currentStatus;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -95,11 +84,11 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        widget.data,
-                        style: const TextStyle(
+                        widget.title,
+                        style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF34495e),
+                          color: theme.colorScheme.secondary,
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -109,16 +98,41 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Current State:',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF2c3e50),
-                                  )),
-                              const SizedBox(height: 5),
-                              Text(getStatus(),
-                                  style: const TextStyle(
-                                      fontSize: 16, color: Color(0xFF7f8c8d))),
+                              Text(
+                                'Status',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: theme.colorScheme.onPrimaryContainer,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                getStatus(widget.status),
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: getColorForLabel(widget.status),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              // Text(
+                              //   'Next Status',
+                              //   style: TextStyle(
+                              //     fontSize: 14,
+                              //     fontWeight: FontWeight.w500,
+                              //     color: theme.colorScheme.onPrimaryContainer,
+                              //   ),
+                              // ),
+                              // const SizedBox(height: 5),
+                              // Text(
+                              //   getStatus(nextStatus),
+                              //   style: TextStyle(
+                              //     fontSize: 16,
+                              //     color: getColorForLabel(nextStatus),
+                              //     fontWeight: FontWeight.w600,
+                              //   ),
+                              // ),
                             ],
                           ),
                           GestureDetector(
@@ -129,19 +143,19 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                         ],
                       ),
                       const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text("Next Status",
-                              style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color(0xFF2c3e50))),
-                          Text(nextStatus,
-                              style: const TextStyle(
-                                  fontSize: 16, color: Color(0xFF3498db))),
-                        ],
-                      ),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [
+                      //     const Text("Next Status",
+                      //         style: TextStyle(
+                      //             fontSize: 16,
+                      //             fontWeight: FontWeight.w500,
+                      //             color: Color(0xFF2c3e50))),
+                      //     Text(nextStatus,
+                      //         style: const TextStyle(
+                      //             fontSize: 16, color: Color(0xFF3498db))),
+                      //   ],
+                      // ),
                       const SizedBox(height: 24),
                       if (isCheckboxVisible)
                         CheckboxListTile(
@@ -311,5 +325,10 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
         ],
       ),
     );
+  }
+
+  onCallRoomDetail() async {
+    final callRoom.RoomRequest request = callRoom.RoomRequest(
+        cookie: AppState().cookieData, fields: '["*"]', id: widget.data);
   }
 }

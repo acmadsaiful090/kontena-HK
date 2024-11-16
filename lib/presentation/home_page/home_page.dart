@@ -6,6 +6,8 @@ import 'package:jc_housekeeping/presentation/home_page/detail_room_page.dart';
 import 'package:jc_housekeeping/api/data/room_api.dart';
 import 'package:jc_housekeeping/app_state.dart';
 import 'package:jc_housekeeping/api/Employee_api.dart';
+import 'package:jc_housekeeping/utils/theme.helper.dart';
+import 'package:jc_housekeeping/widget/bottom_navigation.dart';
 import 'package:provider/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -48,12 +50,12 @@ class _HomePageState extends State<HomePage> {
         title: Column(
           children: [
             Image.asset(
-              'assets/image/logo-kontena.png',
+              'assets/image/logo_housekeeping.png',
               height: 45,
             ),
             Text(
               _formatDateTime(DateTime.now()),
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.normal,
               ),
@@ -64,30 +66,34 @@ class _HomePageState extends State<HomePage> {
         automaticallyImplyLeading: false,
       ),
       body: _widgetOptions.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Room',
-          ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.business),
-          //   label: 'Reservation',
-          // ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.volunteer_activism),
-            label: 'Lost & Found',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Color(0xFF27ae60),
+      bottomNavigationBar: BottomBar(
+        selectedIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   type: BottomNavigationBarType.fixed,
+      //   items: const <BottomNavigationBarItem>[
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.home),
+      //       label: 'Room',
+      //     ),
+      //     // BottomNavigationBarItem(
+      //     //   icon: Icon(Icons.business),
+      //     //   label: 'Reservation',
+      //     // ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.volunteer_activism),
+      //       label: 'Lost & Found',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.person),
+      //       label: 'Profile',
+      //     ),
+      //   ],
+      //   currentIndex: _selectedIndex,
+      //   selectedItemColor: Color(0xFF27ae60),
+      //   onTap: _onItemTapped,
+      // ),
     );
   }
 }
@@ -166,6 +172,8 @@ class _HomeContentState extends State<HomeContent> {
       final request = RoomRequest(
         cookie: cookie,
         fields: '["*"]',
+        orderBy: 'room_type asc',
+        limit: 200,
       );
       final response = await requestItem(requestQuery: request);
       setState(() {
@@ -246,16 +254,16 @@ class _HomeContentState extends State<HomeContent> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return Container(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  const Text(
                     'Filters',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   CheckboxListTile(
-                    title: Text('Filter 1'),
+                    title: const Text('Filter 1'),
                     value: selectedFilters.contains('Filter 1'),
                     onChanged: (bool? value) {
                       setState(() {
@@ -269,7 +277,7 @@ class _HomeContentState extends State<HomeContent> {
                     },
                   ),
                   CheckboxListTile(
-                    title: Text('Filter 2'),
+                    title: const Text('Filter 2'),
                     value: selectedFilters.contains('Filter 2'),
                     onChanged: (bool? value) {
                       setState(() {
@@ -283,7 +291,7 @@ class _HomeContentState extends State<HomeContent> {
                     },
                   ),
                   CheckboxListTile(
-                    title: Text('Filter 3'),
+                    title: const Text('Filter 3'),
                     value: selectedFilters.contains('Filter 3'),
                     onChanged: (bool? value) {
                       setState(() {
@@ -300,7 +308,7 @@ class _HomeContentState extends State<HomeContent> {
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF27ae60),
+                        backgroundColor: const Color(0xFF27ae60),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -308,7 +316,7 @@ class _HomeContentState extends State<HomeContent> {
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: Text('Apply Filter',
+                      child: const Text('Apply Filter',
                           style: TextStyle(
                               fontFamily: 'OpenSans',
                               color: Colors.white,
@@ -330,11 +338,11 @@ class _HomeContentState extends State<HomeContent> {
   // }
 
   Color getColorForLabel(String label) {
-    if (label == "OC") return Colors.red;
-    if (label == "OD") return Colors.red;
-    if (label == "VD") return Colors.green;
-    if (label == "VC") return Colors.blue;
-    if (label == "VR") return Colors.blue;
+    if (label == "OC") return theme.colorScheme.error;
+    if (label == "OD") return theme.colorScheme.error;
+    if (label == "VD") return theme.colorScheme.onSecondary;
+    if (label == "VC") return theme.colorScheme.onSecondary;
+    if (label == "VR") return theme.colorScheme.primary;
     return Colors.transparent;
   }
 
@@ -359,17 +367,17 @@ class _HomeContentState extends State<HomeContent> {
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
                       ),
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: const Icon(Icons.search),
                       suffixIcon: IconButton(
-                        icon: Icon(Icons.clear),
+                        icon: const Icon(Icons.clear),
                         onPressed: _clearSearch,
                       ),
                     ),
                   ),
                 ),
-                SizedBox(width: 10),
+                const SizedBox(width: 10),
                 IconButton(
-                  icon: Icon(Icons.filter_list),
+                  icon: const Icon(Icons.filter_list),
                   onPressed: _showFilterSheet,
                 ),
               ],
@@ -377,24 +385,25 @@ class _HomeContentState extends State<HomeContent> {
           ),
           Expanded(
             child: isLoading
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : filteredItems.isEmpty
-                    ? Center(child: Text('No rooms found.'))
+                    ? const Center(child: Text('No rooms found.'))
                     : ListView.builder(
                         itemCount: filteredItems.length,
                         itemBuilder: (context, index) {
                           final label = filteredItems[index]['status'];
                           final color = getColorForLabel(label);
+                          final dataRm = filteredItems[index];
 
                           return Column(
                             children: [
                               Container(
-                                margin: EdgeInsets.symmetric(
+                                margin: const EdgeInsets.symmetric(
                                     vertical: 8, horizontal: 16),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
+                                  boxShadow: const [
                                     BoxShadow(
                                       color: Colors.black12,
                                       blurRadius: 8,
@@ -403,11 +412,11 @@ class _HomeContentState extends State<HomeContent> {
                                   ],
                                 ),
                                 child: ListTile(
-                                  contentPadding: EdgeInsets.all(16),
+                                  contentPadding: const EdgeInsets.all(16),
                                   title: Text(
                                     '${filteredItems[index]['room_name']}',
                                     textAlign: TextAlign.left,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 20),
                                   ),
@@ -417,20 +426,23 @@ class _HomeContentState extends State<HomeContent> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'Room Type: ${filteredItems[index]['room_type_name']}',
-                                        textAlign: TextAlign.left,
-                                      ),
-                                      Text(
-                                        filteredItems[index]['name'] !=
-                                                null // Change this as per your data
-                                            ? filteredItems[index]['name']!
-                                                .toString()
-                                            : 'No Guest',
-                                        textAlign: TextAlign.left,
+                                        '${filteredItems[index]['room_type_name']}',
                                         style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18),
+                                          fontSize: 18,
+                                        ),
+                                        textAlign: TextAlign.left,
                                       ),
+                                      // Text(
+                                      //   filteredItems[index]['name'] !=
+                                      //           null // Change this as per your data
+                                      //       ? filteredItems[index]['name']!
+                                      //           .toString()
+                                      //       : 'No Guest',
+                                      //   textAlign: TextAlign.left,
+                                      //   style: const TextStyle(
+                                      //       fontWeight: FontWeight.bold,
+                                      //       fontSize: 18),
+                                      // ),
                                     ],
                                   ),
                                   onTap: () {
@@ -440,7 +452,11 @@ class _HomeContentState extends State<HomeContent> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => DetailRoomPage(
-                                          data: filteredItems[index]['name'],
+                                          dataRoom: dataRm,
+                                          title:
+                                              '${filteredItems[index]['room_name']} - ${filteredItems[index]['room_type_name']}',
+                                          data:
+                                              '${filteredItems[index]['room_name']} - ${filteredItems[index]['room_type_name']}',
                                           status: label,
                                           detail: fieldWithOne ?? '',
                                         ),
@@ -457,7 +473,7 @@ class _HomeContentState extends State<HomeContent> {
                                     child: Center(
                                       child: Text(
                                         label,
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.w900,
                                           fontSize: 18,

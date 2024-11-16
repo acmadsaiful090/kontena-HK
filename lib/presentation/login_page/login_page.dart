@@ -123,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    keyboardType: TextInputType.phone,
+                    // keyboardType: TextInputType.,
                   ),
                   SizedBox(height: 20),
                   TextField(

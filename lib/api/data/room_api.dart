@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:jc_housekeeping/app_state.dart';
 
 class RoomRequest {
   final String cookie;
   final String? fields;
   final String? limitStart;
+  final String? orderBy;
   final int? limit;
   final String? filters;
   final String? id;
@@ -16,22 +16,45 @@ class RoomRequest {
     this.limit,
     this.limitStart,
     this.filters,
+    this.orderBy,
     this.id,
   });
 
-  Map<String, dynamic> toRequestParams() {
-    return {
-      if (fields != null && fields!.isNotEmpty) 'fields': fields,
-      if (limitStart != null && limitStart!.isNotEmpty)
-        'limit_start': limitStart,
-      if (limit != null) 'limit': limit,
-      if (filters != null && filters!.isNotEmpty) 'filters': filters,
-    };
+  Map<String, dynamic> request() {
+    Map<String, dynamic> requestMap = {};
+    if (fields != null && fields!.isNotEmpty) {
+      requestMap['fields'] = fields;
+    }
+
+    if (limitStart != null && limitStart!.isNotEmpty) {
+      requestMap['limit_start'] = limitStart;
+    }
+
+    if (limit != null) {
+      requestMap['limit'] = limit;
+    }
+
+    if (filters != null && filters!.isNotEmpty) {
+      requestMap['filters'] = filters;
+    }
+
+    if (orderBy != null && orderBy!.isNotEmpty) {
+      requestMap['order_by'] = orderBy;
+    }
+
+    return requestMap;
+    // return {
+    //   if (fields != null && fields!.isNotEmpty) 'fields': fields,
+    //   if (limitStart != null && limitStart!.isNotEmpty)
+    //     'limit_start': limitStart,
+    //   if (limit != null) 'limit': limit,
+    //   if (filters != null && filters!.isNotEmpty) 'filters': filters,
+    // };
   }
 
-  Map<String, String> toHeaders() => {'Cookie': cookie};
+  Map<String, String> header() => {'Cookie': cookie};
 
-  Map<String, String> paramDetail() {
+  Map<String, String> detail() {
     return {
       'doctype': 'Room Detail',
       'name': id ?? '',
@@ -46,11 +69,11 @@ String queryParams(Map<String, dynamic> map) => map.entries
 
 Future<List<dynamic>> requestItem({required RoomRequest requestQuery}) async {
   String url =
-      'https://erp2.hotelkontena.com/api/resource/Room?${queryParams(requestQuery.toRequestParams())}';
+      'https://erp2.hotelkontena.com/api/resource/Room?${queryParams(requestQuery.request())}';
 
   final response = await http.get(
     Uri.parse(url),
-    headers: requestQuery.toHeaders(),
+    headers: requestQuery.header(),
   );
 
   if (response.statusCode == 200) {
@@ -67,15 +90,14 @@ Future<List<dynamic>> requestItem({required RoomRequest requestQuery}) async {
   }
 }
 
-Future<Map<String, dynamic>> requestDetail(
-    {required RoomRequest requestQuery}) async {
+Future<Map<String, dynamic>> detail({required RoomRequest requestQuery}) async {
   String url =
-      'https://erp2.hotelkontena.com/api/method/frappe.desk.form.load.getdoc?${queryParams(requestQuery.paramDetail())}';
+      'https://erp2.hotelkontena.com/api/method/frappe.desk.form.load.getdoc?${queryParams(requestQuery.detail())}';
   print('URL: $url');
 
   final response = await http.get(
     Uri.parse(url),
-    headers: requestQuery.toHeaders(),
+    headers: requestQuery.header(),
   );
 
   if (response.statusCode == 200) {
