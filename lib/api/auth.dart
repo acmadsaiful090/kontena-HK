@@ -12,7 +12,7 @@ class LoginRequest {
   });
   static const String thunderAppHeader = 'JC-CORP-3.0.0';
   Map<String, String> get headers => {
-        'thunderapp': thunderAppHeader,
+        'thunderapp': 'JC-CORP-3.0.0',
         'Access-Control-Allow-Credentials': 'true',
         'Access-Control-Allow-Headers': '*',
       };
@@ -35,7 +35,8 @@ Future<Map<String, dynamic>> login(LoginRequest requestBody) async {
     if (responseBody['message'] == 'Logged In') {
       final setCookie = response.headers['set-cookie'];
       if (setCookie != null) {
-        await _saveCookie(setCookie);
+        AppState().cookieData = setCookie;
+        // await _saveCookie(setCookie);
       }
       return responseBody;
     } else {

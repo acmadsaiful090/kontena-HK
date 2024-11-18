@@ -112,22 +112,29 @@ class _HomeContentState extends State<HomeContent> {
   List<String> selectedFilters = [];
 
   @override
+  void setState(VoidCallback callback) {
+    super.setState(callback);
+  }
+
+  @override
   void initState() {
     super.initState();
     fetchItems();
     _searchController.addListener(_filterItems);
-    fatchEmployee();
+    // fatchEmployee();
+    // reInit();
+    print('check ini');
   }
 
   Map<String, dynamic>? dataUser;
   Future<void> fatchEmployee() async {
     final prefs = await SharedPreferences.getInstance();
-    final cookie = prefs.getString('session_cookie');
-    if (cookie == null) {
-      throw Exception('No session cookie found. Please log in again.');
-    }
+    // final cookie = prefs.getString('session_cookie');
+    // if (cookie == null) {
+    //   throw Exception('No session cookie found. Please log in again.');
+    // }
     final request = EmployeeDetailRequest(
-      cookie: cookie,
+      cookie: AppState().cookieData,
       fields: '["*"]',
     );
     final response = await requestEmployee(requestQuery: request);
@@ -146,7 +153,7 @@ class _HomeContentState extends State<HomeContent> {
             (item) => item['prefered_email'] == 'othkkontena@gmail.com');
         if (targetItem.isNotEmpty) {
           dataUser = targetItem;
-          Provider.of<AppState>(context, listen: false).setDataUser(targetItem);
+          // Provider.of<AppState>(context, listen: false).setDataUser(targetItem);
         } else {
           print(
               'Data dengan prefered_email "othkkontena@gmail.com" tidak ditemukan.');
@@ -158,25 +165,40 @@ class _HomeContentState extends State<HomeContent> {
     });
   }
 
+  reInit() {
+    if (AppState().roomList.isNotEmpty) {
+      setState(() {
+        items = AppState().roomList.map((roomData) {
+          return {
+            'name': roomData['name']?.toString() ?? '',
+            'room_name': roomData['room_name']?.toString() ?? '',
+            'room_type_name': roomData['room_type_name']?.toString() ?? '',
+            'status': roomData['room_status']?.toString() ?? '',
+            'can_clean': roomData['can_clean'] ?? 0,
+            'can_check': roomData['can_check'] ?? 0,
+            'is_damaged': roomData['is_damaged'] ?? 0,
+          };
+        }).toList();
+        filteredItems = items;
+      });
+    }
+  }
+
   Future<void> fetchItems() async {
     setState(() {
       isLoading = true;
     });
 
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final cookie = prefs.getString('session_cookie');
-      if (cookie == null) {
-        throw Exception('No session cookie found. Please log in again.');
-      }
       final request = RoomRequest(
-        cookie: cookie,
+        cookie: AppState().cookieData,
         fields: '["*"]',
         orderBy: 'room_type asc',
         limit: 200,
       );
       final response = await requestItem(requestQuery: request);
       setState(() {
+        AppState().roomList = response;
         if (response is List) {
           items = response.map((roomData) {
             return {
@@ -343,6 +365,8 @@ class _HomeContentState extends State<HomeContent> {
     if (label == "VD") return theme.colorScheme.onSecondary;
     if (label == "VC") return theme.colorScheme.onSecondary;
     if (label == "VR") return theme.colorScheme.primary;
+    if (label == "OOS") return theme.colorScheme.onPrimaryContainer;
+    if (label == "OOO") return theme.colorScheme.onPrimaryContainer;
     return Colors.transparent;
   }
 
@@ -403,9 +427,10 @@ class _HomeContentState extends State<HomeContent> {
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(12),
-                                  boxShadow: const [
+                                  boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black12,
+                                      color:
+                                          theme.colorScheme.onPrimaryContainer,
                                       blurRadius: 8,
                                       offset: Offset(0, 4),
                                     ),

@@ -60,6 +60,10 @@ class RoomRequest {
       'name': id ?? '',
     };
   }
+
+  String paramID() {
+    return id ?? '';
+  }
 }
 
 String queryParams(Map<String, dynamic> map) => map.entries
@@ -91,8 +95,10 @@ Future<List<dynamic>> requestItem({required RoomRequest requestQuery}) async {
 }
 
 Future<Map<String, dynamic>> detail({required RoomRequest requestQuery}) async {
+  // String url =
+  //     'https://erp2.hotelkontena.com/api/method/frappe.desk.form.load.getdoc?${queryParams(requestQuery.detail())}';
   String url =
-      'https://erp2.hotelkontena.com/api/method/frappe.desk.form.load.getdoc?${queryParams(requestQuery.detail())}';
+      'https://erp2.hotelkontena.com/api/resource/Room/${requestQuery.paramID()}';
   print('URL: $url');
 
   final response = await http.get(
@@ -102,15 +108,21 @@ Future<Map<String, dynamic>> detail({required RoomRequest requestQuery}) async {
 
   if (response.statusCode == 200) {
     final responseBody = json.decode(response.body);
-    if (responseBody is Map<String, dynamic> &&
-        responseBody.containsKey('docs') &&
-        responseBody['docs'] is List) {
-      return responseBody['docs'][0];
+    if (responseBody.containsKey('data')) {
+      return responseBody['data'];
     } else {
       throw Exception('Unexpected response format: $responseBody');
     }
   } else {
-    throw Exception(
-        'System unknown error, status code: ${response.statusCode}');
+    final responseBody = json.decode(response.body);
+    final message;
+    if (responseBody.containsKey('exception')) {
+      message = responseBody['exception'];
+    } else if (responseBody.containsKey('message')) {
+      message = responseBody['message'];
+    } else {
+      message = responseBody;
+    }
+    throw Exception(message);
   }
 }

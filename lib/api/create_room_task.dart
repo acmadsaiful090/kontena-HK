@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:jc_housekeeping/app_state.dart';
 
-class CreateRoomTaskRequest {
+class CreateRoomTask {
   final String cookie;
   final String? id;
   final String purpose;
@@ -9,7 +10,7 @@ class CreateRoomTaskRequest {
   final String employee;
   final String employeeName;
 
-  CreateRoomTaskRequest({
+  CreateRoomTask({
     required this.cookie,
     this.id,
     required this.purpose,
@@ -17,10 +18,9 @@ class CreateRoomTaskRequest {
     required this.employee,
     required this.employeeName,
   });
+
   Map<String, String> formatHeader() {
-    return {
-      'Cookie': cookie,
-    };
+    return {'Cookie': cookie};
   }
 
   String? getParamID() {
@@ -35,29 +35,40 @@ class CreateRoomTaskRequest {
       'employee': employee,
       'employee_name': employeeName,
     };
+
     data.removeWhere((key, value) => value == null);
+    return data;
+  }
+
+  Map<String, dynamic> toJsonSubmit() {
+    final data = {
+      'docstatus': 1,
+    };
     return data;
   }
 }
 
 Future<Map<String, dynamic>> request(
-    {required CreateRoomTaskRequest requestQuery}) async {
+    {required CreateRoomTask requestQuery}) async {
   String url;
   http.Response response;
 
   if (requestQuery.getParamID() != null) {
     url =
-        'https://erp2.hotelkontena.com/api/resource/room-task/view/list${requestQuery.getParamID()}';
+        '${AppState().domain}/api/resource/Room Task/${requestQuery.getParamID()}';
   } else {
-    url = 'https://erp2.hotelkontena.com/api/resource/Room Task';
+    url = '${AppState().domain}/api/resource/Room Task';
   }
+
   if (requestQuery.getParamID() != null) {
     response = await http.put(
       Uri.parse(url),
       headers: requestQuery.formatHeader(),
-      body: json.encode(requestQuery.toJson()),
+      body: json.encode(requestQuery.toJsonSubmit()),
     );
   } else {
+    print('check param, ${requestQuery.toJson()}');
+    print('check param, ${requestQuery.formatHeader()}');
     response = await http.post(
       Uri.parse(url),
       headers: requestQuery.formatHeader(),
@@ -67,9 +78,10 @@ Future<Map<String, dynamic>> request(
 
   if (response.statusCode == 200) {
     final responseBody = json.decode(response.body);
-    print('respon data, ${responseBody}');
-    print('respon data, ${requestQuery.toJson()}');
+
+    print('respon room taask, ${responseBody}');
     if (requestQuery.getParamID() != null) {
+      // print('respon data order, ${requestQuery.toJson()}');
       if (responseBody.containsKey('data')) {
         return responseBody['data'];
       } else {
@@ -84,7 +96,7 @@ Future<Map<String, dynamic>> request(
     }
   } else {
     final responseBody = json.decode(response.body);
-    final message;
+    dynamic message;
     if (responseBody.containsKey('exception')) {
       message = responseBody['exception'];
     } else if (responseBody.containsKey('message')) {

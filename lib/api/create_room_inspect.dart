@@ -1,26 +1,28 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:jc_housekeeping/app_state.dart';
 
-class CreateRoomTaskRequest {
+class CreateRoomInspect {
   final String cookie;
   final String? id;
   final String purpose;
   final String room;
-  final String employee;
-  final String employeeName;
+  final String statusCurrent;
+  final String date;
+  final List<dynamic>? roomInspect;
 
-  CreateRoomTaskRequest({
+  CreateRoomInspect({
     required this.cookie,
     this.id,
     required this.purpose,
     required this.room,
-    required this.employee,
-    required this.employeeName,
+    required this.statusCurrent,
+    required this.date,
+    this.roomInspect,
   });
+
   Map<String, String> formatHeader() {
-    return {
-      'Cookie': cookie,
-    };
+    return {'Cookie': cookie};
   }
 
   String? getParamID() {
@@ -30,34 +32,46 @@ class CreateRoomTaskRequest {
   Map<String, dynamic> toJson() {
     final data = {
       'purpose': purpose,
+      'date': date,
       'room': room,
+      'status_current': statusCurrent,
       'company': 'KONTENA BATU',
-      'employee': employee,
-      'employee_name': employeeName,
+      'details': roomInspect,
     };
+
     data.removeWhere((key, value) => value == null);
+    return data;
+  }
+
+  Map<String, dynamic> toJsonSubmit() {
+    final data = {
+      'docstatus': 1,
+    };
     return data;
   }
 }
 
 Future<Map<String, dynamic>> request(
-    {required CreateRoomTaskRequest requestQuery}) async {
+    {required CreateRoomInspect requestQuery}) async {
   String url;
   http.Response response;
 
   if (requestQuery.getParamID() != null) {
     url =
-        'https://erp2.hotelkontena.com/api/resource/room-task/view/list${requestQuery.getParamID()}';
+        '${AppState().domain}/api/resource/Room Inspect/${requestQuery.getParamID()}';
   } else {
-    url = 'https://erp2.hotelkontena.com/api/resource/Room Task';
+    url = '${AppState().domain}/api/resource/Room Inspect';
   }
+
   if (requestQuery.getParamID() != null) {
     response = await http.put(
       Uri.parse(url),
       headers: requestQuery.formatHeader(),
-      body: json.encode(requestQuery.toJson()),
+      body: json.encode(requestQuery.toJsonSubmit()),
     );
   } else {
+    print('check param, ${requestQuery.toJson()}');
+    print('check param, ${requestQuery.formatHeader()}');
     response = await http.post(
       Uri.parse(url),
       headers: requestQuery.formatHeader(),
@@ -67,9 +81,10 @@ Future<Map<String, dynamic>> request(
 
   if (response.statusCode == 200) {
     final responseBody = json.decode(response.body);
-    print('respon data, ${responseBody}');
-    print('respon data, ${requestQuery.toJson()}');
+
+    print('respon room taask, ${responseBody}');
     if (requestQuery.getParamID() != null) {
+      // print('respon data order, ${requestQuery.toJson()}');
       if (responseBody.containsKey('data')) {
         return responseBody['data'];
       } else {
@@ -84,7 +99,7 @@ Future<Map<String, dynamic>> request(
     }
   } else {
     final responseBody = json.decode(response.body);
-    final message;
+    dynamic message;
     if (responseBody.containsKey('exception')) {
       message = responseBody['exception'];
     } else if (responseBody.containsKey('message')) {

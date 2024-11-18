@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -50,8 +52,25 @@ class AppState extends ChangeNotifier {
 
   Map<String, dynamic> _dataUser = {};
   Map<String, dynamic> get dataUser => _dataUser;
-  void setDataUser(Map<String, dynamic> value) {
+  set dataUser(Map<String, dynamic> value) {
     _dataUser = value;
+    prefs.setString('ff_user', jsonEncode(value));
+    notifyListeners();
+  }
+
+  List<dynamic> _roomList = [];
+  List<dynamic> get roomList => _roomList;
+  set roomList(List<dynamic> value) {
+    _roomList = value;
+    prefs.setString('ff_room_list', jsonEncode(value));
+    notifyListeners();
+  }
+
+  List<dynamic> _roomStatus = [];
+  List<dynamic> get roomStatus => _roomStatus;
+  set roomStatus(List<dynamic> value) {
+    _roomStatus = value;
+    prefs.setString('ff_room_status', jsonEncode(value));
     notifyListeners();
   }
 
