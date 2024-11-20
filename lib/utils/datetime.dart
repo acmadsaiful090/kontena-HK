@@ -110,6 +110,14 @@ String? dateTimeFormat(
         DateTime date = DateTime(now.year, now.month, now.day, 23, 59, 59);
         result = DateFormat(frm).format(date);
       }
+    } else if (type == 'dateMonthComplete') {
+      if (param != null) {
+        DateTime parse = DateTime.parse(param);
+        result = DateFormat('dd MMMM yyyy').format(parse);
+      } else {
+        result = DateFormat('dd MMMM yyyy').format(now);
+      }
+      return result;
     }
 
     // Day

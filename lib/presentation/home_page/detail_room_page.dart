@@ -52,6 +52,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
   late String detail;
   String checkboxLabel = "";
   String employee = '';
+  String purpose = '';
 
   dynamic dataRoom;
 
@@ -83,7 +84,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
     print('check data, ${AppState().dataUser['employee']}');
   }
 
-  void checkFieldsInDetail() {
+  checkFieldsInDetail() {
     if (detail.contains('can_clean')) {
       checkboxLabel = 'Clean';
       isCheckboxVisible = true;
@@ -173,11 +174,11 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        getStatus(widget.status),
+                                        getStatus(dataRoom['room_status']),
                                         style: TextStyle(
                                           fontSize: 20,
                                           color:
-                                              getColorForLabel(widget.status),
+                                              getColorForLabel(dataRoom['room_status']),
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
@@ -324,7 +325,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                               const SizedBox(height: 12),
 
                               if ((isLoading == false) &&
-                                  (dataRoom['is_occupied'] == 0))
+                                  (dataRoom['is_occupied'] == 0) && (dataRoom['is_damaged'] != 1) && (dataRoomTask.isEmpty))
                                 CustomOutlinedButton(
                                   height: 60.0,
                                   text: "Maintenance",
@@ -648,7 +649,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
   }
 
   onCallCreateRoomTask() async {
-    final purpose = checkboxLabel;
+    // final purpose = checkboxLabel;
     final callCreateRoomTask.CreateRoomTask request =
         callCreateRoomTask.CreateRoomTask(
       cookie: AppState().cookieData,
@@ -656,6 +657,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
       room: dataRoom['name'],
       employee: employee,
       employeeName: AppState().dataUser['user']['full_name'],
+      date: dataRoom['is_damaged'] == 1 ? dateTimeFormat('date', null) : null,
     );
 
     try {
@@ -720,11 +722,11 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
     final callRoomInspect.RoomInspect request = callRoomInspect.RoomInspect(
         cookie: AppState().cookieData,
         fields: '["name","purpose"]',
-        filters: '[["docstatus","=",0],["room","=","${dataRoom['name']}"]]');
+        filters: '[["docstatus","=",0],["Room Inspect Detail","room","=","${dataRoom['name']}"]]');
 
     try {
       final callRequest = await callRoomInspect.request(requestQuery: request);
-
+      print('room inspect, ${callRequest}');
       if (callRequest.isNotEmpty) {
         setState(() {
           dataRoomInspect = callRequest;
@@ -748,8 +750,8 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
       cookie: AppState().cookieData,
       purpose: purpose,
       date: dateTimeFormat('date', null).toString(),
-      statusCurrent: dataRoom['status'],
-      room: dataRoom['name'],
+      // statusCurrent: dataRoom['status'],
+      // room: dataRoom['name'],
       roomInspect: [],
     );
 
@@ -837,16 +839,34 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
       isLoading = true;
     });
     await onCallRoomDetail();
+    await onCheckState();
 
     if (dataRoom != null) {
-      if (dataRoom['is_damaged'] == 1) {
-        await onCallRoomInspect();
+      if (isDamage) {
+        setState((){
+          purpose = 'Maintain';
+        });
+      } else if (canCheck) {
+        setState((){
+          purpose = 'Check';
+        });
       } else {
+        setState((){
+          purpose = 'Clean';
+        });
+      }
+
+      if (dataRoom['is_damaged'] == 1) {
+        print(1);
+        await onCallRoomInspect();
+        await onCallRoomTask();
+      } else {
+        print(2);
         await onCallRoomTask();
       }
     }
-    checkFieldsInDetail();
-    onCheckState();
+
+    await checkFieldsInDetail();
     setState(() {
       isLoading = false;
     });
@@ -902,10 +922,14 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
           padding: MediaQuery.viewInsetsOf(context),
           child: CreateDamageWidget(
             room: dataRoom,
+            onComplete: () {
+              print('yes');
+            }
           ),
         );
       },
     ).then((value) => {});
+    onTapHistory();
     setState(() {
       // cartData = cart.getAllItemCart();
     });

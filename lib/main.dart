@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
           return MaterialApp(
-            title: 'JC HouseKeeping',
+            title: 'JC House Keeping',
             theme: ThemeData(
               colorScheme: ColorScheme.light(),
               fontFamily: 'OpenSans',

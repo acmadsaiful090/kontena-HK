@@ -9,6 +9,7 @@ class CreateRoomTask {
   final String room;
   final String employee;
   final String employeeName;
+  final String? date;
 
   CreateRoomTask({
     required this.cookie,
@@ -17,6 +18,7 @@ class CreateRoomTask {
     required this.room,
     required this.employee,
     required this.employeeName,
+    this.date,
   });
 
   Map<String, String> formatHeader() {
@@ -34,6 +36,7 @@ class CreateRoomTask {
       'company': 'KONTENA BATU',
       'employee': employee,
       'employee_name': employeeName,
+      'to_be_completed_at': date,
     };
 
     data.removeWhere((key, value) => value == null);
