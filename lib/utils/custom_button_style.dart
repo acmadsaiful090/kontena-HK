@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jc_housekeeping/utils/theme.helper.dart';
+import 'package:jc_hk/utils/theme.helper.dart';
 
 /// A class that offers pre-defined button styles for customizing button appearance.
 class CustomButtonStyles {

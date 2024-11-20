@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jc_housekeeping/app_state.dart';
+import 'package:jc_hk/app_state.dart';
 
 class LoginRequest {
   final String username;

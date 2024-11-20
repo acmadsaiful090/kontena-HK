@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jc_housekeeping/utils/custom_text_style.dart';
-import 'package:jc_housekeeping/widget/base_button.dart';
+import 'package:jc_hk/utils/custom_text_style.dart';
+import 'package:jc_hk/widget/base_button.dart';
 // import 'package:jc_housekeeping/core/app_export.dart';
 
 class CustomOutlinedButton extends BaseButton {

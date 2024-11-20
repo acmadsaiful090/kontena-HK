@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jc_housekeeping/routes/app_routes.dart';
-import 'package:jc_housekeeping/app_state.dart';
+import 'package:jc_hk/routes/app_routes.dart';
+import 'package:jc_hk/app_state.dart';
 import 'package:provider/provider.dart';
 
 var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();

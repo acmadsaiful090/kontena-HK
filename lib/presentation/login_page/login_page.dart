@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:jc_housekeeping/app_state.dart';
-import 'package:jc_housekeeping/routes/app_routes.dart';
-import 'package:jc_housekeeping/utils/custom_button_style.dart';
-import 'package:jc_housekeeping/widget/alert.dart';
-import 'package:jc_housekeeping/widget/custom_outlined_button.dart';
+import 'package:jc_hk/app_state.dart';
+import 'package:jc_hk/routes/app_routes.dart';
+import 'package:jc_hk/utils/custom_button_style.dart';
+import 'package:jc_hk/widget/alert.dart';
+import 'package:jc_hk/widget/custom_outlined_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jc_housekeeping/utils/theme.helper.dart';
-import 'package:jc_housekeeping/api/auth.dart' as auth;
-import 'package:jc_housekeeping/api/user.dart' as user;
-import 'package:jc_housekeeping/api/Employee_api.dart' as employee;
-import 'package:jc_housekeeping/api/room_status.dart' as roomStatus;
+import 'package:jc_hk/utils/theme.helper.dart';
+import 'package:jc_hk/api/auth.dart' as auth;
+import 'package:jc_hk/api/user.dart' as user;
+import 'package:jc_hk/api/Employee_api.dart' as employee;
+import 'package:jc_hk/api/room_status.dart' as roomStatus;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

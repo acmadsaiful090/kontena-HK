@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-import 'package:jc_housekeeping/presentation/lost_found_page/lost_found_add_page.dart';
+import 'package:jc_hk/presentation/lost_found_page/lost_found_add_page.dart';
 
 class LostFoundPage extends StatefulWidget {
   @override

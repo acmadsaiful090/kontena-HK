@@ -2,18 +2,18 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:jc_housekeeping/presentation/home_page/detail_room_page.dart';
-import 'package:jc_housekeeping/api/data/room_api.dart';
-import 'package:jc_housekeeping/app_state.dart';
-import 'package:jc_housekeeping/api/Employee_api.dart';
-import 'package:jc_housekeeping/utils/theme.helper.dart';
-import 'package:jc_housekeeping/widget/bottom_navigation.dart';
+import 'package:jc_hk/presentation/home_page/detail_room_page.dart';
+import 'package:jc_hk/api/data/room_api.dart';
+import 'package:jc_hk/app_state.dart';
+import 'package:jc_hk/api/Employee_api.dart';
+import 'package:jc_hk/utils/theme.helper.dart';
+import 'package:jc_hk/widget/bottom_navigation.dart';
 import 'package:provider/provider.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 // Import your pages
-import 'package:jc_housekeeping/presentation/lost_found_page/lost_found_page.dart';
-import 'package:jc_housekeeping/presentation/profile_page.dart/profile_page.dart';
+import 'package:jc_hk/presentation/lost_found_page/lost_found_page.dart';
+import 'package:jc_hk/presentation/profile_page.dart/profile_page.dart';
 
 class HomePage extends StatefulWidget {
   @override

@@ -29,8 +29,8 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // String _domain = 'https://erp.hotelkontena.com';
-  String _domain = 'https://erp2.hotelkontena.com';
+  String _domain = 'https://erp.hotelkontena.com';
+  // String _domain = 'https://erp2.hotelkontena.com';
   String get domain => _domain;
   set domain(String _value) {
     _domain = _value;

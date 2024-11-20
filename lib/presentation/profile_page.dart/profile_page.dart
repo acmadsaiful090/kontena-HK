@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jc_housekeeping/app_state.dart';
+import 'package:jc_hk/app_state.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
