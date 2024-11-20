@@ -2,10 +2,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:jc_hk/functions/status_room_color.dart';
 import 'package:jc_hk/presentation/home_page/detail_room_page.dart';
 import 'package:jc_hk/api/data/room_api.dart';
 import 'package:jc_hk/app_state.dart';
 import 'package:jc_hk/api/Employee_api.dart';
+import 'package:jc_hk/utils/datetime.dart';
 import 'package:jc_hk/utils/theme.helper.dart';
 import 'package:jc_hk/widget/bottom_navigation.dart';
 import 'package:provider/provider.dart';
@@ -36,11 +38,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  String _formatDateTime(DateTime dateTime) {
-    final DateFormat formatter = DateFormat('EEEE, d MMMM yyyy', 'id');
-    return formatter.format(dateTime);
-  }
-
   @override
   Widget build(BuildContext context) {
     initializeDateFormatting('id', null);
@@ -54,7 +51,7 @@ class _HomePageState extends State<HomePage> {
               height: 45,
             ),
             Text(
-              _formatDateTime(DateTime.now()),
+              dateTimeFormat('dateMonthComplete', null).toString(),
               style: const TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.normal,
@@ -122,8 +119,6 @@ class _HomeContentState extends State<HomeContent> {
     fetchItems();
     _searchController.addListener(_filterItems);
     // fatchEmployee();
-    // reInit();
-    print('check ini');
   }
 
   Map<String, dynamic>? dataUser;
@@ -359,15 +354,11 @@ class _HomeContentState extends State<HomeContent> {
   //   return status[random.nextInt(5)];
   // }
 
-  Color getColorForLabel(String label) {
-    if (label == "OC") return theme.colorScheme.error;
-    if (label == "OD") return theme.colorScheme.error;
-    if (label == "VD") return theme.colorScheme.onSecondary;
-    if (label == "VC") return theme.colorScheme.onSecondary;
-    if (label == "VR") return theme.colorScheme.primary;
-    if (label == "OOS") return theme.colorScheme.onPrimaryContainer;
-    if (label == "OOO") return theme.colorScheme.onPrimaryContainer;
-    return Colors.transparent;
+  List<dynamic> roomList(List<dynamic> room, String search, String filter) {
+    return room
+        .where((rm) =>
+            rm['name'].toString().toLowerCase().contains(search.toLowerCase()))
+        .toList();
   }
 
   @override
@@ -387,23 +378,35 @@ class _HomeContentState extends State<HomeContent> {
                       filled: true,
                       fillColor: Colors.white,
                       hintText: 'Search...',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
+                      hintStyle: TextStyle(
+                        color: theme.colorScheme.onPrimaryContainer,
                       ),
-                      prefixIcon: const Icon(Icons.search),
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: _clearSearch,
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: theme.colorScheme
+                                .outline, // Warna border saat tidak aktif
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(8.0)),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: theme.colorScheme.onPrimaryContainer,
                       ),
+                      suffixIcon: (_searchController.text != '')
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: _clearSearch,
+                            )
+                          : null,
                     ),
                   ),
                 ),
-                const SizedBox(width: 10),
-                IconButton(
-                  icon: const Icon(Icons.filter_list),
-                  onPressed: _showFilterSheet,
-                ),
+                // const SizedBox(width: 10),
+                // if (_searchController.text != '')
+                // IconButton(
+                //   icon: const Icon(Icons.filter_list),
+                //   onPressed: _showFilterSheet,
+                // ),
               ],
             ),
           ),
@@ -412,106 +415,113 @@ class _HomeContentState extends State<HomeContent> {
                 ? const Center(child: CircularProgressIndicator())
                 : filteredItems.isEmpty
                     ? const Center(child: Text('No rooms found.'))
-                    : ListView.builder(
-                        itemCount: filteredItems.length,
-                        itemBuilder: (context, index) {
-                          final label = filteredItems[index]['status'];
-                          final color = getColorForLabel(label);
-                          final dataRm = filteredItems[index];
-
-                          return Column(
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color:
-                                          theme.colorScheme.onPrimaryContainer,
-                                      blurRadius: 8,
-                                      offset: Offset(0, 4),
+                    : Builder(builder: (context) {
+                        final room =
+                            roomList(filteredItems, _searchController.text, '');
+                        return ListView.builder(
+                          itemCount: room.length,
+                          itemBuilder: (context, index) {
+                            final roomItem = room[index];
+                            // final dataRm = room[index];
+                            return Column(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 16),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: theme.colorScheme.outline,
+                                      width: 0.5,
                                     ),
-                                  ],
-                                ),
-                                child: ListTile(
-                                  contentPadding: const EdgeInsets.all(16),
-                                  title: Text(
-                                    '${filteredItems[index]['room_name']}',
-                                    textAlign: TextAlign.left,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 20),
-                                  ),
-                                  subtitle: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        '${filteredItems[index]['room_type_name']}',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                        ),
-                                        textAlign: TextAlign.left,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: theme.colorScheme.outline,
+                                        blurRadius: 5,
+                                        offset: Offset(0, 8),
                                       ),
-                                      // Text(
-                                      //   filteredItems[index]['name'] !=
-                                      //           null // Change this as per your data
-                                      //       ? filteredItems[index]['name']!
-                                      //           .toString()
-                                      //       : 'No Guest',
-                                      //   textAlign: TextAlign.left,
-                                      //   style: const TextStyle(
-                                      //       fontWeight: FontWeight.bold,
-                                      //       fontSize: 18),
-                                      // ),
                                     ],
                                   ),
-                                  onTap: () {
-                                    String? fieldWithOne =
-                                        getFirstFieldWithOneAtIndex(index);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => DetailRoomPage(
-                                          dataRoom: dataRm,
-                                          title:
-                                              '${filteredItems[index]['room_name']} - ${filteredItems[index]['room_type_name']}',
-                                          data:
-                                              '${filteredItems[index]['room_name']} - ${filteredItems[index]['room_type_name']}',
-                                          status: label,
-                                          detail: fieldWithOne ?? '',
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  trailing: Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: color,
-                                      shape: BoxShape.circle,
+                                  child: ListTile(
+                                    contentPadding: const EdgeInsets.all(16),
+                                    title: Text(
+                                      '${roomItem['room_name']}',
+                                      textAlign: TextAlign.left,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20),
                                     ),
-                                    child: Center(
-                                      child: Text(
-                                        label,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w900,
-                                          fontSize: 18,
+                                    subtitle: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${roomItem['room_type_name']}',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                          ),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                        // Text(
+                                        //   filteredItems[index]['name'] !=
+                                        //           null // Change this as per your data
+                                        //       ? filteredItems[index]['name']!
+                                        //           .toString()
+                                        //       : 'No Guest',
+                                        //   textAlign: TextAlign.left,
+                                        //   style: const TextStyle(
+                                        //       fontWeight: FontWeight.bold,
+                                        //       fontSize: 18),
+                                        // ),
+                                      ],
+                                    ),
+                                    onTap: () {
+                                      String? fieldWithOne =
+                                          getFirstFieldWithOneAtIndex(index);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => DetailRoomPage(
+                                            dataRoom: roomItem,
+                                            title:
+                                                '${roomItem['room_name']} - ${roomItem['room_type_name']}',
+                                            data:
+                                                '${roomItem['room_name']} - ${roomItem['room_type_name']}',
+                                            status: roomItem['status'],
+                                            detail: fieldWithOne ?? '',
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    trailing: Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: getColorForLabel(
+                                            roomItem['status']),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          roomItem['status'],
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w900,
+                                            fontSize: 18,
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
+                              ],
+                            );
+                          },
+                        );
+                      }),
           ),
         ],
       ),

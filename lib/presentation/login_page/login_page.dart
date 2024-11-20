@@ -107,6 +107,7 @@ class _LoginPageState extends State<LoginPage> {
   onCallRoomStatus() async {
     final roomStatus.RoomStatus requestCall = roomStatus.RoomStatus(
       cookie: AppState().cookieData,
+      fields: '["name","status_name"]',
     );
 
     try {

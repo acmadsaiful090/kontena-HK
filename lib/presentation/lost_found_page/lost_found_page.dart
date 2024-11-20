@@ -53,71 +53,82 @@ class _LostFoundPageState extends State<LostFoundPage> {
               Expanded(
                 child: isLoading
                     ? Center(child: CircularProgressIndicator())
-                    : ListView.builder(
-                        itemCount: items.length,
-                        itemBuilder: (context, index) {
-                          return Column(
-                            children: [
-                              Container(
-                                margin: EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      blurRadius: 8,
-                                      offset: Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: ListTile(
-                                  contentPadding: EdgeInsets.all(16),
-                                  title: Text(
-                                    items[index],
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.normal),
-                                  ),
-                                  onTap: () {
-                                    // Handle item click
-                                  },
-                                  trailing: Container(
-                                    width: 24,
-                                    height: 24,
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
+                    // : ListView.builder(
+                    //     itemCount: items.length,
+                    //     itemBuilder: (context, index) {
+                    //       return Column(
+                    //         children: [
+                    //           Container(
+                    //             margin: EdgeInsets.symmetric(
+                    //                 vertical: 8, horizontal: 16),
+                    //             decoration: BoxDecoration(
+                    //               color: Colors.white,
+                    //               borderRadius: BorderRadius.circular(12),
+                    //               boxShadow: [
+                    //                 BoxShadow(
+                    //                   color: Colors.black12,
+                    //                   blurRadius: 8,
+                    //                   offset: Offset(0, 4),
+                    //                 ),
+                    //               ],
+                    //             ),
+                    //             child: ListTile(
+                    //               contentPadding: EdgeInsets.all(16),
+                    //               title: Text(
+                    //                 items[index],
+                    //                 textAlign: TextAlign.center,
+                    //                 style: TextStyle(
+                    //                     fontWeight: FontWeight.normal),
+                    //               ),
+                    //               onTap: () {
+                    //                 // Handle item click
+                    //               },
+                    //               trailing: Container(
+                    //                 width: 24,
+                    //                 height: 24,
+                    //                 decoration: BoxDecoration(
+                    //                   color: Colors.red,
+                    //                   shape: BoxShape.circle,
+                    //                 ),
+                    //               ),
+                    //             ),
+                    //           ),
+                    //         ],
+                    //       );
+                    //     },
+                    //   ),
+                    : Center(
+                        child: Padding(
+                          padding: const EdgeInsetsDirectional
+                              .fromSTEB(12.0, 0.0, 12.0, 0.0),
+                          child: SizedBox(
+                            height: double.infinity,
+                            child: Text('Upcoming Feature'),
+                          ),
+                        ),
                       ),
               ),
             ],
           ),
-          floatingActionButton: SizedBox(
-            width: 60,
-            height: 60,
-            child: FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => LostFoundAddPage()),
-                );
-              },
-              child: Icon(Icons.add, size: 36, color: Colors.white),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
-              backgroundColor: Color(0xFF27ae60),
-            ),
-          ),
+          // floatingActionButton: SizedBox(
+          //   width: 60,
+          //   height: 60,
+          //   child: FloatingActionButton(
+          //     onPressed: () {
+          //       Navigator.push(
+          //         context,
+          //         MaterialPageRoute(builder: (context) => LostFoundAddPage()),
+          //       );
+          //     },
+          //     child: Icon(Icons.add, size: 36, color: Colors.white),
+          //     shape: RoundedRectangleBorder(
+          //       borderRadius: BorderRadius.circular(30),
+          //     ),
+          //     backgroundColor: Color(0xFF27ae60),
+          //   ),
+          // ),
           floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-        ));
+        ),
+      );
   }
 }

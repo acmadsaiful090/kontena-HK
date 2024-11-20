@@ -6,8 +6,6 @@ class CreateRoomInspect {
   final String cookie;
   final String? id;
   final String purpose;
-  final String room;
-  final String statusCurrent;
   final String date;
   final List<dynamic>? roomInspect;
 
@@ -15,8 +13,6 @@ class CreateRoomInspect {
     required this.cookie,
     this.id,
     required this.purpose,
-    required this.room,
-    required this.statusCurrent,
     required this.date,
     this.roomInspect,
   });
@@ -31,10 +27,9 @@ class CreateRoomInspect {
 
   Map<String, dynamic> toJson() {
     final data = {
+      'docstatus': 1,
       'purpose': purpose,
       'date': date,
-      'room': room,
-      'status_current': statusCurrent,
       'company': 'KONTENA BATU',
       'details': roomInspect,
     };
