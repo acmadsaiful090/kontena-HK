@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:jc_hk/app_state.dart';
 
 class UserDetailRequest {
   final String cookie;
@@ -60,7 +61,7 @@ String queryParams(Map<String, dynamic> map) =>
 Future<Map<String, dynamic>> requestuser(
     {required UserDetailRequest requestQuery}) async {
   String url =
-      'https://erp2.hotelkontena.com/api/resource/User/${requestQuery.paramID()}?${queryParams(requestQuery.formatRequest())}';
+      '${AppState().domain}/api/resource/User/${requestQuery.paramID()}?${queryParams(requestQuery.formatRequest())}';
 
   final response = await http.get(
     Uri.parse(url),

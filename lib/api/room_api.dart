@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:jc_hk/app_state.dart';
 
 class RoomRequest {
   final String cookie;
@@ -72,8 +73,9 @@ String queryParams(Map<String, dynamic> map) => map.entries
     .join('&');
 
 Future<List<dynamic>> requestItem({required RoomRequest requestQuery}) async {
-  String url =
-      'https://erp2.hotelkontena.com/api/resource/Room?${queryParams(requestQuery.request())}';
+  String
+  url =
+      '${AppState().domain}/api/resource/Room?${queryParams(requestQuery.request())}';
 
   final response = await http.get(
     Uri.parse(url),
@@ -95,10 +97,8 @@ Future<List<dynamic>> requestItem({required RoomRequest requestQuery}) async {
 }
 
 Future<Map<String, dynamic>> detail({required RoomRequest requestQuery}) async {
-  // String url =
-  //     'https://erp2.hotelkontena.com/api/method/frappe.desk.form.load.getdoc?${queryParams(requestQuery.detail())}';
   String url =
-      'https://erp2.hotelkontena.com/api/resource/Room/${requestQuery.paramID()}';
+      '${AppState().domain}/api/resource/Room/${requestQuery.paramID()}';
   print('URL: $url');
 
   final response = await http.get(

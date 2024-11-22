@@ -78,9 +78,8 @@ class _LoginPageState extends State<LoginPage> {
           });
 
           if (mounted) {
-            // Navigator.pushReplacementNamed(context, '/home');
             Navigator.of(context).pushNamedAndRemoveUntil(
-              AppRoutes.home,
+              AppRoutes.company,
               (route) => false,
             );
           }
@@ -88,6 +87,7 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         setState(() {
           _errorMessage = 'Invalid username or password';
+          isLoading = false;
         });
 
         if (mounted) {
@@ -97,6 +97,7 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       setState(() {
         _errorMessage = 'Invalid username or password';
+        isLoading = false;
       });
       if (mounted) {
         alertError(context, e.toString());

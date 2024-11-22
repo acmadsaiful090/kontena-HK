@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:jc_hk/app_state.dart';
 
 class EmployeeDetailRequest {
   final String cookie;
@@ -52,7 +53,7 @@ Future<List<dynamic>> requestEmployee({
   required EmployeeDetailRequest requestQuery,
 }) async {
   String url =
-      'https://erp2.hotelkontena.com/api/resource/Employee?${queryParams(requestQuery.formatRequest())}';
+      '${AppState().domain}/api/resource/Employee?${queryParams(requestQuery.formatRequest())}';
 
   final response = await http.get(
     Uri.parse(url),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:jc_hk/app_state.dart';
 
 class CreateRoomTaskRequest {
   final String cookie;
@@ -47,9 +48,9 @@ Future<Map<String, dynamic>> request(
 
   if (requestQuery.getParamID() != null) {
     url =
-        'https://erp2.hotelkontena.com/api/resource/room-task/view/list${requestQuery.getParamID()}';
+       '${AppState().domain}/api/resource/room-task/view/list${requestQuery.getParamID()}';
   } else {
-    url = 'https://erp2.hotelkontena.com/api/resource/Room Task';
+    url = '${AppState().domain}/api/resource/Room Task';
   }
   if (requestQuery.getParamID() != null) {
     response = await http.put(
