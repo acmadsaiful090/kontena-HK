@@ -9,54 +9,45 @@ class CompanyPage extends StatefulWidget {
 
 class _CompanyPageState extends State<CompanyPage> {
   String? selectedCompany;
-
-  // Simulasi data perusahaan (nama dan logo URL)
   final List<Map<String, String>> companies = [
     {
       'name': 'Company A',
-      'logo': 'https://via.placeholder.com/150', // Ganti dengan URL logo nyata
+      'logo': 'https://via.placeholder.com/150',
     },
     {
       'name': 'Company B',
-      'logo': 'https://via.placeholder.com/150', // Ganti dengan URL logo nyata
+      'logo': 'https://via.placeholder.com/150',
     },
     {
       'name': 'Company C',
-      'logo': 'https://via.placeholder.com/150', // Ganti dengan URL logo nyata
+      'logo': 'https://via.placeholder.com/150',
     },
     {
       'name': 'Company D',
-      'logo': 'https://via.placeholder.com/150', // Ganti dengan URL logo nyata
+      'logo': 'https://via.placeholder.com/150',
     },
     {
       'name': 'Company E',
-      'logo': 'https://via.placeholder.com/150', // Ganti dengan URL logo nyata
+      'logo': 'https://via.placeholder.com/150',
     },
     {
       'name': 'Company F',
-      'logo': 'https://via.placeholder.com/150', // Ganti dengan URL logo nyata
+      'logo': 'https://via.placeholder.com/150',
     },
   ];
 
   void selectCompany(String companyName) {
-    setState(() {
-      selectedCompany = companyName;
       AppState().company = companyName; 
       Navigator.of(context).pushNamedAndRemoveUntil(
         AppRoutes.home,
         (route) => false,
       );
-    });
   }
-
 
   @override
   Widget build(BuildContext context) {
-    // Mendapatkan lebar layar
     double screenWidth = MediaQuery.of(context).size.width;
-
-    // Menghitung jumlah kolom berdasarkan lebar layar
-    int crossAxisCount = (screenWidth / 200).floor(); // Misalnya, 200 adalah lebar card
+    int crossAxisCount = (screenWidth / 200).floor(); 
 
     return Scaffold(
       appBar: AppBar(
@@ -65,7 +56,7 @@ class _CompanyPageState extends State<CompanyPage> {
       body: GridView.builder(
         padding: EdgeInsets.all(16),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: crossAxisCount > 3 ? crossAxisCount : 3, // Minimal 2 kolom
+          crossAxisCount: crossAxisCount > 3 ? crossAxisCount : 3,
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
           childAspectRatio: 3 / 4,
