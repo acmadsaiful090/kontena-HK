@@ -4,7 +4,6 @@ import 'package:jc_hk/routes/app_routes.dart';
 import 'package:jc_hk/utils/custom_button_style.dart';
 import 'package:jc_hk/widget/alert.dart';
 import 'package:jc_hk/widget/custom_outlined_button.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jc_hk/utils/theme.helper.dart';
 import 'package:jc_hk/api/auth.dart' as auth;
 import 'package:jc_hk/api/user.dart' as user;
@@ -30,80 +29,139 @@ class _LoginPageState extends State<LoginPage> {
 
   String _errorMessage = '';
 
-  Future<void> _handleLogin() async {
-    final username = _phoneController.text;
-    final password = _passwordController.text;
+//   Future<void> _handleLogin() async {
+//   final username = _phoneController.text.trim();
+//   final password = _passwordController.text.trim();
 
+//   if (username.isEmpty || password.isEmpty) {
+//     setState(() {
+//       _errorMessage = 'Username and password cannot be empty';
+//     });
+//     return;
+//   }
+
+//   setState(() {
+//     isLoading = true;
+//     _errorMessage = ''; 
+//   });
+
+//   final loginRequest = auth.LoginRequest(username: username, password: password);
+
+//   try {
+//     final response = await auth.login(loginRequest);
+//     if (response['message'] == 'Logged In') {
+//       final user.UserDetailRequest requestUser  = user.UserDetailRequest(
+//         cookie: AppState().cookieData,
+//         id: username,
+//       );
+
+//       final callUser  = await user.requestuser(requestQuery: requestUser );
+//       final employee.EmployeeDetailRequest requestEmployee = employee.EmployeeDetailRequest(
+//         cookie: AppState().cookieData,
+//         fields: '["name"]',
+//         filters: '[["user_id","=","$username"]]',
+//       );
+
+//       final callEmployee = await employee.requestEmployee(requestQuery: requestEmployee);
+
+//       await onCallRoomStatus();
+
+//       if (callUser .containsKey('name') && callEmployee.isNotEmpty) {
+//         setState(() {
+//           dataUser  = callUser ;
+//           dataEmployee = callEmployee.length == 1 ? callEmployee[0] : null;
+//           AppState().dataUser  = {
+//             'user': dataUser ,
+//             'employee': dataEmployee,
+//           };
+//         });
+//         if (mounted) {
+//           Navigator.of(context).pushNamedAndRemoveUntil(
+//             AppRoutes.company,
+//             (route) => false,
+//           );
+//         }
+//       } else {
+//         setState(() {
+//           _errorMessage = 'User  data not found';
+//         });
+//         if (mounted) {
+//           alertError(context, 'User  data not found');
+//         }
+//       }
+//     } else {
+//       setState(() {
+//         _errorMessage = 'Invalid username or password';
+//       });
+//       if (mounted) {
+//         alertError(context, 'Invalid username or password');
+//       }
+//     }
+//   } catch (e) {
+//     setState(() {
+//       _errorMessage = 'An error occurred. Please try again.';
+//     });
+//     if (mounted) {
+//       alertError(context, e.toString());
+//     }
+//   } finally {
+//     setState(() {
+//       isLoading = false;
+//     });
+//   }
+// }
+
+Future<void> _handleLogin() async {
+  final username = _phoneController.text.trim();
+  final password = _passwordController.text.trim();
+
+  if (username.isEmpty || password.isEmpty) {
     setState(() {
-      isLoading = true;
+      _errorMessage = 'Username and password cannot be empty';
     });
+    return;
+  }
 
-    final loginRequest =
-        auth.LoginRequest(username: username, password: password);
+  setState(() {
+    isLoading = true;
+    _errorMessage = ''; 
+  });
 
-    try {
-      final response = await auth.login(loginRequest);
-      if (response['message'] == 'Logged In') {
-        final user.UserDetailRequest requestUser = user.UserDetailRequest(
-          cookie: AppState().cookieData,
-          id: _phoneController.text,
+  final loginRequest = auth.LoginRequest(username: username, password: password);
+
+  try {
+    final response = await auth.login(loginRequest);
+    if (response['message'] == 'Logged In') {
+      // Skip user data retrieval entirely
+      // You can also reset AppState or other relevant states here if needed
+
+      if (mounted) {
+        Navigator.of(context).pushNamedAndRemoveUntil(
+          AppRoutes.company,
+          (route) => false,
         );
-
-        final callUser = await user.requestuser(requestQuery: requestUser);
-
-        final employee.EmployeeDetailRequest requestEmployee =
-            employee.EmployeeDetailRequest(
-          cookie: AppState().cookieData,
-          fields: '["name"]',
-          filters: '[["user_id","=","${_phoneController.text}"]]',
-        );
-
-        final callEmployee =
-            await employee.requestEmployee(requestQuery: requestEmployee);
-
-        isLoading = false;
-
-        await onCallRoomStatus();
-
-        if ((callUser.containsKey('name')) && (callEmployee.isNotEmpty)) {
-          setState(() {
-            dataUser = callUser;
-            if (callEmployee.isNotEmpty && callEmployee.length == 1) {
-              dataEmployee = callEmployee[0];
-            }
-            AppState().dataUser = {
-              'user': dataUser,
-              'employee': dataEmployee,
-            };
-          });
-
-          if (mounted) {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              AppRoutes.company,
-              (route) => false,
-            );
-          }
-        }
-      } else {
-        setState(() {
-          _errorMessage = 'Invalid username or password';
-          isLoading = false;
-        });
-
-        if (mounted) {
-          alertError(context, 'Sepertinya akun atau passwordmu salah');
-        }
       }
-    } catch (e) {
+    } else {
       setState(() {
         _errorMessage = 'Invalid username or password';
-        isLoading = false;
       });
       if (mounted) {
-        alertError(context, e.toString());
+        alertError(context, 'Invalid username or password');
       }
     }
+  } catch (e) {
+    setState(() {
+      _errorMessage = 'An error occurred. Please try again.';
+    });
+    if (mounted) {
+      alertError(context, e.toString());
+    }
+  } finally {
+    setState(() {
+      isLoading = false;
+    });
   }
+}
 
   onCallRoomStatus() async {
     final roomStatus.RoomStatus requestCall = roomStatus.RoomStatus(

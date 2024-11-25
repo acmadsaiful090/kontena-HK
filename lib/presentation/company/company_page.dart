@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jc_hk/app_state.dart';
-import 'package:jc_hk/routes/app_routes.dart'; // Pastikan file ini sesuai dengan struktur project Anda
+import 'package:jc_hk/routes/app_routes.dart';
+import 'package:jc_hk/api/company_api.dart'; 
 
 class CompanyPage extends StatefulWidget {
   @override
@@ -9,32 +10,43 @@ class CompanyPage extends StatefulWidget {
 
 class _CompanyPageState extends State<CompanyPage> {
   String? selectedCompany;
-  final List<Map<String, String>> companies = [
-    {
-      'name': 'Company A',
-      'logo': 'https://via.placeholder.com/150',
-    },
-    {
-      'name': 'Company B',
-      'logo': 'https://via.placeholder.com/150',
-    },
-    {
-      'name': 'Company C',
-      'logo': 'https://via.placeholder.com/150',
-    },
-    {
-      'name': 'Company D',
-      'logo': 'https://via.placeholder.com/150',
-    },
-    {
-      'name': 'Company E',
-      'logo': 'https://via.placeholder.com/150',
-    },
-    {
-      'name': 'Company F',
-      'logo': 'https://via.placeholder.com/150',
-    },
-  ];
+  List<Map<String, dynamic>> companies = [];
+  @override
+  void initState() {
+    super.initState();
+    fetchCompanies();
+  }
+  Future<void> fetchCompanies() async {
+  try {
+    final companyRequest = CompanyRequest(
+      cookie: AppState().cookieData,
+      fields: '["company_name"]',
+      limit: 50,
+    );
+    final response = await requestCompany(requestQuery: companyRequest);
+    if (response.isNotEmpty) {
+      setState(() {
+        companies = response.map((company){
+          return {
+            'name': company['company_name'],
+            'logo': company['logo'] ?? 'https://via.placeholder.com/150',
+          };
+        }).toList();
+      });
+      AppState().companylist = response;
+      print(companies);
+    } else {
+      debugPrint('No companies found.');
+    }
+  } catch (e) {
+    debugPrint('Error fetching companies: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Failed to fetch companies. Please try again.'),
+      ),
+    );
+  }
+}
 
   void selectCompany(String companyName) {
       AppState().company = companyName; 

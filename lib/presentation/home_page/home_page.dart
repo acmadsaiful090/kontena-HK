@@ -124,10 +124,6 @@ class _HomeContentState extends State<HomeContent> {
   Map<String, dynamic>? dataUser;
   Future<void> fatchEmployee() async {
     final prefs = await SharedPreferences.getInstance();
-    // final cookie = prefs.getString('session_cookie');
-    // if (cookie == null) {
-    //   throw Exception('No session cookie found. Please log in again.');
-    // }
     final request = EmployeeDetailRequest(
       cookie: AppState().cookieData,
       fields: '["*"]',
@@ -148,7 +144,6 @@ class _HomeContentState extends State<HomeContent> {
             (item) => item['prefered_email'] == 'othkkontena@gmail.com');
         if (targetItem.isNotEmpty) {
           dataUser = targetItem;
-          // Provider.of<AppState>(context, listen: false).setDataUser(targetItem);
         } else {
           print(
               'Data dengan prefered_email "othkkontena@gmail.com" tidak ditemukan.');

@@ -500,21 +500,13 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
   }
 
   void _sendStatusRequest() async {
-    final prefs = await SharedPreferences.getInstance();
-    final cookie = prefs.getString('session_cookie');
-    final appState = Provider.of<AppState>(context, listen: false);
-    final employee = appState.dataUser?['name'];
-    if (cookie == null) {
-      print('Cookie not found. Please log in again.');
-      return;
-    }
     final purpose = checkboxLabel;
     try {
       CreateRoomTaskRequest request = CreateRoomTaskRequest(
-        cookie: cookie,
+        cookie:  AppState().cookieData,
         purpose: purpose,
         room: widget.data,
-        employee: employee,
+        employee:AppState().dataUser?['employee'],
         employeeName: '',
       );
       // final response = await requestRoomTask(requestQuery: request);
@@ -538,7 +530,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
               'icon': Icons.volunteer_activism,
               'color': Colors.green,
               'onTap': () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => LostFoundAddPage()))
+              MaterialPageRoute(builder: (context) => LostFoundAddPage()))
             },
             {
               'label': 'Do not disturb',
@@ -647,7 +639,6 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
   }
 
   onCallCreateRoomTask() async {
-    // final purpose = checkboxLabel;
     final callCreateRoomTask.CreateRoomTask request =
         callCreateRoomTask.CreateRoomTask(
       cookie: AppState().cookieData,

@@ -28,12 +28,13 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  String _company='';
-  String get company=>_company;
-  set company(String value){
-    _company=value;
-    prefs.setString('ff_company',value);
+  String _company = '';
+  String get company => _company;
+  set company(String value) {
+    _company = value;
+    prefs.setString('ff_company', value);
   }
+
   // String _domain = 'https://erp.hotelkontena.com';
   String _domain = 'https://erp2.hotelkontena.com';
 
@@ -60,6 +61,14 @@ class AppState extends ChangeNotifier {
   set dataUser(Map<String, dynamic> value) {
     _dataUser = value;
     prefs.setString('ff_user', jsonEncode(value));
+    notifyListeners();
+  }
+
+  List<dynamic> _companylist = [];
+  List<dynamic> get companylist => _companylist;
+  set companylist(List<dynamic> value) {
+    _companylist = value;
+    prefs.setString('ff_company', jsonEncode(value));
     notifyListeners();
   }
 
