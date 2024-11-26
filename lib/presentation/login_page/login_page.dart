@@ -9,6 +9,7 @@ import 'package:jc_hk/api/auth.dart' as auth;
 import 'package:jc_hk/api/user.dart' as user;
 import 'package:jc_hk/api/Employee_api.dart' as employee;
 import 'package:jc_hk/api/room_status.dart' as roomStatus;
+import 'package:jc_hk/api/company_api.dart' as company;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -29,89 +30,7 @@ class _LoginPageState extends State<LoginPage> {
 
   String _errorMessage = '';
 
-//   Future<void> _handleLogin() async {
-//   final username = _phoneController.text.trim();
-//   final password = _passwordController.text.trim();
-
-//   if (username.isEmpty || password.isEmpty) {
-//     setState(() {
-//       _errorMessage = 'Username and password cannot be empty';
-//     });
-//     return;
-//   }
-
-//   setState(() {
-//     isLoading = true;
-//     _errorMessage = ''; 
-//   });
-
-//   final loginRequest = auth.LoginRequest(username: username, password: password);
-
-//   try {
-//     final response = await auth.login(loginRequest);
-//     if (response['message'] == 'Logged In') {
-//       final user.UserDetailRequest requestUser  = user.UserDetailRequest(
-//         cookie: AppState().cookieData,
-//         id: username,
-//       );
-
-//       final callUser  = await user.requestuser(requestQuery: requestUser );
-//       final employee.EmployeeDetailRequest requestEmployee = employee.EmployeeDetailRequest(
-//         cookie: AppState().cookieData,
-//         fields: '["name"]',
-//         filters: '[["user_id","=","$username"]]',
-//       );
-
-//       final callEmployee = await employee.requestEmployee(requestQuery: requestEmployee);
-
-//       await onCallRoomStatus();
-
-//       if (callUser .containsKey('name') && callEmployee.isNotEmpty) {
-//         setState(() {
-//           dataUser  = callUser ;
-//           dataEmployee = callEmployee.length == 1 ? callEmployee[0] : null;
-//           AppState().dataUser  = {
-//             'user': dataUser ,
-//             'employee': dataEmployee,
-//           };
-//         });
-//         if (mounted) {
-//           Navigator.of(context).pushNamedAndRemoveUntil(
-//             AppRoutes.company,
-//             (route) => false,
-//           );
-//         }
-//       } else {
-//         setState(() {
-//           _errorMessage = 'User  data not found';
-//         });
-//         if (mounted) {
-//           alertError(context, 'User  data not found');
-//         }
-//       }
-//     } else {
-//       setState(() {
-//         _errorMessage = 'Invalid username or password';
-//       });
-//       if (mounted) {
-//         alertError(context, 'Invalid username or password');
-//       }
-//     }
-//   } catch (e) {
-//     setState(() {
-//       _errorMessage = 'An error occurred. Please try again.';
-//     });
-//     if (mounted) {
-//       alertError(context, e.toString());
-//     }
-//   } finally {
-//     setState(() {
-//       isLoading = false;
-//     });
-//   }
-// }
-
-Future<void> _handleLogin() async {
+  Future<void> _handleLogin() async {
   final username = _phoneController.text.trim();
   final password = _passwordController.text.trim();
 
@@ -132,14 +51,41 @@ Future<void> _handleLogin() async {
   try {
     final response = await auth.login(loginRequest);
     if (response['message'] == 'Logged In') {
-      // Skip user data retrieval entirely
-      // You can also reset AppState or other relevant states here if needed
-
-      if (mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          AppRoutes.company,
-          (route) => false,
-        );
+      final user.UserDetailRequest requestUser  = user.UserDetailRequest(
+        cookie: AppState().cookieData,
+        id: username,
+      );
+      final callUser  = await user.requestuser(requestQuery: requestUser );
+      final employee.EmployeeDetailRequest requestEmployee = employee.EmployeeDetailRequest(
+        cookie: AppState().cookieData,
+        fields: '["name"]',
+        filters: '[["user_id","=","$username"]]',
+      );
+      final callEmployee = await employee.requestEmployee(requestQuery: requestEmployee);
+      await onCallRoomStatus();
+      await onCallCompany();
+      if (callUser .containsKey('name') && callEmployee.isNotEmpty) {
+        setState(() {
+          dataUser  = callUser ;
+          dataEmployee = callEmployee.length == 1 ? callEmployee[0] : null;
+          AppState().dataUser  = {
+            'user': dataUser ,
+            'employee': dataEmployee,
+          };
+        });
+        if (mounted) {
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            AppRoutes.company,
+            (route) => false,
+          );
+        }
+      } else {
+        setState(() {
+          _errorMessage = 'User  data not found';
+        });
+        if (mounted) {
+          alertError(context, 'User  data not found');
+        }
       }
     } else {
       setState(() {
@@ -151,27 +97,62 @@ Future<void> _handleLogin() async {
     }
   } catch (e) {
     setState(() {
-      _errorMessage = 'An error occurred. Please try again.';
+      _errorMessage = 'Invalid username or password';
     });
-    if (mounted) {
-      alertError(context, e.toString());
-    }
   } finally {
     setState(() {
       isLoading = false;
     });
   }
 }
+dynamic onCallCompany() async {
+  try {
+    final companyRequest = company.CompanyRequest(
+      cookie: AppState().cookieData,
+      fields: '["name"]',
+      limit: 50,
+    );
 
-  onCallRoomStatus() async {
+    final response = await company.requestCompany(requestQuery: companyRequest);
+    List<Map<String, String>>? datacompanylist;
+    if (response.isNotEmpty) {
+      datacompanylist = response.map((company) {
+        return {
+          'name': company['company_name'] ?? 'Unknown Company',
+          'logo': company['logo'] ?? 'https://via.placeholder.com/150',
+        };
+      }).cast<Map<String, String>>().toList();
+    } else {
+      datacompanylist = [
+        {
+          'name': 'Default',
+          'logo': 'https://via.placeholder.com/150',
+        },
+      ];
+      debugPrint('Response kosong, menggunakan data default.');
+    }
+    setState(() {
+      AppState().companylist =datacompanylist!;
+    });
+  } catch (e) {
+    debugPrint('Error fetching companies: $e');
+    setState(() {
+      AppState().companylist = [
+        {
+          'name': 'Default',
+          'logo': 'https://via.placeholder.com/150',
+        },
+      ];
+    });
+  }
+}
+  dynamic onCallRoomStatus() async {
     final roomStatus.RoomStatus requestCall = roomStatus.RoomStatus(
       cookie: AppState().cookieData,
       fields: '["name","status_name"]',
     );
-
     try {
       final request = await roomStatus.request(requestQuery: requestCall);
-
       if (request.isNotEmpty) {
         setState(() {
           AppState().roomStatus = request;
@@ -179,7 +160,6 @@ Future<void> _handleLogin() async {
       }
     } catch (error) {
       print('error, ${error.toString()}');
-
       if (mounted) {
         alertError(context, error.toString());
       }

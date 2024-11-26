@@ -1,65 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:jc_hk/app_state.dart';
 import 'package:jc_hk/routes/app_routes.dart';
-import 'package:jc_hk/api/company_api.dart'; 
-
 class CompanyPage extends StatefulWidget {
   @override
   _CompanyPageState createState() => _CompanyPageState();
 }
-
 class _CompanyPageState extends State<CompanyPage> {
   String? selectedCompany;
   List<Map<String, dynamic>> companies = [];
   @override
   void initState() {
     super.initState();
-    fetchCompanies();
+    _listCompany();
   }
-  Future<void> fetchCompanies() async {
-  try {
-    final companyRequest = CompanyRequest(
-      cookie: AppState().cookieData,
-      fields: '["company_name"]',
-      limit: 50,
-    );
-    final response = await requestCompany(requestQuery: companyRequest);
-    if (response.isNotEmpty) {
+  void _listCompany() {
+    if (AppState().companylist.isNotEmpty) {
       setState(() {
-        companies = response.map((company){
+        companies = AppState().companylist.map((company) {
           return {
-            'name': company['company_name'],
-            'logo': company['logo'] ?? 'https://via.placeholder.com/150',
+            'name': company['name'],
+            'logo': company['logo'],
           };
         }).toList();
       });
-      AppState().companylist = response;
-      print(companies);
-    } else {
-      debugPrint('No companies found.');
     }
-  } catch (e) {
-    debugPrint('Error fetching companies: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Failed to fetch companies. Please try again.'),
-      ),
-    );
   }
-}
 
   void selectCompany(String companyName) {
-      AppState().company = companyName; 
-      Navigator.of(context).pushNamedAndRemoveUntil(
-        AppRoutes.home,
-        (route) => false,
-      );
+    AppState().company = companyName;
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      AppRoutes.home,
+      (route) => false,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
-    int crossAxisCount = (screenWidth / 200).floor(); 
+    int crossAxisCount = (screenWidth / 200).floor();
 
     return Scaffold(
       appBar: AppBar(
@@ -87,7 +65,8 @@ class _CompanyPageState extends State<CompanyPage> {
                 children: [
                   Expanded(
                     child: ClipRRect(
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(12)),
                       child: Image.network(
                         company['logo']!,
                         width: double.infinity,
@@ -99,7 +78,8 @@ class _CompanyPageState extends State<CompanyPage> {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       company['name']!,
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       textAlign: TextAlign.center,
                     ),
                   ),
