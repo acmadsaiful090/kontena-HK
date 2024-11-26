@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:jc_hk/utils/theme.helper.dart';
+import 'package:kontena_hk/utils/theme.helper.dart';
 
 void alertError(BuildContext context, String message) {
   ScaffoldMessenger.of(context).hideCurrentSnackBar();

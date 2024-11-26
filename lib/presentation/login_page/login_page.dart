@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:jc_hk/app_state.dart';
-import 'package:jc_hk/routes/app_routes.dart';
-import 'package:jc_hk/utils/custom_button_style.dart';
-import 'package:jc_hk/widget/alert.dart';
-import 'package:jc_hk/widget/custom_outlined_button.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jc_hk/utils/theme.helper.dart';
-import 'package:jc_hk/api/auth.dart' as auth;
-import 'package:jc_hk/api/user.dart' as user;
-import 'package:jc_hk/api/Employee_api.dart' as employee;
-import 'package:jc_hk/api/room_status.dart' as roomStatus;
+import 'package:kontena_hk/app_state.dart';
+import 'package:kontena_hk/routes/app_routes.dart';
+import 'package:kontena_hk/utils/custom_button_style.dart';
+import 'package:kontena_hk/widget/alert.dart';
+import 'package:kontena_hk/widget/custom_outlined_button.dart';
+import 'package:kontena_hk/utils/theme.helper.dart';
+import 'package:kontena_hk/api/auth.dart' as auth;
+import 'package:kontena_hk/api/user.dart' as user;
+import 'package:kontena_hk/api/Employee_api.dart' as employee;
+import 'package:kontena_hk/api/room_status.dart' as room_status;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,8 +18,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _phoneController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   dynamic dataUser;
   dynamic dataEmployee;
@@ -29,6 +28,27 @@ class _LoginPageState extends State<LoginPage> {
   bool isLoading = false;
 
   String _errorMessage = '';
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => setState(
+        () {
+          _phoneController.text = '';
+          _passwordController.text = '';
+        },
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   Future<void> _handleLogin() async {
     final username = _phoneController.text;
@@ -88,6 +108,7 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         setState(() {
           _errorMessage = 'Invalid username or password';
+          isLoading = false;
         });
 
         if (mounted) {
@@ -97,21 +118,23 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       setState(() {
         _errorMessage = 'Invalid username or password';
+        isLoading = false;
       });
       if (mounted) {
         alertError(context, e.toString());
+        isLoading = false;
       }
     }
   }
 
   onCallRoomStatus() async {
-    final roomStatus.RoomStatus requestCall = roomStatus.RoomStatus(
+    final room_status.RoomStatus requestCall = room_status.RoomStatus(
       cookie: AppState().cookieData,
       fields: '["name","status_name"]',
     );
 
     try {
-      final request = await roomStatus.request(requestQuery: requestCall);
+      final request = await room_status.request(requestQuery: requestCall);
 
       if (request.isNotEmpty) {
         setState(() {
@@ -122,16 +145,10 @@ class _LoginPageState extends State<LoginPage> {
       print('error, ${error.toString()}');
 
       if (mounted) {
+        isLoading = false;
         alertError(context, error.toString());
       }
     }
-  }
-
-  @override
-  void dispose() {
-    _phoneController.dispose();
-    _passwordController.dispose();
-    super.dispose();
   }
 
   @override
@@ -145,23 +162,11 @@ class _LoginPageState extends State<LoginPage> {
             Align(
               alignment: Alignment.topRight,
               child: Image.asset(
-                'assets/image/logo_housekeeping.png',
+                'assets/image/kontena-hk.png',
                 height: 200,
                 width: 200,
               ),
             ),
-            // Align(
-            //   alignment: Alignment.centerRight,
-            //   child: Text(
-            //     'House Keeping',
-            //     style: TextStyle(
-            //       fontSize: 10,
-            //       fontWeight: FontWeight.normal,
-            //       fontFamily: 'OpenSans',
-            //     ),
-            //     textAlign: TextAlign.left,
-            //   ),
-            // ),
             SizedBox(height: 20),
             Container(
               padding: const EdgeInsets.all(32.0),
@@ -299,26 +304,6 @@ class _LoginPageState extends State<LoginPage> {
                       buttonStyle: CustomButtonStyles.primary,
                       onPressed: _handleLogin,
                     ),
-                  // SizedBox(
-                  //   width: double.infinity,
-                  //   child: ElevatedButton(
-                  //     style: ElevatedButton.styleFrom(
-                  //       backgroundColor: theme.colorScheme.primary,
-                  //       shape: RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(4),
-                  //       ),
-                  //     ),
-                  //     onPressed: _handleLogin,
-                  //     child: Text(
-                  //       'LOG IN',
-                  //       style: TextStyle(
-                  //         fontFamily: 'OpenSans',
-                  //         color: Colors.white,
-                  //         fontSize: 14,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
                 ],
               ),
             ),

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:jc_hk/utils/theme.helper.dart';
+import 'package:kontena_hk/utils/theme.helper.dart';
 
-class BottomBar extends StatelessWidget {
+// ignore: must_be_immutable
+class BottomNavigationCustom extends StatelessWidget {
   int selectedIndex;
   void Function(int) onTap;
 
-  BottomBar({
+  BottomNavigationCustom({
     super.key,
     required this.selectedIndex,
     required this.onTap,
@@ -24,7 +25,7 @@ class BottomBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
-      items: [
+      items: const [
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'Room',

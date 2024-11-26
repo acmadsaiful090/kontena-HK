@@ -1,23 +1,21 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:jc_hk/functions/status_room_color.dart';
-import 'package:jc_hk/presentation/home_page/detail_room_page.dart';
-import 'package:jc_hk/api/data/room_api.dart';
-import 'package:jc_hk/app_state.dart';
-import 'package:jc_hk/api/Employee_api.dart';
-import 'package:jc_hk/utils/datetime.dart';
-import 'package:jc_hk/utils/theme.helper.dart';
-import 'package:jc_hk/widget/bottom_navigation.dart';
-import 'package:provider/provider.dart';
+import 'package:kontena_hk/functions/status_room_color.dart';
+import 'package:kontena_hk/presentation/home_page/detail_room_page.dart';
+import 'package:kontena_hk/api/data/room_api.dart';
+import 'package:kontena_hk/app_state.dart';
+import 'package:kontena_hk/utils/datetime.dart';
+import 'package:kontena_hk/utils/theme.helper.dart';
+import 'package:kontena_hk/widget/bottom_navigation.dart';
 
-import 'package:shared_preferences/shared_preferences.dart';
 // Import your pages
-import 'package:jc_hk/presentation/lost_found_page/lost_found_page.dart';
-import 'package:jc_hk/presentation/profile_page.dart/profile_page.dart';
+import 'package:kontena_hk/presentation/lost_found_page/lost_found_page.dart';
+import 'package:kontena_hk/presentation/profile_page.dart/profile_page.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -25,7 +23,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  static List<Widget> _widgetOptions = <Widget>[
+  static final List<Widget> _widgetOptions = <Widget>[
     HomeContent(),
     // ReservationPage(),
     LostFoundPage(),
@@ -47,7 +45,7 @@ class _HomePageState extends State<HomePage> {
         title: Column(
           children: [
             Image.asset(
-              'assets/image/logo_housekeeping.png',
+              'assets/image/kontena-hk.png',
               height: 45,
             ),
             Text(
@@ -63,7 +61,7 @@ class _HomePageState extends State<HomePage> {
         automaticallyImplyLeading: false,
       ),
       body: _widgetOptions.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomBar(
+      bottomNavigationBar: BottomNavigationCustom(
         selectedIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
@@ -96,6 +94,8 @@ class _HomePageState extends State<HomePage> {
 }
 
 class HomeContent extends StatefulWidget {
+  const HomeContent({super.key});
+
   @override
   _HomeContentState createState() => _HomeContentState();
 }
@@ -123,41 +123,36 @@ class _HomeContentState extends State<HomeContent> {
 
   Map<String, dynamic>? dataUser;
   Future<void> fatchEmployee() async {
-    final prefs = await SharedPreferences.getInstance();
-    // final cookie = prefs.getString('session_cookie');
-    // if (cookie == null) {
-    //   throw Exception('No session cookie found. Please log in again.');
-    // }
-    final request = EmployeeDetailRequest(
-      cookie: AppState().cookieData,
-      fields: '["*"]',
-    );
-    final response = await requestEmployee(requestQuery: request);
-    setState(() {
-      if (response is List) {
-        items = response.map((EmpData) {
-          return {
-            'name': EmpData['name']?.toString() ?? '',
-            'cell_number': EmpData['cell_number']?.toString() ?? '',
-            'first_name': EmpData['first_name']?.toString() ?? '',
-            'employee_name': EmpData['employee_name']?.toString() ?? '',
-            'prefered_email': EmpData['prefered_email']?.toString() ?? '',
-          };
-        }).toList();
-        var targetItem = items.firstWhere(
-            (item) => item['prefered_email'] == 'othkkontena@gmail.com');
-        if (targetItem.isNotEmpty) {
-          dataUser = targetItem;
-          // Provider.of<AppState>(context, listen: false).setDataUser(targetItem);
-        } else {
-          print(
-              'Data dengan prefered_email "othkkontena@gmail.com" tidak ditemukan.');
-        }
-      } else {
-        throw Exception('Unexpected response format');
-      }
-      isLoading = false;
-    });
+    // final request = EmployeeDetailRequest(
+    //   cookie: AppState().cookieData,
+    //   fields: '["*"]',
+    // );
+    // final response = await requestEmployee(requestQuery: request);
+    // setState(() {
+    //   if (response is List) {
+    //     items = response.map((EmpData) {
+    //       return {
+    //         'name': EmpData['name']?.toString() ?? '',
+    //         'cell_number': EmpData['cell_number']?.toString() ?? '',
+    //         'first_name': EmpData['first_name']?.toString() ?? '',
+    //         'employee_name': EmpData['employee_name']?.toString() ?? '',
+    //         'prefered_email': EmpData['prefered_email']?.toString() ?? '',
+    //       };
+    //     }).toList();
+    //     var targetItem = items.firstWhere(
+    //         (item) => item['prefered_email'] == 'othkkontena@gmail.com');
+    //     if (targetItem.isNotEmpty) {
+    //       dataUser = targetItem;
+    //       // Provider.of<AppState>(context, listen: false).setDataUser(targetItem);
+    //     } else {
+    //       print(
+    //           'Data dengan prefered_email "othkkontena@gmail.com" tidak ditemukan.');
+    //     }
+    //   } else {
+    //     throw Exception('Unexpected response format');
+    //   }
+    //   isLoading = false;
+    // });
   }
 
   reInit() {
@@ -194,22 +189,18 @@ class _HomeContentState extends State<HomeContent> {
       final response = await requestItem(requestQuery: request);
       setState(() {
         AppState().roomList = response;
-        if (response is List) {
-          items = response.map((roomData) {
-            return {
-              'name': roomData['name']?.toString() ?? '',
-              'room_name': roomData['room_name']?.toString() ?? '',
-              'room_type_name': roomData['room_type_name']?.toString() ?? '',
-              'status': roomData['room_status']?.toString() ?? '',
-              'can_clean': roomData['can_clean'] ?? 0,
-              'can_check': roomData['can_check'] ?? 0,
-              'is_damaged': roomData['is_damaged'] ?? 0,
-            };
-          }).toList();
-          filteredItems = items;
-        } else {
-          throw Exception('Unexpected response format');
-        }
+        items = response.map((roomData) {
+          return {
+            'name': roomData['name']?.toString() ?? '',
+            'room_name': roomData['room_name']?.toString() ?? '',
+            'room_type_name': roomData['room_type_name']?.toString() ?? '',
+            'status': roomData['room_status']?.toString() ?? '',
+            'can_clean': roomData['can_clean'] ?? 0,
+            'can_check': roomData['can_check'] ?? 0,
+            'is_damaged': roomData['is_damaged'] ?? 0,
+          };
+        }).toList();
+        filteredItems = items;
         isLoading = false;
       });
     } catch (e) {
@@ -262,91 +253,6 @@ class _HomeContentState extends State<HomeContent> {
 
   void _clearSearch() {
     _searchController.clear();
-  }
-
-  void _showFilterSheet() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return Container(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Filters',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  CheckboxListTile(
-                    title: const Text('Filter 1'),
-                    value: selectedFilters.contains('Filter 1'),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        if (value == true) {
-                          selectedFilters.add('Filter 1');
-                        } else {
-                          selectedFilters.remove('Filter 1');
-                        }
-                      });
-                      _filterItems();
-                    },
-                  ),
-                  CheckboxListTile(
-                    title: const Text('Filter 2'),
-                    value: selectedFilters.contains('Filter 2'),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        if (value == true) {
-                          selectedFilters.add('Filter 2');
-                        } else {
-                          selectedFilters.remove('Filter 2');
-                        }
-                      });
-                      _filterItems();
-                    },
-                  ),
-                  CheckboxListTile(
-                    title: const Text('Filter 3'),
-                    value: selectedFilters.contains('Filter 3'),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        if (value == true) {
-                          selectedFilters.add('Filter 3');
-                        } else {
-                          selectedFilters.remove('Filter 3');
-                        }
-                      });
-                      _filterItems();
-                    },
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF27ae60),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('Apply Filter',
-                          style: TextStyle(
-                              fontFamily: 'OpenSans',
-                              color: Colors.white,
-                              fontSize: 14)),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
   }
 
   // String getRandomStatus() {

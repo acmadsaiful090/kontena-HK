@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jc_hk/routes/app_routes.dart';
-import 'package:jc_hk/app_state.dart';
+import 'package:kontena_hk/routes/app_routes.dart';
+import 'package:kontena_hk/app_state.dart';
 import 'package:provider/provider.dart';
 
 var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
           return MaterialApp(
-            title: 'JC House Keeping',
+            title: 'Kontena HK',
             theme: ThemeData(
               colorScheme: ColorScheme.light(),
               fontFamily: 'OpenSans',

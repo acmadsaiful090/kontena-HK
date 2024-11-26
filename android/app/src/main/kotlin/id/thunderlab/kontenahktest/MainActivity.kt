@@ -1,4 +1,4 @@
-package com.example.kontena_hk_2
+package id.thunderlab.kontenahktest
 
 import io.flutter.embedding.android.FlutterActivity
 

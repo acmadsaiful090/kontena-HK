@@ -1,7 +1,7 @@
-name: jc_hk
-description: "Application House Keeping for JC Corporate"
+name: kontena_hk
+description: "Application House Keeping for Kontena Hotel managed by JC Coorporate"
 publish_to: 'none'
-version: 1.0.0
+version: 1.1.2
 
 environment:
   sdk: '>=3.2.3 <4.0.0'

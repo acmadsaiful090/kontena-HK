@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:jc_hk/app_state.dart';
-import 'package:jc_hk/utils/datetime.dart';
-import 'package:jc_hk/utils/theme.helper.dart';
-import 'package:jc_hk/api/create_room_inspect.dart' as createRoomInspect;
-import 'package:jc_hk/widget/alert.dart';
+import 'package:kontena_hk/app_state.dart';
+import 'package:kontena_hk/utils/theme.helper.dart';
+import 'package:kontena_hk/api/create_room_inspect.dart' as create_room_inspect;
+import 'package:kontena_hk/widget/alert.dart';
 
 class CreateDamageWidget extends StatefulWidget {
   final dynamic room;
   final VoidCallback? onComplete;
 
-  CreateDamageWidget({
-    Key? key,
+  const CreateDamageWidget({
+    super.key,
     this.room,
     this.onComplete,
-  }) : super(key: key);
+  });
 
   @override
   _CreateDamageWidgetState createState() => _CreateDamageWidgetState();
@@ -504,7 +503,7 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
                           width: double.infinity,
                           height: 60.0,
                           decoration: BoxDecoration(
-                            color: theme.colorScheme.error,
+                            color: theme.colorScheme.primary,
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           child: Padding(
@@ -570,10 +569,8 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
       'until': untilDate.text,
     });
 
-    print('check date, ${date.text}');
-    print('check date, ${dateTimeFormat('date', datePick)}');
-    final createRoomInspect.CreateRoomInspect request =
-        createRoomInspect.CreateRoomInspect(
+    final create_room_inspect.CreateRoomInspect request =
+        create_room_inspect.CreateRoomInspect(
       cookie: AppState().cookieData,
       purpose: 'Damage',
       date: datePick,
@@ -581,9 +578,8 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
     );
 
     try {
-      print('check, ${request}');
       final callRequest =
-          await createRoomInspect.request(requestQuery: request);
+          await create_room_inspect.request(requestQuery: request);
       if (callRequest.isNotEmpty) {
         if (mounted) {
           alertSuccess(context, 'Success, create room to maintence');

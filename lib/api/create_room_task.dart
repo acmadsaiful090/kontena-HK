@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:jc_hk/app_state.dart';
+import 'package:kontena_hk/app_state.dart';
 
 class CreateRoomTask {
   final String cookie;
@@ -70,8 +70,6 @@ Future<Map<String, dynamic>> request(
       body: json.encode(requestQuery.toJsonSubmit()),
     );
   } else {
-    print('check param, ${requestQuery.toJson()}');
-    print('check param, ${requestQuery.formatHeader()}');
     response = await http.post(
       Uri.parse(url),
       headers: requestQuery.formatHeader(),
@@ -82,9 +80,7 @@ Future<Map<String, dynamic>> request(
   if (response.statusCode == 200) {
     final responseBody = json.decode(response.body);
 
-    print('respon room taask, ${responseBody}');
     if (requestQuery.getParamID() != null) {
-      // print('respon data order, ${requestQuery.toJson()}');
       if (responseBody.containsKey('data')) {
         return responseBody['data'];
       } else {

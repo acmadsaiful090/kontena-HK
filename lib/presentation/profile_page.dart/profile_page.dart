@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:jc_hk/app_state.dart';
-import 'package:jc_hk/routes/app_routes.dart';
-import 'package:jc_hk/utils/custom_button_style.dart';
-import 'package:jc_hk/utils/theme.helper.dart';
-import 'package:jc_hk/widget/custom_outlined_button.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:kontena_hk/app_state.dart';
+import 'package:kontena_hk/routes/app_routes.dart';
+import 'package:kontena_hk/utils/custom_button_style.dart';
+import 'package:kontena_hk/utils/theme.helper.dart';
+import 'package:kontena_hk/widget/custom_outlined_button.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -119,7 +117,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   Text(
-                    ' - ${(AppState().domain.contains('erp2')) ? ' - Testing' : ''}',
+                    ' ${(AppState().domain.contains('erp2')) ? ' - Testing' : ''}',
                     style: TextStyle(
                       fontSize: 16,
                       color: theme.colorScheme.onPrimaryContainer,

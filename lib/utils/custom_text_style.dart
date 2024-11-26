@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jc_hk/app_export.dart';
-import 'package:jc_hk/utils/size_utils.dart';
-import 'package:jc_hk/utils/theme.helper.dart';
+import 'package:kontena_hk/utils/size_utils.dart';
+import 'package:kontena_hk/utils/theme.helper.dart';
 
 /// A collection of pre-defined text styles for customizing text appearance,
 /// categorized by different font families and weights.

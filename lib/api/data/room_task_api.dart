@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:kontena_hk/app_state.dart';
 
 class CreateRoomTaskRequest {
   final String cookie;
@@ -35,7 +36,7 @@ class CreateRoomTaskRequest {
       'employee': employee,
       'employee_name': employeeName,
     };
-    data.removeWhere((key, value) => value == null);
+    data.removeWhere((key, value) => value == '');
     return data;
   }
 }
@@ -47,9 +48,9 @@ Future<Map<String, dynamic>> request(
 
   if (requestQuery.getParamID() != null) {
     url =
-        'https://erp2.hotelkontena.com/api/resource/room-task/view/list${requestQuery.getParamID()}';
+        '${AppState().domain}/api/resource/room-task/view/list${requestQuery.getParamID()}';
   } else {
-    url = 'https://erp2.hotelkontena.com/api/resource/Room Task';
+    url = '${AppState().domain}/api/resource/Room Task';
   }
   if (requestQuery.getParamID() != null) {
     response = await http.put(
@@ -67,8 +68,6 @@ Future<Map<String, dynamic>> request(
 
   if (response.statusCode == 200) {
     final responseBody = json.decode(response.body);
-    print('respon data, ${responseBody}');
-    print('respon data, ${requestQuery.toJson()}');
     if (requestQuery.getParamID() != null) {
       if (responseBody.containsKey('data')) {
         return responseBody['data'];
@@ -84,7 +83,7 @@ Future<Map<String, dynamic>> request(
     }
   } else {
     final responseBody = json.decode(response.body);
-    final message;
+    dynamic message;
     if (responseBody.containsKey('exception')) {
       message = responseBody['exception'];
     } else if (responseBody.containsKey('message')) {

@@ -29,25 +29,26 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  String _domain = 'https://erp.hotelkontena.com';
-  // String _domain = 'https://erp2.hotelkontena.com';
+  // String _domain = 'https://erp.hotelkontena.com';
+  String _domain = 'https://erp2.hotelkontena.com';
   String get domain => _domain;
-  set domain(String _value) {
-    _domain = _value;
-    prefs.setString('ff_domain', _value);
+  set domain(String value) {
+    _domain = value;
+    prefs.setString('ff_domain', value);
   }
 
-  String _version = '1.0.0';
+  String _version = '1.1.2';
   String get version => _version;
-  set version(String _value) {
-    _version = _value;
-    prefs.setString('ff_version', _value);
+  set version(String value) {
+    _version = value;
+    prefs.setString('ff_version', value);
   }
 
   String _cookieData = '';
   String get cookieData => _cookieData;
   set cookieData(String value) {
     _cookieData = value;
+    prefs.setString('ff_cookieData', value);
   }
 
   Map<String, dynamic> _dataUser = {};

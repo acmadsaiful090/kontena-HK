@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:jc_hk/utils/theme.helper.dart';
+import 'package:kontena_hk/utils/theme.helper.dart';
 
 class LoadingList extends StatelessWidget {
-  LoadingList({Key? key});
+  const LoadingList({super.key});
 
   @override
   Widget build(BuildContext context) {

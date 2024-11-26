@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:kontena_hk/app_state.dart';
 
 class RoomRequest {
   final String cookie;
@@ -43,13 +44,6 @@ class RoomRequest {
     }
 
     return requestMap;
-    // return {
-    //   if (fields != null && fields!.isNotEmpty) 'fields': fields,
-    //   if (limitStart != null && limitStart!.isNotEmpty)
-    //     'limit_start': limitStart,
-    //   if (limit != null) 'limit': limit,
-    //   if (filters != null && filters!.isNotEmpty) 'filters': filters,
-    // };
   }
 
   Map<String, String> header() => {'Cookie': cookie};
@@ -73,7 +67,7 @@ String queryParams(Map<String, dynamic> map) => map.entries
 
 Future<List<dynamic>> requestItem({required RoomRequest requestQuery}) async {
   String url =
-      'https://erp2.hotelkontena.com/api/resource/Room?${queryParams(requestQuery.request())}';
+      '${AppState().domain}/api/resource/Room?${queryParams(requestQuery.request())}';
 
   final response = await http.get(
     Uri.parse(url),
@@ -98,7 +92,7 @@ Future<Map<String, dynamic>> detail({required RoomRequest requestQuery}) async {
   // String url =
   //     'https://erp2.hotelkontena.com/api/method/frappe.desk.form.load.getdoc?${queryParams(requestQuery.detail())}';
   String url =
-      'https://erp2.hotelkontena.com/api/resource/Room/${requestQuery.paramID()}';
+      '${AppState().domain}/api/resource/Room/${requestQuery.paramID()}';
   print('URL: $url');
 
   final response = await http.get(
@@ -115,7 +109,7 @@ Future<Map<String, dynamic>> detail({required RoomRequest requestQuery}) async {
     }
   } else {
     final responseBody = json.decode(response.body);
-    final message;
+    dynamic message;
     if (responseBody.containsKey('exception')) {
       message = responseBody['exception'];
     } else if (responseBody.containsKey('message')) {
