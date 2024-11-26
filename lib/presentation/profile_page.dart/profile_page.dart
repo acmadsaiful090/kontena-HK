@@ -22,7 +22,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> fetchUserData() async {
-    // final appState = Provider.of<AppState>(context, listen: false);
     String username = AppState().dataUser['user']['full_name'] ?? '';
     String phone = AppState().dataUser['user']['name'] ?? '';
 
@@ -33,7 +32,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   onLogout() async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       AppState().dataUser = {};
       AppState().cookieData = '';
@@ -76,6 +74,14 @@ class _ProfilePageState extends State<ProfilePage> {
               Text(
                 phone,
                 style: TextStyle(
+                  fontSize: 18,
+                  color: theme.colorScheme.secondary,
+                ),
+              ),
+              Text(
+                AppState().company,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
                   fontSize: 18,
                   color: theme.colorScheme.secondary,
                 ),

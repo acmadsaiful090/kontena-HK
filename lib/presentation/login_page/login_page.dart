@@ -9,6 +9,7 @@ import 'package:kontena_hk/api/auth.dart' as auth;
 import 'package:kontena_hk/api/user.dart' as user;
 import 'package:kontena_hk/api/Employee_api.dart' as employee;
 import 'package:kontena_hk/api/room_status.dart' as room_status;
+import 'package:kontena_hk/api/company_api.dart' as company;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -51,11 +52,19 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _handleLogin() async {
-    final username = _phoneController.text;
-    final password = _passwordController.text;
+    final username = _phoneController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (username.isEmpty || password.isEmpty) {
+      setState(() {
+        _errorMessage = 'Username and password cannot be empty';
+      });
+      return;
+    }
 
     setState(() {
       isLoading = true;
+      _errorMessage = '';
     });
 
     final loginRequest =
@@ -66,43 +75,41 @@ class _LoginPageState extends State<LoginPage> {
       if (response['message'] == 'Logged In') {
         final user.UserDetailRequest requestUser = user.UserDetailRequest(
           cookie: AppState().cookieData,
-          id: _phoneController.text,
+          id: username,
         );
-
         final callUser = await user.requestuser(requestQuery: requestUser);
-
         final employee.EmployeeDetailRequest requestEmployee =
             employee.EmployeeDetailRequest(
           cookie: AppState().cookieData,
           fields: '["name"]',
-          filters: '[["user_id","=","${_phoneController.text}"]]',
+          filters: '[["user_id","=","$username"]]',
         );
-
         final callEmployee =
             await employee.requestEmployee(requestQuery: requestEmployee);
-
-        isLoading = false;
-
-        await onCallRoomStatus();
-
-        if ((callUser.containsKey('name')) && (callEmployee.isNotEmpty)) {
+        // await onCallRoomStatus();
+        await onCallCompany();
+        if (callUser.containsKey('name') && callEmployee.isNotEmpty) {
           setState(() {
             dataUser = callUser;
-            if (callEmployee.isNotEmpty && callEmployee.length == 1) {
-              dataEmployee = callEmployee[0];
-            }
+            dataEmployee = callEmployee.length == 1 ? callEmployee[0] : null;
             AppState().dataUser = {
               'user': dataUser,
               'employee': dataEmployee,
             };
           });
-
           if (mounted) {
-            // Navigator.pushReplacementNamed(context, '/home');
             Navigator.of(context).pushNamedAndRemoveUntil(
-              AppRoutes.home,
+              AppRoutes.company,
               (route) => false,
             );
+          }
+        } else {
+          setState(() {
+            isLoading = false;
+            _errorMessage = 'User  data not found';
+          });
+          if (mounted) {
+            alertError(context, 'User  data not found');
           }
         }
       } else {
@@ -110,32 +117,76 @@ class _LoginPageState extends State<LoginPage> {
           _errorMessage = 'Invalid username or password';
           isLoading = false;
         });
-
         if (mounted) {
-          alertError(context, 'Sepertinya akun atau passwordmu salah');
+          isLoading = false;
+          alertError(context, 'Invalid username or password');
         }
       }
     } catch (e) {
       setState(() {
         _errorMessage = 'Invalid username or password';
+      });
+    } finally {
+      setState(() {
         isLoading = false;
       });
-      if (mounted) {
-        alertError(context, e.toString());
-        isLoading = false;
-      }
     }
   }
 
-  onCallRoomStatus() async {
+  dynamic onCallCompany() async {
+    try {
+      final companyRequest = company.CompanyRequest(
+        cookie: AppState().cookieData,
+        fields: '["name"]',
+        limit: 50,
+      );
+
+      // onCallRoomStatus() async {
+      final response =
+          await company.requestCompany(requestQuery: companyRequest);
+      List<Map<String, String>>? datacompanylist;
+      if (response.isNotEmpty) {
+        datacompanylist = response
+            .map((company) {
+              return {
+                'name': company['company_name'] ?? 'Unknown Company',
+                'logo': company['logo'] ?? 'https://via.placeholder.com/150',
+              };
+            })
+            .cast<Map<String, String>>()
+            .toList();
+      } else {
+        datacompanylist = [
+          {
+            'name': 'Default',
+            'logo': 'https://via.placeholder.com/150',
+          },
+        ];
+        debugPrint('Response kosong, menggunakan data default.');
+      }
+      setState(() {
+        AppState().companylist = datacompanylist!;
+      });
+    } catch (e) {
+      debugPrint('Error fetching companies: $e');
+      setState(() {
+        AppState().companylist = [
+          {
+            'name': 'Default',
+            'logo': 'https://via.placeholder.com/150',
+          },
+        ];
+      });
+    }
+  }
+
+  dynamic onCallRoomStatus() async {
     final room_status.RoomStatus requestCall = room_status.RoomStatus(
       cookie: AppState().cookieData,
       fields: '["name","status_name"]',
     );
-
     try {
       final request = await room_status.request(requestQuery: requestCall);
-
       if (request.isNotEmpty) {
         setState(() {
           AppState().roomStatus = request;
@@ -143,7 +194,6 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (error) {
       print('error, ${error.toString()}');
-
       if (mounted) {
         isLoading = false;
         alertError(context, error.toString());

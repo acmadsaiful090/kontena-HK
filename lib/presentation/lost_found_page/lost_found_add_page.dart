@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:jc_hk/routes/app_routes.dart';
 
 class LostFoundAddPage extends StatefulWidget {
   @override
@@ -43,7 +44,10 @@ class _LostFoundAddPageState extends State<LostFoundAddPage> {
           _imageFile != null &&
           _selectedItemType != null) {
         _errorMessage = '';
-        Navigator.pushReplacementNamed(context, '/home');
+        Navigator.of(context).pushNamedAndRemoveUntil(
+              AppRoutes.company,
+              (route) => false,
+            );
       } else {
         _errorMessage = 'Input is Empty';
       }

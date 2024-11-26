@@ -20,7 +20,6 @@ class AppState extends ChangeNotifier {
 
   Future<void> initializeState() async {
     prefs = await SharedPreferences.getInstance();
-
     notifyListeners();
   }
 
@@ -36,6 +35,21 @@ class AppState extends ChangeNotifier {
     _domain = value;
     prefs.setString('ff_domain', value);
   }
+
+  String _company = '';
+  String get company => _company;
+  set company(String value) {
+    _company = value;
+    prefs.setString('ff_company', value);
+  }
+
+  // String _domain = 'https://erp.hotelkontena.com';
+  // String _domain = 'https://erp2.hotelkontena.com';
+
+  // String get domain => _domain;
+  // set domain(String _value) {
+  //   _domain = _value;
+  // }
 
   String _version = '1.1.2';
   String get version => _version;
@@ -56,6 +70,14 @@ class AppState extends ChangeNotifier {
   set dataUser(Map<String, dynamic> value) {
     _dataUser = value;
     prefs.setString('ff_user', jsonEncode(value));
+    notifyListeners();
+  }
+
+  List<dynamic> _companylist = [];
+  List<dynamic> get companylist => _companylist;
+  set companylist(List<dynamic> value) {
+    _companylist = value;
+    prefs.setString('ff_company', jsonEncode(value));
     notifyListeners();
   }
 

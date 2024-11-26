@@ -89,8 +89,6 @@ Future<List<dynamic>> requestItem({required RoomRequest requestQuery}) async {
 }
 
 Future<Map<String, dynamic>> detail({required RoomRequest requestQuery}) async {
-  // String url =
-  //     'https://erp2.hotelkontena.com/api/method/frappe.desk.form.load.getdoc?${queryParams(requestQuery.detail())}';
   String url =
       '${AppState().domain}/api/resource/Room/${requestQuery.paramID()}';
   print('URL: $url');

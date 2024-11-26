@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:kontena_hk/api/room_task_api.dart';
 import 'package:kontena_hk/functions/status_room_color.dart';
 import 'package:kontena_hk/presentation/home_page/add_damage.dart';
 import 'package:kontena_hk/presentation/lost_found_page/lost_found_add_page.dart';
@@ -527,25 +528,42 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
   }
 
   void _sendStatusRequest() async {
-    // final employee = appState().dataUser?['name'];
-    // if (AppState().cookieData == null) {
-    //   print('Cookie not found. Please log in again.');
-    //   return;
-    // }
-    // final purpose = checkboxLabel;
-    // try {
-    //   CreateRoomTaskRequest request = CreateRoomTaskRequest(
-    //     cookie: AppState().cookieData,
-    //     purpose: purpose,
-    //     room: widget.data,
-    //     employee: employee,
-    //     employeeName: '',
-    //   );
-    //   // final response = await requestRoomTask(requestQuery: request);
-    //   print('Room task successfully created with purpose: $purpose');
-    // } catch (e) {
-    //   print('Failed to send status: $e');
-    // }
+// <<<<<<< HEAD
+    final employee = AppState().dataUser?['name'];
+    if (AppState().cookieData == null) {
+      print('Cookie not found. Please log in again.');
+      return;
+    }
+    final purpose = checkboxLabel;
+    try {
+      CreateRoomTaskRequest request = CreateRoomTaskRequest(
+        cookie: AppState().cookieData,
+        purpose: purpose,
+        room: widget.data,
+        employee: employee,
+        employeeName: '',
+      );
+      // final response = await requestRoomTask(requestQuery: request);
+      print('Room task successfully created with purpose: $purpose');
+    } catch (e) {
+      print('Failed to send status: $e');
+    }
+// =======
+//     final purpose = checkboxLabel;
+//     try {
+//       CreateRoomTaskRequest request = CreateRoomTaskRequest(
+//         cookie:  AppState().cookieData,
+//         purpose: purpose,
+//         room: widget.data,
+//         employee:AppState().dataUser?['employee'],
+//         employeeName: '',
+//       );
+//       // final response = await requestRoomTask(requestQuery: request);
+//       print('Room task successfully created with purpose: $purpose');
+//     } catch (e) {
+//       print('Failed to send status: $e');
+//     }
+// >>>>>>> 5e1f3505568e2dd7e731bdff5429a96c47bf2f01
   }
 
   void _showReportDialog() {
@@ -668,9 +686,14 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
   }
 
   onCallCreateRoomTask() async {
+// <<<<<<< HEAD
     // final purpose = checkboxLabel;
     final call_create_room_task.CreateRoomTask request =
         call_create_room_task.CreateRoomTask(
+// =======
+//     final callCreateRoomTask.CreateRoomTask request =
+//         callCreateRoomTask.CreateRoomTask(
+// >>>>>>> 5e1f3505568e2dd7e731bdff5429a96c47bf2f01
       cookie: AppState().cookieData,
       purpose: purpose,
       room: dataRoom['name'],
