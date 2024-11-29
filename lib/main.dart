@@ -19,51 +19,21 @@ void main() async {
   );
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  late Future<String> _initialRouteFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _initialRouteFuture = _checkStoredUser();
-  }
-
-  Future<String> _checkStoredUser() async {
-    // Adjust based on actual implementation
-    // For now, we return the login screen as the initial route
-    return AppRoutes.login;
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return FutureBuilder<String>(
-      future: _initialRouteFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return Center(child: Text('Error: ${snapshot.error}'));
-        } else {
-          return MaterialApp(
-            title: 'Kontena HK',
-            theme: ThemeData(
-              colorScheme: ColorScheme.light(),
-              fontFamily: 'OpenSans',
-            ),
-            initialRoute: snapshot.data ?? AppRoutes.splashScreen,
-            navigatorKey: navigatorKey,
-            routes: AppRoutes.routes,
-            debugShowCheckedModeBanner: false,
-          );
-        }
-      },
+    return MaterialApp(
+      title: 'JC House Keeping',
+      theme: ThemeData(
+        colorScheme: const ColorScheme.light(),
+        fontFamily: 'OpenSans',
+      ),
+      initialRoute: AppRoutes.splashScreen,
+      navigatorKey: navigatorKey,
+      routes: AppRoutes.routes,
+      debugShowCheckedModeBanner: false,
     );
   }
 }

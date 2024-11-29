@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jc_hk/app_state.dart';
-import 'package:jc_hk/routes/app_routes.dart';
+import 'package:kontena_hk/app_state.dart';
+import 'package:kontena_hk/routes/app_routes.dart';
 class CompanyPage extends StatefulWidget {
   @override
   _CompanyPageState createState() => _CompanyPageState();

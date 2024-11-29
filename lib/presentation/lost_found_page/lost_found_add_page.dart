@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:jc_hk/routes/app_routes.dart';
+import 'package:kontena_hk/routes/app_routes.dart';
 
 class LostFoundAddPage extends StatefulWidget {
   @override
