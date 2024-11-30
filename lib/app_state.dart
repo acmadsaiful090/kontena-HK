@@ -29,15 +29,15 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  String _domain = 'https://erp.hotelkontena.com';
-  // String _domain = 'https://erp2.hotelkontena.com';
+  // String _domain = 'https://erp.hotelkontena.com';
+  String _domain = 'https://erp2.hotelkontena.com';
   String get domain => _domain;
   set domain(String _value) {
     _domain = _value;
     prefs.setString('ff_domain', _value);
   }
 
-  String _version = '1.0.0';
+  String _version = '1.0.1';
   String get version => _version;
   set version(String _value) {
     _version = _value;

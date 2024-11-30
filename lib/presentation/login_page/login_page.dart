@@ -87,6 +87,7 @@ class _LoginPageState extends State<LoginPage> {
         }
       } else {
         setState(() {
+          isLoading = false;
           _errorMessage = 'Invalid username or password';
         });
 
@@ -96,6 +97,7 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (e) {
       setState(() {
+        isLoading = false;
         _errorMessage = 'Invalid username or password';
       });
       if (mounted) {

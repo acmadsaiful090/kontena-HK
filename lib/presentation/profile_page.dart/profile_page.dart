@@ -119,7 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   Text(
-                    ' - ${(AppState().domain.contains('erp2')) ? ' - Testing' : ''}',
+                    ' ${(AppState().domain.contains('erp2')) ? ' - Testing' : ''}',
                     style: TextStyle(
                       fontSize: 16,
                       color: theme.colorScheme.onPrimaryContainer,

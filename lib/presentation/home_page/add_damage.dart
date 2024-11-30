@@ -25,6 +25,7 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
   bool isLoading = false;
 
   String datePick = '';
+  String datePick2 = '';
 
   List<dynamic> typeDamage = [
     {'value': 'OOO', 'text': 'Out Of Order'},
@@ -442,6 +443,7 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
 
                                       if (pickedDate != null) {
                                         // Format and set the selected date
+                                        datePick2 = "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
                                         setState(() {
                                           untilDate.text =
                                               "${pickedDate.day.toString().padLeft(2, '0')}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.year}";
@@ -512,7 +514,7 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
                         width: double.infinity,
                         height: 60.0,
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.error,
+                          color: theme.colorScheme.primary,
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         child: Padding(
@@ -579,7 +581,7 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
       'room': room.text,
       'status_current': currentStatus.text,
       'status_next': selectedType,
-      'until': untilDate.text,
+      'until': datePick2,
     });
 
     
