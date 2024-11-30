@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:jc_hk/app_state.dart';
+import 'package:kontena_hk/app_state.dart';
 
 class CompanyRequest {
   final String cookie;
@@ -8,15 +8,14 @@ class CompanyRequest {
   final String? limitStart;
   final int? limit;
   final String? filters;
-  
+
   CompanyRequest({
     required this.cookie,
     this.fields,
     this.limit,
     this.limitStart,
     this.filters,
-  }) {
-  }
+  });
 
   Map<String, dynamic> formatRequestCompany() {
     Map<String, dynamic> requestMap = {};

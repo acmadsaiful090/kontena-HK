@@ -33,9 +33,17 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _initialRouteFuture = _checkStoredUser();
+    print('check initial route, ${_initialRouteFuture}');
   }
 
   Future<String> _checkStoredUser() async {
+    print('check user, ${AppState().cookieData != ''}');
+    print('check user, ${AppState().dataUser}');
+    if (AppState().cookieData != '') {
+      print(1);
+      return AppRoutes.home;
+    }
+    print(2);
     // Adjust based on actual implementation
     // For now, we return the login screen as the initial route
     return AppRoutes.login;
@@ -57,7 +65,7 @@ class _MyAppState extends State<MyApp> {
               colorScheme: ColorScheme.light(),
               fontFamily: 'OpenSans',
             ),
-            initialRoute: snapshot.data ?? AppRoutes.splashScreen,
+            initialRoute: snapshot.data!,
             navigatorKey: navigatorKey,
             routes: AppRoutes.routes,
             debugShowCheckedModeBanner: false,

@@ -1,10 +1,9 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-// <<<<<<< HEAD
 import 'package:kontena_hk/functions/status_room_color.dart';
 import 'package:kontena_hk/presentation/home_page/detail_room_page.dart';
-import 'package:kontena_hk/api/data/room_api.dart';
+import 'package:kontena_hk/api/room_api.dart';
 import 'package:kontena_hk/app_state.dart';
 import 'package:kontena_hk/utils/datetime.dart';
 import 'package:kontena_hk/utils/theme.helper.dart';
@@ -167,36 +166,36 @@ class _HomeContentState extends State<HomeContent> {
     //   isLoading = false;
     // });
 // =======
-    // final prefs = await SharedPreferences.getInstance();
-    final request = EmployeeDetailRequest(
-      cookie: AppState().cookieData,
-      fields: '["*"]',
-    );
-    final response = await requestEmployee(requestQuery: request);
-    setState(() {
-      if (response is List) {
-        items = response.map((EmpData) {
-          return {
-            'name': EmpData['name']?.toString() ?? '',
-            'cell_number': EmpData['cell_number']?.toString() ?? '',
-            'first_name': EmpData['first_name']?.toString() ?? '',
-            'employee_name': EmpData['employee_name']?.toString() ?? '',
-            'prefered_email': EmpData['prefered_email']?.toString() ?? '',
-          };
-        }).toList();
-        var targetItem = items.firstWhere(
-            (item) => item['prefered_email'] == 'othkkontena@gmail.com');
-        if (targetItem.isNotEmpty) {
-          dataUser = targetItem;
-        } else {
-          print(
-              'Data dengan prefered_email "othkkontena@gmail.com" tidak ditemukan.');
-        }
-      } else {
-        throw Exception('Unexpected response format');
-      }
-      isLoading = false;
-    });
+    // // final prefs = await SharedPreferences.getInstance();
+    // final request = EmployeeDetailRequest(
+    //   cookie: AppState().cookieData,
+    //   fields: '["*"]',
+    // );
+    // final response = await requestEmployee(requestQuery: request);
+    // setState(() {
+    //   if (response is List) {
+    //     items = response.map((EmpData) {
+    //       return {
+    //         'name': EmpData['name']?.toString() ?? '',
+    //         'cell_number': EmpData['cell_number']?.toString() ?? '',
+    //         'first_name': EmpData['first_name']?.toString() ?? '',
+    //         'employee_name': EmpData['employee_name']?.toString() ?? '',
+    //         'prefered_email': EmpData['prefered_email']?.toString() ?? '',
+    //       };
+    //     }).toList();
+    //     var targetItem = items.firstWhere(
+    //         (item) => item['prefered_email'] == 'othkkontena@gmail.com');
+    //     if (targetItem.isNotEmpty) {
+    //       dataUser = targetItem;
+    //     } else {
+    //       print(
+    //           'Data dengan prefered_email "othkkontena@gmail.com" tidak ditemukan.');
+    //     }
+    //   } else {
+    //     throw Exception('Unexpected response format');
+    //   }
+    //   isLoading = false;
+    // });
 // >>>>>>> 5e1f3505568e2dd7e731bdff5429a96c47bf2f01
   }
 

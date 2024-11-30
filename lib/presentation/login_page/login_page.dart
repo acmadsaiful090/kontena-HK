@@ -22,6 +22,8 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  final unfocusNode = FocusNode();
+
   dynamic dataUser;
   dynamic dataEmployee;
 
@@ -87,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
         final callEmployee =
             await employee.requestEmployee(requestQuery: requestEmployee);
         // await onCallRoomStatus();
-        await onCallCompany();
+        // await onCallCompany();
         if (callUser.containsKey('name') && callEmployee.isNotEmpty) {
           setState(() {
             dataUser = callUser;
@@ -99,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
           });
           if (mounted) {
             Navigator.of(context).pushNamedAndRemoveUntil(
-              AppRoutes.company,
+              AppRoutes.home,
               (route) => false,
             );
           }
@@ -144,39 +146,17 @@ class _LoginPageState extends State<LoginPage> {
       // onCallRoomStatus() async {
       final response =
           await company.requestCompany(requestQuery: companyRequest);
-      List<Map<String, String>>? datacompanylist;
+
       if (response.isNotEmpty) {
-        datacompanylist = response
-            .map((company) {
-              return {
-                'name': company['company_name'] ?? 'Unknown Company',
-                'logo': company['logo'] ?? 'https://via.placeholder.com/150',
-              };
-            })
-            .cast<Map<String, String>>()
-            .toList();
-      } else {
-        datacompanylist = [
-          {
-            'name': 'Default',
-            'logo': 'https://via.placeholder.com/150',
-          },
-        ];
-        debugPrint('Response kosong, menggunakan data default.');
+        setState(() {
+          AppState().companylist = response;
+        });
       }
-      setState(() {
-        AppState().companylist = datacompanylist!;
-      });
-    } catch (e) {
-      debugPrint('Error fetching companies: $e');
-      setState(() {
-        AppState().companylist = [
-          {
-            'name': 'Default',
-            'logo': 'https://via.placeholder.com/150',
-          },
-        ];
-      });
+    } catch (error) {
+      if (mounted) {
+        isLoading = false;
+        alertError(context, error.toString());
+      }
     }
   }
 
@@ -203,161 +183,189 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Align(
-              alignment: Alignment.topRight,
-              child: Image.asset(
-                'assets/image/kontena-hk.png',
-                height: 200,
-                width: 200,
-              ),
-            ),
-            SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(32.0),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(8),
-              ),
+    return GestureDetector(
+      onTap: () => unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(unfocusNode)
+          : FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        body: Center(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Padding(
+              padding:
+                  const EdgeInsetsDirectional.fromSTEB(0.0, 80.0, 0.0, 20.0),
               child: Column(
-                children: <Widget>[
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
                   Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Login',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'OpenSans',
-                      ),
-                      textAlign: TextAlign.left,
+                    alignment: Alignment.topRight,
+                    child: Image.asset(
+                      'assets/image/kontena-hk.png',
+                      height: 200,
+                      width: 200,
                     ),
                   ),
-                  SizedBox(height: 4),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Masukkan Username dan Password anda',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.normal,
-                        fontFamily: 'OpenSans',
-                      ),
-                      textAlign: TextAlign.left,
+                  SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.all(32.0),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  ),
-                  SizedBox(height: 16),
-                  TextField(
-                    controller: _phoneController,
-                    decoration: InputDecoration(
-                      labelText: 'Enter email/username',
-                      labelStyle: TextStyle(
-                        fontFamily: 'OpenSans',
-                        color: theme.colorScheme.onPrimaryContainer,
-                      ),
-                      errorText: _errorMessage.isEmpty ? null : _errorMessage,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: theme.colorScheme.outline,
+                    child: Column(
+                      children: <Widget>[
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Login',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'OpenSans',
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
                         ),
-                      ),
-                    ),
-                    // keyboardType: TextInputType.,
-                  ),
-                  SizedBox(height: 10),
-                  TextField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                      labelText: 'Enter password',
-                      labelStyle: TextStyle(
-                        fontFamily: 'OpenSans',
-                        color: theme.colorScheme.onPrimaryContainer,
-                      ),
-                      errorText: _errorMessage.isEmpty ? null : _errorMessage,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: theme.colorScheme.outline,
+                        SizedBox(height: 4),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Masukkan Username dan Password anda',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.normal,
+                              fontFamily: 'OpenSans',
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
                         ),
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _isPasswordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _isPasswordVisible = !_isPasswordVisible;
-                          });
-                        },
-                      ),
-                    ),
-                    obscureText: !_isPasswordVisible,
-                  ),
-                  SizedBox(height: 40),
-                  if (isLoading)
-                    Container(
-                      width: double.infinity,
-                      height: 60.0,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsetsDirectional.fromSTEB(
-                            8.0, 0.0, 8.0, 0.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Center(
-                              child: SizedBox(
-                                width: 23,
-                                height: 23,
-                                child: const CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.white,
-                                  ),
-                                ),
+                        SizedBox(height: 16),
+                        TextField(
+                          controller: _phoneController,
+                          decoration: InputDecoration(
+                            labelText: 'Enter email/username',
+                            labelStyle: TextStyle(
+                              fontFamily: 'OpenSans',
+                              color: theme.colorScheme.onPrimaryContainer,
+                            ),
+                            errorText:
+                                _errorMessage.isEmpty ? null : _errorMessage,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: theme.colorScheme.outline,
                               ),
                             ),
-                            Padding(
+                          ),
+                          // keyboardType: TextInputType.,
+                        ),
+                        SizedBox(height: 10),
+                        TextField(
+                          controller: _passwordController,
+                          decoration: InputDecoration(
+                            labelText: 'Enter password',
+                            labelStyle: TextStyle(
+                              fontFamily: 'OpenSans',
+                              color: theme.colorScheme.onPrimaryContainer,
+                            ),
+                            errorText:
+                                _errorMessage.isEmpty ? null : _errorMessage,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: theme.colorScheme.outline,
+                              ),
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
+                            ),
+                          ),
+                          obscureText: !_isPasswordVisible,
+                        ),
+                        SizedBox(height: 40),
+                        if (isLoading)
+                          Container(
+                            width: double.infinity,
+                            height: 60.0,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary,
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Padding(
                               padding: const EdgeInsetsDirectional.fromSTEB(
-                                  10.0, 0.0, 8.0, 0.0),
-                              child: Text(
-                                'Loading...',
-                                style: TextStyle(
-                                    color: theme.colorScheme.primaryContainer),
+                                  8.0, 0.0, 8.0, 0.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Center(
+                                    child: SizedBox(
+                                      width: 23,
+                                      height: 23,
+                                      child: const CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                          Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            10.0, 0.0, 8.0, 0.0),
+                                    child: Text(
+                                      'Loading...',
+                                      style: TextStyle(
+                                          color: theme
+                                              .colorScheme.primaryContainer),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        if (isLoading == false)
+                          CustomOutlinedButton(
+                            height: 60.0,
+                            text: "LOG IN",
+                            isDisabled: false,
+                            buttonTextStyle: TextStyle(
+                              color: theme.colorScheme.primaryContainer,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            buttonStyle: CustomButtonStyles.primary,
+                            onPressed: _handleLogin,
+                          ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                        8.0, 80.0, 8.0, 0.0),
+                    child: Text(
+                      'HK - Version ${AppState().version} ${(AppState().domain.contains('erp2')) ? ' - Testing' : ''}',
+                      style: TextStyle(
+                        color: theme.colorScheme.onPrimaryContainer,
                       ),
                     ),
-                  if (isLoading == false)
-                    CustomOutlinedButton(
-                      height: 60.0,
-                      text: "LOG IN",
-                      isDisabled: false,
-                      buttonTextStyle: TextStyle(
-                        color: theme.colorScheme.primaryContainer,
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      buttonStyle: CustomButtonStyles.primary,
-                      onPressed: _handleLogin,
-                    ),
+                  ),
                 ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );

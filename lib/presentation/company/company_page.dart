@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:jc_hk/app_state.dart';
-import 'package:jc_hk/routes/app_routes.dart';
+import 'package:kontena_hk/app_state.dart';
+import 'package:kontena_hk/routes/app_routes.dart';
+
 class CompanyPage extends StatefulWidget {
   @override
   _CompanyPageState createState() => _CompanyPageState();
 }
+
 class _CompanyPageState extends State<CompanyPage> {
   String? selectedCompany;
-  List<Map<String, dynamic>> companies = [];
+  List<dynamic> companies = [];
+
   @override
   void initState() {
     super.initState();
     _listCompany();
   }
+
   void _listCompany() {
+    print('list company, ${AppState().companylist}');
     if (AppState().companylist.isNotEmpty) {
       setState(() {
-        companies = AppState().companylist.map((company) {
-          return {
-            'name': company['name'],
-            'logo': company['logo'],
-          };
-        }).toList();
+        companies = AppState().companylist;
       });
     }
   }
@@ -54,6 +54,8 @@ class _CompanyPageState extends State<CompanyPage> {
         itemCount: companies.length,
         itemBuilder: (context, index) {
           final company = companies[index];
+          String filename =
+              company['name'].toString().toLowerCase().replaceAll(' ', '_');
           return GestureDetector(
             onTap: () => selectCompany(company['name']!),
             child: Card(
@@ -67,10 +69,21 @@ class _CompanyPageState extends State<CompanyPage> {
                     child: ClipRRect(
                       borderRadius:
                           BorderRadius.vertical(top: Radius.circular(12)),
-                      child: Image.network(
-                        company['logo']!,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
+                      child: Image.asset(
+                        'assets/images/$filename.png',
+                        fit: BoxFit.contain,
+                        width: 100.0,
+                        height: 100.0,
+                        errorBuilder: (BuildContext context, Object exception,
+                            StackTrace? stackTrace) {
+                          // Tampilkan gambar default jika file tidak ada
+                          return Image.asset(
+                            'assets/images/image_not_found.png',
+                            fit: BoxFit.cover,
+                            width: 104.0,
+                            height: 104.0,
+                          );
+                        },
                       ),
                     ),
                   ),

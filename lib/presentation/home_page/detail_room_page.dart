@@ -12,7 +12,7 @@ import 'package:kontena_hk/widget/alert.dart';
 import 'package:kontena_hk/widget/custom_outlined_button.dart';
 import 'package:kontena_hk/app_state.dart';
 
-import 'package:kontena_hk/api/data/room_api.dart' as call_room;
+import 'package:kontena_hk/api/room_api.dart' as call_room;
 import 'package:kontena_hk/api/create_room_task.dart' as call_create_room_task;
 import 'package:kontena_hk/api/room_task.dart' as call_room_task;
 import 'package:kontena_hk/api/room_inspect.dart' as call_room_inspect;
