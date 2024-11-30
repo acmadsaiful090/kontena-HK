@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:kontena_hk/app_state.dart';
 
 class UserDetailRequest {
   final String cookie;
@@ -60,7 +61,7 @@ String queryParams(Map<String, dynamic> map) =>
 Future<Map<String, dynamic>> requestuser(
     {required UserDetailRequest requestQuery}) async {
   String url =
-      'https://erp2.hotelkontena.com/api/resource/User/${requestQuery.paramID()}?${queryParams(requestQuery.formatRequest())}';
+      '${AppState().domain}/api/resource/User/${requestQuery.paramID()}?${queryParams(requestQuery.formatRequest())}';
 
   final response = await http.get(
     Uri.parse(url),
@@ -75,7 +76,16 @@ Future<Map<String, dynamic>> requestuser(
       throw Exception(responseBody);
     }
   } else {
-    throw Exception('System unknown error code ${response.statusCode}');
+    final responseBody = json.decode(response.body);
+    dynamic message;
+    if (responseBody.containsKey('exception')) {
+      message = responseBody['exception'];
+    } else if (responseBody.containsKey('message')) {
+      message = responseBody['message'];
+    } else {
+      message = responseBody;
+    }
+    throw Exception(message);
   }
 }
 

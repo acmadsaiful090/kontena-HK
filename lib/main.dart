@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jc_housekeeping/routes/app_routes.dart';
-import 'package:jc_housekeeping/app_state.dart';
+import 'package:kontena_hk/routes/app_routes.dart';
+import 'package:kontena_hk/app_state.dart';
 import 'package:provider/provider.dart';
 
 var globalMessengerKey = GlobalKey<ScaffoldMessengerState>();
@@ -33,9 +33,13 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _initialRouteFuture = _checkStoredUser();
+    print('check initial route, ${_initialRouteFuture}');
   }
 
   Future<String> _checkStoredUser() async {
+    if (AppState().cookieData != '') {
+      return AppRoutes.home;
+    }
     // Adjust based on actual implementation
     // For now, we return the login screen as the initial route
     return AppRoutes.login;
@@ -52,12 +56,12 @@ class _MyAppState extends State<MyApp> {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
           return MaterialApp(
-            title: 'JC House Keeping',
+            title: 'Kontena HK',
             theme: ThemeData(
               colorScheme: ColorScheme.light(),
               fontFamily: 'OpenSans',
             ),
-            initialRoute: snapshot.data ?? AppRoutes.splashScreen,
+            initialRoute: snapshot.data!,
             navigatorKey: navigatorKey,
             routes: AppRoutes.routes,
             debugShowCheckedModeBanner: false,

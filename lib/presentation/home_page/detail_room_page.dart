@@ -1,28 +1,23 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:jc_housekeeping/api/data/room_task_api.dart';
-import 'package:jc_housekeeping/functions/status_room_color.dart';
-import 'package:jc_housekeeping/models/room.dart';
-import 'package:jc_housekeeping/presentation/home_page/add_damage.dart';
-import 'package:jc_housekeeping/presentation/lost_found_page/lost_found_add_page.dart';
-import 'package:jc_housekeeping/api/data/room_api.dart' as callRoom;
-import 'package:jc_housekeeping/api/create_room_task.dart'
-    as callCreateRoomTask;
-import 'package:jc_housekeeping/api/room_task.dart' as callRoomTask;
-import 'package:jc_housekeeping/api/room_inspect.dart' as callRoomInspect;
-import 'package:jc_housekeeping/api/create_room_inspect.dart'
-    as callCreateRoomInspect;
-import 'package:jc_housekeeping/routes/app_routes.dart';
-import 'package:jc_housekeeping/utils/custom_button_style.dart';
-import 'package:jc_housekeeping/utils/datetime.dart';
-import 'package:jc_housekeeping/utils/theme.helper.dart';
-import 'package:jc_housekeeping/widget/alert.dart';
-import 'package:jc_housekeeping/widget/custom_outlined_button.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jc_housekeeping/app_state.dart';
-import 'package:provider/provider.dart';
+import 'package:kontena_hk/api/room_task_api.dart';
+import 'package:kontena_hk/functions/status_room_color.dart';
+import 'package:kontena_hk/presentation/home_page/add_damage.dart';
+import 'package:kontena_hk/presentation/lost_found_page/lost_found_add_page.dart';
+import 'package:kontena_hk/routes/app_routes.dart';
+import 'package:kontena_hk/utils/custom_button_style.dart';
+import 'package:kontena_hk/utils/datetime.dart';
+import 'package:kontena_hk/utils/theme.helper.dart';
+import 'package:kontena_hk/widget/alert.dart';
+import 'package:kontena_hk/widget/custom_outlined_button.dart';
+import 'package:kontena_hk/app_state.dart';
+
+import 'package:kontena_hk/api/room_api.dart' as call_room;
+import 'package:kontena_hk/api/create_room_task.dart' as call_create_room_task;
+import 'package:kontena_hk/api/room_task.dart' as call_room_task;
+import 'package:kontena_hk/api/room_inspect.dart' as call_room_inspect;
+import 'package:kontena_hk/api/create_room_inspect.dart'
+    as call_create_room_inspect;
 
 class DetailRoomPage extends StatefulWidget {
   final String data;
@@ -81,7 +76,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
           ? AppState().dataUser['employee']['name']
           : '';
     });
-    print('check data, ${AppState().dataUser['employee']}');
+    // print('check data, ${dataRoomTask[0]}');
   }
 
   checkFieldsInDetail() {
@@ -135,6 +130,9 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
         top: false,
         child: LayoutBuilder(
           builder: (context, constraints) {
+            if (dataRoomTask.isNotEmpty) {
+              // print('checke, ${dataRoomTask[0]["employee_name"]}');
+            }
             return (isLoading == false)
                 ? SingleChildScrollView(
                     child: ConstrainedBox(
@@ -172,25 +170,51 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                                               .colorScheme.onPrimaryContainer,
                                         ),
                                       ),
-                                      const SizedBox(height: 8),
+                                      const SizedBox(height: 2),
                                       Text(
                                         getStatus(dataRoom['room_status']),
                                         style: TextStyle(
                                           fontSize: 20,
-                                          color:
-                                              getColorForLabel(dataRoom['room_status']),
+                                          color: getColorForLabel(
+                                              dataRoom['room_status']),
                                           fontWeight: FontWeight.w600,
                                         ),
                                       ),
-                                      const SizedBox(height: 12),
-                                      // Text(
-                                      //   'Next Status',
-                                      //   style: TextStyle(
-                                      //     fontSize: 14,
-                                      //     fontWeight: FontWeight.w500,
-                                      //     color: theme.colorScheme.onPrimaryContainer,
-                                      //   ),
-                                      // ),
+                                      const SizedBox(height: 24),
+                                      if ((isLoading == false) &&
+                                          (dataRoomTask.isNotEmpty))
+                                        Text(
+                                          'User is ${dataRoomTask[0]['purpose']}',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                            color: theme
+                                                .colorScheme.onPrimaryContainer,
+                                          ),
+                                        ),
+                                      if ((isLoading == false) &&
+                                          (dataRoomTask.isNotEmpty))
+                                        const SizedBox(height: 2),
+                                      if ((isLoading == false) &&
+                                          (dataRoomTask.isNotEmpty))
+                                        Text(
+                                          dataRoomTask[0]['employee_name'],
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            color: theme.colorScheme.secondary,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                      if ((isLoading == false) &&
+                                          (dataRoomTask.isNotEmpty))
+                                        Text(
+                                          "[ ${dataRoomTask[0]['employee']} ]",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: theme.colorScheme.secondary,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
                                       // const SizedBox(height: 5),
                                       // Text(
                                       //   getStatus(nextStatus),
@@ -325,7 +349,9 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                               const SizedBox(height: 12),
 
                               if ((isLoading == false) &&
-                                  (dataRoom['is_occupied'] == 0) && (dataRoom['is_damaged'] != 1) && (dataRoomTask.isEmpty))
+                                  (dataRoom['is_occupied'] == 0) &&
+                                  (dataRoom['is_damaged'] != 1) &&
+                                  (dataRoomTask.isEmpty))
                                 CustomOutlinedButton(
                                   height: 60.0,
                                   text: "Maintenance",
@@ -502,18 +528,16 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
   }
 
   void _sendStatusRequest() async {
-    final prefs = await SharedPreferences.getInstance();
-    final cookie = prefs.getString('session_cookie');
-    final appState = Provider.of<AppState>(context, listen: false);
-    final employee = appState.dataUser?['name'];
-    if (cookie == null) {
+// <<<<<<< HEAD
+    final employee = AppState().dataUser?['name'];
+    if (AppState().cookieData == null) {
       print('Cookie not found. Please log in again.');
       return;
     }
     final purpose = checkboxLabel;
     try {
       CreateRoomTaskRequest request = CreateRoomTaskRequest(
-        cookie: cookie,
+        cookie: AppState().cookieData,
         purpose: purpose,
         room: widget.data,
         employee: employee,
@@ -524,6 +548,22 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
     } catch (e) {
       print('Failed to send status: $e');
     }
+// =======
+//     final purpose = checkboxLabel;
+//     try {
+//       CreateRoomTaskRequest request = CreateRoomTaskRequest(
+//         cookie:  AppState().cookieData,
+//         purpose: purpose,
+//         room: widget.data,
+//         employee:AppState().dataUser?['employee'],
+//         employeeName: '',
+//       );
+//       // final response = await requestRoomTask(requestQuery: request);
+//       print('Room task successfully created with purpose: $purpose');
+//     } catch (e) {
+//       print('Failed to send status: $e');
+//     }
+// >>>>>>> 5e1f3505568e2dd7e731bdff5429a96c47bf2f01
   }
 
   void _showReportDialog() {
@@ -591,26 +631,21 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
   }
 
   onCallRoomDetail() async {
-    final callRoom.RoomRequest requestCall = callRoom.RoomRequest(
+    final call_room.RoomRequest requestCall = call_room.RoomRequest(
       cookie: AppState().cookieData,
       fields: '["*"]',
       id: widget.dataRoom['name'],
     );
 
     try {
-      final request = await callRoom.detail(requestQuery: requestCall);
+      final request = await call_room.detail(requestQuery: requestCall);
       if (request.isNotEmpty) {
         setState(() {
           // isLoading = false;
           dataRoom = request;
         });
-        print('check request, ${json.encode(request)}');
       }
     } catch (error) {
-      print('error, ${error.toString()}');
-      // setState(() {
-      //   isLoading = false;
-      // });
       if (error is TimeoutException) {
         // Handle timeout error
         // _bottomScreenTimeout(context);
@@ -624,13 +659,15 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
   }
 
   onCallRoomTask() async {
-    final callRoomTask.RoomTaskRequest request = callRoomTask.RoomTaskRequest(
-        cookie: AppState().cookieData,
-        fields: '["name","purpose"]',
-        filters: '[["docstatus","=",0],["room","=","${dataRoom['name']}"]]');
+    final call_room_task.RoomTaskRequest request =
+        call_room_task.RoomTaskRequest(
+            cookie: AppState().cookieData,
+            fields: '["name","purpose","employee","employee_name"]',
+            filters:
+                '[["docstatus","=",0],["room","=","${dataRoom['name']}"]]');
 
     try {
-      final callRequest = await callRoomTask.request(requestQuery: request);
+      final callRequest = await call_room_task.request(requestQuery: request);
 
       if (callRequest.isNotEmpty) {
         setState(() {
@@ -649,9 +686,14 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
   }
 
   onCallCreateRoomTask() async {
+// <<<<<<< HEAD
     // final purpose = checkboxLabel;
-    final callCreateRoomTask.CreateRoomTask request =
-        callCreateRoomTask.CreateRoomTask(
+    final call_create_room_task.CreateRoomTask request =
+        call_create_room_task.CreateRoomTask(
+// =======
+//     final callCreateRoomTask.CreateRoomTask request =
+//         callCreateRoomTask.CreateRoomTask(
+// >>>>>>> 5e1f3505568e2dd7e731bdff5429a96c47bf2f01
       cookie: AppState().cookieData,
       purpose: purpose,
       room: dataRoom['name'],
@@ -661,7 +703,43 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
     );
 
     try {
-      final response = await callCreateRoomTask.request(requestQuery: request);
+      final response =
+          await call_create_room_task.request(requestQuery: request);
+
+      if (response.isNotEmpty) {
+        setState(() {
+          isLoading = false;
+        });
+
+        if (mounted) {
+          alertSuccess(context, 'Successfully updated room status');
+        }
+      }
+    } catch (error) {
+      setState(() {
+        isLoading = false;
+      });
+      if (context.mounted) {
+        alertError(context, error.toString());
+      }
+    }
+  }
+
+  onCallSubmitRoomTask() async {
+    final purpose = checkboxLabel;
+    final call_create_room_task.CreateRoomTask request =
+        call_create_room_task.CreateRoomTask(
+      cookie: AppState().cookieData,
+      purpose: purpose,
+      room: dataRoom['name'],
+      employee: employee,
+      employeeName: AppState().dataUser['user']['full_name'],
+      id: dataRoomTask[0]['name'],
+    );
+
+    try {
+      final response =
+          await call_create_room_task.request(requestQuery: request);
 
       if (response.isNotEmpty) {
         setState(() {
@@ -683,49 +761,16 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
     }
   }
 
-  onCallSubmitRoomTask() async {
-    final purpose = checkboxLabel;
-    final callCreateRoomTask.CreateRoomTask request =
-        callCreateRoomTask.CreateRoomTask(
-      cookie: AppState().cookieData,
-      purpose: purpose,
-      room: dataRoom['name'],
-      employee: employee,
-      employeeName: AppState().dataUser['user']['full_name'],
-      id: dataRoomTask[0]['name'],
-    );
-
-    try {
-      final response = await callCreateRoomTask.request(requestQuery: request);
-
-      if (response != null) {
-        setState(() {
-          isLoading = false;
-        });
-
-        if (mounted) {
-          alertSuccess(context, 'Successfully updated room status');
-        }
-      }
-    } catch (error) {
-      setState(() {
-        isLoading = false;
-      });
-      print('error create room task, ${error}');
-      if (context.mounted) {
-        alertError(context, error.toString());
-      }
-    }
-  }
-
   onCallRoomInspect() async {
-    final callRoomInspect.RoomInspect request = callRoomInspect.RoomInspect(
+    final call_room_inspect.RoomInspect request = call_room_inspect.RoomInspect(
         cookie: AppState().cookieData,
         fields: '["name","purpose"]',
-        filters: '[["docstatus","=",0],["Room Inspect Detail","room","=","${dataRoom['name']}"]]');
+        filters:
+            '[["docstatus","=",0],["Room Inspect Detail","room","=","${dataRoom['name']}"]]');
 
     try {
-      final callRequest = await callRoomInspect.request(requestQuery: request);
+      final callRequest =
+          await call_room_inspect.request(requestQuery: request);
       print('room inspect, ${callRequest}');
       if (callRequest.isNotEmpty) {
         setState(() {
@@ -745,8 +790,8 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
 
   onCallCreateRoomInspect() async {
     final purpose = checkboxLabel;
-    final callCreateRoomInspect.CreateRoomInspect request =
-        callCreateRoomInspect.CreateRoomInspect(
+    final call_create_room_inspect.CreateRoomInspect request =
+        call_create_room_inspect.CreateRoomInspect(
       cookie: AppState().cookieData,
       purpose: purpose,
       date: dateTimeFormat('date', null).toString(),
@@ -757,7 +802,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
 
     try {
       final response =
-          await callCreateRoomInspect.request(requestQuery: request);
+          await call_create_room_inspect.request(requestQuery: request);
 
       if (response.isNotEmpty) {
         setState(() {
@@ -780,7 +825,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
   }
 
   onCallRoom() async {
-    final callRoom.RoomRequest request = callRoom.RoomRequest(
+    final call_room.RoomRequest request = call_room.RoomRequest(
       cookie: AppState().cookieData,
       fields: '["*"]',
       orderBy: 'room_type asc',
@@ -788,7 +833,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
     );
 
     try {
-      final callRequest = await callRoom.requestItem(requestQuery: request);
+      final callRequest = await call_room.requestItem(requestQuery: request);
       if (callRequest.isNotEmpty) {
         setState(() {
           AppState().roomList = callRequest;
@@ -843,15 +888,15 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
 
     if (dataRoom != null) {
       if (isDamage) {
-        setState((){
+        setState(() {
           purpose = 'Maintain';
         });
       } else if (canCheck) {
-        setState((){
+        setState(() {
           purpose = 'Check';
         });
       } else {
-        setState((){
+        setState(() {
           purpose = 'Clean';
         });
       }
@@ -921,11 +966,10 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
         return Padding(
           padding: MediaQuery.viewInsetsOf(context),
           child: CreateDamageWidget(
-            room: dataRoom,
-            onComplete: () {
-              print('yes');
-            }
-          ),
+              room: dataRoom,
+              onComplete: () {
+                print('yes');
+              }),
         );
       },
     ).then((value) => {});

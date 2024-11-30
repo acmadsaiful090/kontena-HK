@@ -1,23 +1,33 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:jc_housekeeping/functions/status_room_color.dart';
-import 'package:jc_housekeeping/presentation/home_page/detail_room_page.dart';
-import 'package:jc_housekeeping/api/data/room_api.dart';
-import 'package:jc_housekeeping/app_state.dart';
-import 'package:jc_housekeeping/api/Employee_api.dart';
-import 'package:jc_housekeeping/utils/datetime.dart';
-import 'package:jc_housekeeping/utils/theme.helper.dart';
-import 'package:jc_housekeeping/widget/bottom_navigation.dart';
-import 'package:provider/provider.dart';
+import 'package:kontena_hk/functions/status_room_color.dart';
+import 'package:kontena_hk/presentation/home_page/detail_room_page.dart';
+import 'package:kontena_hk/api/room_api.dart';
+import 'package:kontena_hk/app_state.dart';
+import 'package:kontena_hk/utils/datetime.dart';
+import 'package:kontena_hk/utils/theme.helper.dart';
+import 'package:kontena_hk/widget/bottom_navigation.dart';
+import 'package:kontena_hk/api/Employee_api.dart';
+// =======
+// import 'package:jc_hk/functions/status_room_color.dart';
+// import 'package:jc_hk/presentation/home_page/detail_room_page.dart';
+// import 'package:jc_hk/api/room_api.dart';
+// import 'package:jc_hk/app_state.dart';
+// import 'package:jc_hk/api/Employee_api.dart';
+// import 'package:jc_hk/utils/datetime.dart';
+// import 'package:jc_hk/utils/theme.helper.dart';
+// import 'package:jc_hk/widget/bottom_navigation.dart';
+// import 'package:provider/provider.dart';
+// >>>>>>> 5e1f3505568e2dd7e731bdff5429a96c47bf2f01
 
-import 'package:shared_preferences/shared_preferences.dart';
 // Import your pages
-import 'package:jc_housekeeping/presentation/lost_found_page/lost_found_page.dart';
-import 'package:jc_housekeeping/presentation/profile_page.dart/profile_page.dart';
+import 'package:kontena_hk/presentation/lost_found_page/lost_found_page.dart';
+import 'package:kontena_hk/presentation/profile_page.dart/profile_page.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -25,7 +35,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  static List<Widget> _widgetOptions = <Widget>[
+  static final List<Widget> _widgetOptions = <Widget>[
     HomeContent(),
     // ReservationPage(),
     LostFoundPage(),
@@ -47,7 +57,7 @@ class _HomePageState extends State<HomePage> {
         title: Column(
           children: [
             Image.asset(
-              'assets/image/logo_housekeeping.png',
+              'assets/image/kontena-hk.png',
               height: 45,
             ),
             Text(
@@ -63,7 +73,7 @@ class _HomePageState extends State<HomePage> {
         automaticallyImplyLeading: false,
       ),
       body: _widgetOptions.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomBar(
+      bottomNavigationBar: BottomNavigationCustom(
         selectedIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
@@ -96,6 +106,8 @@ class _HomePageState extends State<HomePage> {
 }
 
 class HomeContent extends StatefulWidget {
+  const HomeContent({super.key});
+
   @override
   _HomeContentState createState() => _HomeContentState();
 }
@@ -123,41 +135,69 @@ class _HomeContentState extends State<HomeContent> {
 
   Map<String, dynamic>? dataUser;
   Future<void> fatchEmployee() async {
-    final prefs = await SharedPreferences.getInstance();
-    // final cookie = prefs.getString('session_cookie');
-    // if (cookie == null) {
-    //   throw Exception('No session cookie found. Please log in again.');
-    // }
-    final request = EmployeeDetailRequest(
-      cookie: AppState().cookieData,
-      fields: '["*"]',
-    );
-    final response = await requestEmployee(requestQuery: request);
-    setState(() {
-      if (response is List) {
-        items = response.map((EmpData) {
-          return {
-            'name': EmpData['name']?.toString() ?? '',
-            'cell_number': EmpData['cell_number']?.toString() ?? '',
-            'first_name': EmpData['first_name']?.toString() ?? '',
-            'employee_name': EmpData['employee_name']?.toString() ?? '',
-            'prefered_email': EmpData['prefered_email']?.toString() ?? '',
-          };
-        }).toList();
-        var targetItem = items.firstWhere(
-            (item) => item['prefered_email'] == 'othkkontena@gmail.com');
-        if (targetItem.isNotEmpty) {
-          dataUser = targetItem;
-          // Provider.of<AppState>(context, listen: false).setDataUser(targetItem);
-        } else {
-          print(
-              'Data dengan prefered_email "othkkontena@gmail.com" tidak ditemukan.');
-        }
-      } else {
-        throw Exception('Unexpected response format');
-      }
-      isLoading = false;
-    });
+// <<<<<<< HEAD
+    // final request = EmployeeDetailRequest(
+    //   cookie: AppState().cookieData,
+    //   fields: '["*"]',
+    // );
+    // final response = await requestEmployee(requestQuery: request);
+    // setState(() {
+    //   if (response is List) {
+    //     items = response.map((EmpData) {
+    //       return {
+    //         'name': EmpData['name']?.toString() ?? '',
+    //         'cell_number': EmpData['cell_number']?.toString() ?? '',
+    //         'first_name': EmpData['first_name']?.toString() ?? '',
+    //         'employee_name': EmpData['employee_name']?.toString() ?? '',
+    //         'prefered_email': EmpData['prefered_email']?.toString() ?? '',
+    //       };
+    //     }).toList();
+    //     var targetItem = items.firstWhere(
+    //         (item) => item['prefered_email'] == 'othkkontena@gmail.com');
+    //     if (targetItem.isNotEmpty) {
+    //       dataUser = targetItem;
+    //       // Provider.of<AppState>(context, listen: false).setDataUser(targetItem);
+    //     } else {
+    //       print(
+    //           'Data dengan prefered_email "othkkontena@gmail.com" tidak ditemukan.');
+    //     }
+    //   } else {
+    //     throw Exception('Unexpected response format');
+    //   }
+    //   isLoading = false;
+    // });
+// =======
+    // // final prefs = await SharedPreferences.getInstance();
+    // final request = EmployeeDetailRequest(
+    //   cookie: AppState().cookieData,
+    //   fields: '["*"]',
+    // );
+    // final response = await requestEmployee(requestQuery: request);
+    // setState(() {
+    //   if (response is List) {
+    //     items = response.map((EmpData) {
+    //       return {
+    //         'name': EmpData['name']?.toString() ?? '',
+    //         'cell_number': EmpData['cell_number']?.toString() ?? '',
+    //         'first_name': EmpData['first_name']?.toString() ?? '',
+    //         'employee_name': EmpData['employee_name']?.toString() ?? '',
+    //         'prefered_email': EmpData['prefered_email']?.toString() ?? '',
+    //       };
+    //     }).toList();
+    //     var targetItem = items.firstWhere(
+    //         (item) => item['prefered_email'] == 'othkkontena@gmail.com');
+    //     if (targetItem.isNotEmpty) {
+    //       dataUser = targetItem;
+    //     } else {
+    //       print(
+    //           'Data dengan prefered_email "othkkontena@gmail.com" tidak ditemukan.');
+    //     }
+    //   } else {
+    //     throw Exception('Unexpected response format');
+    //   }
+    //   isLoading = false;
+    // });
+// >>>>>>> 5e1f3505568e2dd7e731bdff5429a96c47bf2f01
   }
 
   reInit() {
@@ -194,22 +234,18 @@ class _HomeContentState extends State<HomeContent> {
       final response = await requestItem(requestQuery: request);
       setState(() {
         AppState().roomList = response;
-        if (response is List) {
-          items = response.map((roomData) {
-            return {
-              'name': roomData['name']?.toString() ?? '',
-              'room_name': roomData['room_name']?.toString() ?? '',
-              'room_type_name': roomData['room_type_name']?.toString() ?? '',
-              'status': roomData['room_status']?.toString() ?? '',
-              'can_clean': roomData['can_clean'] ?? 0,
-              'can_check': roomData['can_check'] ?? 0,
-              'is_damaged': roomData['is_damaged'] ?? 0,
-            };
-          }).toList();
-          filteredItems = items;
-        } else {
-          throw Exception('Unexpected response format');
-        }
+        items = response.map((roomData) {
+          return {
+            'name': roomData['name']?.toString() ?? '',
+            'room_name': roomData['room_name']?.toString() ?? '',
+            'room_type_name': roomData['room_type_name']?.toString() ?? '',
+            'status': roomData['room_status']?.toString() ?? '',
+            'can_clean': roomData['can_clean'] ?? 0,
+            'can_check': roomData['can_check'] ?? 0,
+            'is_damaged': roomData['is_damaged'] ?? 0,
+          };
+        }).toList();
+        filteredItems = items;
         isLoading = false;
       });
     } catch (e) {
@@ -264,98 +300,16 @@ class _HomeContentState extends State<HomeContent> {
     _searchController.clear();
   }
 
-  void _showFilterSheet() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return Container(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Filters',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  CheckboxListTile(
-                    title: const Text('Filter 1'),
-                    value: selectedFilters.contains('Filter 1'),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        if (value == true) {
-                          selectedFilters.add('Filter 1');
-                        } else {
-                          selectedFilters.remove('Filter 1');
-                        }
-                      });
-                      _filterItems();
-                    },
-                  ),
-                  CheckboxListTile(
-                    title: const Text('Filter 2'),
-                    value: selectedFilters.contains('Filter 2'),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        if (value == true) {
-                          selectedFilters.add('Filter 2');
-                        } else {
-                          selectedFilters.remove('Filter 2');
-                        }
-                      });
-                      _filterItems();
-                    },
-                  ),
-                  CheckboxListTile(
-                    title: const Text('Filter 3'),
-                    value: selectedFilters.contains('Filter 3'),
-                    onChanged: (bool? value) {
-                      setState(() {
-                        if (value == true) {
-                          selectedFilters.add('Filter 3');
-                        } else {
-                          selectedFilters.remove('Filter 3');
-                        }
-                      });
-                      _filterItems();
-                    },
-                  ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF27ae60),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: const Text('Apply Filter',
-                          style: TextStyle(
-                              fontFamily: 'OpenSans',
-                              color: Colors.white,
-                              fontSize: 14)),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
   // String getRandomStatus() {
   //   List<String> status = ['OC', 'OD', 'VD', 'VC', 'VR'];
   //   return status[random.nextInt(5)];
   // }
 
   List<dynamic> roomList(List<dynamic> room, String search, String filter) {
-    return room.where((rm) => rm['name'].toString().toLowerCase().contains(search.toLowerCase())).toList();
+    return room
+        .where((rm) =>
+            rm['name'].toString().toLowerCase().contains(search.toLowerCase()))
+        .toList();
   }
 
   @override
@@ -379,17 +333,22 @@ class _HomeContentState extends State<HomeContent> {
                         color: theme.colorScheme.onPrimaryContainer,
                       ),
                       enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: theme.colorScheme.outline, // Warna border saat tidak aktif
-                          width: 2.0,
-                        ),
-                        borderRadius: BorderRadius.circular(8.0)
+                          borderSide: BorderSide(
+                            color: theme.colorScheme
+                                .outline, // Warna border saat tidak aktif
+                            width: 2.0,
+                          ),
+                          borderRadius: BorderRadius.circular(8.0)),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: theme.colorScheme.onPrimaryContainer,
                       ),
-                      prefixIcon: Icon(Icons.search, color: theme.colorScheme.onPrimaryContainer,),
-                      suffixIcon: (_searchController.text != '') ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: _clearSearch,
-                      ) : null,
+                      suffixIcon: (_searchController.text != '')
+                          ? IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: _clearSearch,
+                            )
+                          : null,
                     ),
                   ),
                 ),
@@ -402,120 +361,118 @@ class _HomeContentState extends State<HomeContent> {
               ],
             ),
           ),
-          
           Expanded(
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : filteredItems.isEmpty
                     ? const Center(child: Text('No rooms found.'))
-                    : Builder(
-                  builder: (context) {
-                    final room = roomList(filteredItems, _searchController.text, '');
-                    return ListView.builder(
-                      itemCount: room.length,
-                      itemBuilder: (context, index) {
-                        final roomItem = room[index];
-                        // final dataRm = room[index];
-                        return Column(
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 16),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: theme.colorScheme.outline,
-                                  width: 0.5,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color:
-                                        theme.colorScheme.outline,
-                                    blurRadius: 5,
-                                    offset: Offset(0, 8),
-                                  ),
-                                ],
-                              ),
-                              child: ListTile(
-                                contentPadding: const EdgeInsets.all(16),
-                                title: Text(
-                                  '${roomItem['room_name']}',
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20),
-                                ),
-                                subtitle: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${roomItem['room_type_name']}',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                      ),
-                                      textAlign: TextAlign.left,
-                                    ),
-                                    // Text(
-                                    //   filteredItems[index]['name'] !=
-                                    //           null // Change this as per your data
-                                    //       ? filteredItems[index]['name']!
-                                    //           .toString()
-                                    //       : 'No Guest',
-                                    //   textAlign: TextAlign.left,
-                                    //   style: const TextStyle(
-                                    //       fontWeight: FontWeight.bold,
-                                    //       fontSize: 18),
-                                    // ),
-                                  ],
-                                ),
-                                onTap: () {
-                                  String? fieldWithOne =
-                                      getFirstFieldWithOneAtIndex(index);
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => DetailRoomPage(
-                                        dataRoom: roomItem,
-                                        title:
-                                            '${roomItem['room_name']} - ${roomItem['room_type_name']}',
-                                        data:
-                                            '${roomItem['room_name']} - ${roomItem['room_type_name']}',
-                                        status: roomItem['status'],
-                                        detail: fieldWithOne ?? '',
-                                      ),
-                                    ),
-                                  );
-                                },
-                                trailing: Container(
-                                  width: 40,
-                                  height: 40,
+                    : Builder(builder: (context) {
+                        final room =
+                            roomList(filteredItems, _searchController.text, '');
+                        return ListView.builder(
+                          itemCount: room.length,
+                          itemBuilder: (context, index) {
+                            final roomItem = room[index];
+                            // final dataRm = room[index];
+                            return Column(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 16),
                                   decoration: BoxDecoration(
-                                    color: getColorForLabel(roomItem['status']),
-                                    shape: BoxShape.circle,
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: theme.colorScheme.outline,
+                                      width: 0.5,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: theme.colorScheme.outline,
+                                        blurRadius: 5,
+                                        offset: Offset(0, 8),
+                                      ),
+                                    ],
                                   ),
-                                  child: Center(
-                                    child: Text(
-                                      roomItem['status'],
+                                  child: ListTile(
+                                    contentPadding: const EdgeInsets.all(16),
+                                    title: Text(
+                                      '${roomItem['room_name']}',
+                                      textAlign: TextAlign.left,
                                       style: const TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w900,
-                                        fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20),
+                                    ),
+                                    subtitle: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${roomItem['room_type_name']}',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                          ),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                        // Text(
+                                        //   filteredItems[index]['name'] !=
+                                        //           null // Change this as per your data
+                                        //       ? filteredItems[index]['name']!
+                                        //           .toString()
+                                        //       : 'No Guest',
+                                        //   textAlign: TextAlign.left,
+                                        //   style: const TextStyle(
+                                        //       fontWeight: FontWeight.bold,
+                                        //       fontSize: 18),
+                                        // ),
+                                      ],
+                                    ),
+                                    onTap: () {
+                                      String? fieldWithOne =
+                                          getFirstFieldWithOneAtIndex(index);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => DetailRoomPage(
+                                            dataRoom: roomItem,
+                                            title:
+                                                '${roomItem['room_name']} - ${roomItem['room_type_name']}',
+                                            data:
+                                                '${roomItem['room_name']} - ${roomItem['room_type_name']}',
+                                            status: roomItem['status'],
+                                            detail: fieldWithOne ?? '',
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    trailing: Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        color: getColorForLabel(
+                                            roomItem['status']),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          roomItem['status'],
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w900,
+                                            fontSize: 18,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ),
-                          ],
+                              ],
+                            );
+                          },
                         );
-                      },
-                    );
-                  }
-                ),
-                      
+                      }),
           ),
         ],
       ),

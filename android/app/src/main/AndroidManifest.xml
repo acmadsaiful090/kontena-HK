@@ -1,10 +1,8 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="id.thunderlab.jchousekeeping">
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.INTERNET" />
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="id.thunderlab.kontenahktest">
+    <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="JCHouseKeeping"
+        android:label="Kontena HK Test"
         android:name="${applicationName}"
         android:icon="@mipmap/logo">
         <activity

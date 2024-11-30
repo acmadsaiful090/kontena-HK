@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jc_housekeeping/app_state.dart';
+import 'package:kontena_hk/app_state.dart';
 
 class LoginRequest {
   final String username;
@@ -23,7 +22,7 @@ class LoginRequest {
 }
 
 Future<Map<String, dynamic>> login(LoginRequest requestBody) async {
-  final uri = Uri.parse('https://erp2.hotelkontena.com/api/method/login');
+  final uri = Uri.parse('${AppState().domain}/api/method/login');
   final response = await http.post(
     uri,
     headers: requestBody.headers,
@@ -35,19 +34,24 @@ Future<Map<String, dynamic>> login(LoginRequest requestBody) async {
     if (responseBody['message'] == 'Logged In') {
       final setCookie = response.headers['set-cookie'];
       if (setCookie != null) {
-        AppState().cookieData = setCookie;
-        // await _saveCookie(setCookie);
+        AppState().update(() {
+          AppState().cookieData = setCookie;
+        });
       }
       return responseBody;
     } else {
       throw Exception(responseBody['message'] ?? 'Unknown error');
     }
   } else {
-    throw Exception('Error: ${response.statusCode} - ${response.reasonPhrase}');
+    final responseBody = json.decode(response.body);
+    dynamic message;
+    if (responseBody.containsKey('exception')) {
+      message = responseBody['exception'];
+    } else if (responseBody.containsKey('message')) {
+      message = responseBody['message'];
+    } else {
+      message = responseBody;
+    }
+    throw Exception(message);
   }
-}
-
-Future<void> _saveCookie(String cookie) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.setString('session_cookie', cookie);
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jc_housekeeping/app_state.dart';
-import 'package:jc_housekeeping/utils/theme.helper.dart';
+import 'package:kontena_hk/app_state.dart';
+import 'package:kontena_hk/utils/theme.helper.dart';
 
 Color getColorForLabel(String status) {
   switch (status) {

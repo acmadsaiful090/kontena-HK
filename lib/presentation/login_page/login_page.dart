@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:jc_housekeeping/app_state.dart';
-import 'package:jc_housekeeping/routes/app_routes.dart';
-import 'package:jc_housekeeping/utils/custom_button_style.dart';
-import 'package:jc_housekeeping/widget/alert.dart';
-import 'package:jc_housekeeping/widget/custom_outlined_button.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:jc_housekeeping/utils/theme.helper.dart';
-import 'package:jc_housekeeping/api/auth.dart' as auth;
-import 'package:jc_housekeeping/api/user.dart' as user;
-import 'package:jc_housekeeping/api/Employee_api.dart' as employee;
-import 'package:jc_housekeeping/api/room_status.dart' as roomStatus;
+import 'package:kontena_hk/app_state.dart';
+import 'package:kontena_hk/routes/app_routes.dart';
+import 'package:kontena_hk/utils/custom_button_style.dart';
+import 'package:kontena_hk/widget/alert.dart';
+import 'package:kontena_hk/widget/custom_outlined_button.dart';
+import 'package:kontena_hk/utils/theme.helper.dart';
+import 'package:kontena_hk/api/auth.dart' as auth;
+import 'package:kontena_hk/api/user.dart' as user;
+import 'package:kontena_hk/api/Employee_api.dart' as employee;
+import 'package:kontena_hk/api/room_status.dart' as room_status;
+import 'package:kontena_hk/api/company_api.dart' as company;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -19,8 +19,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _phoneController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  final unfocusNode = FocusNode();
 
   dynamic dataUser;
   dynamic dataEmployee;
@@ -30,12 +32,41 @@ class _LoginPageState extends State<LoginPage> {
 
   String _errorMessage = '';
 
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => setState(
+        () {
+          _phoneController.text = '';
+          _passwordController.text = '';
+        },
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   Future<void> _handleLogin() async {
-    final username = _phoneController.text;
-    final password = _passwordController.text;
+    final username = _phoneController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (username.isEmpty || password.isEmpty) {
+      setState(() {
+        _errorMessage = 'Username and password cannot be empty';
+      });
+      return;
+    }
 
     setState(() {
       isLoading = true;
+      _errorMessage = '';
     });
 
     final loginRequest =
@@ -46,53 +77,52 @@ class _LoginPageState extends State<LoginPage> {
       if (response['message'] == 'Logged In') {
         final user.UserDetailRequest requestUser = user.UserDetailRequest(
           cookie: AppState().cookieData,
-          id: _phoneController.text,
+          id: username,
         );
-
         final callUser = await user.requestuser(requestQuery: requestUser);
-
         final employee.EmployeeDetailRequest requestEmployee =
             employee.EmployeeDetailRequest(
           cookie: AppState().cookieData,
           fields: '["name"]',
-          filters: '[["user_id","=","${_phoneController.text}"]]',
+          filters: '[["user_id","=","$username"]]',
         );
-
         final callEmployee =
             await employee.requestEmployee(requestQuery: requestEmployee);
-
-        isLoading = false;
-
-        await onCallRoomStatus();
-
-        if ((callUser.containsKey('name')) && (callEmployee.isNotEmpty)) {
+        // await onCallRoomStatus();
+        // await onCallCompany();
+        if (callUser.containsKey('name') && callEmployee.isNotEmpty) {
           setState(() {
             dataUser = callUser;
-            if (callEmployee.isNotEmpty && callEmployee.length == 1) {
-              dataEmployee = callEmployee[0];
-            }
+            dataEmployee = callEmployee.length == 1 ? callEmployee[0] : null;
             AppState().dataUser = {
               'user': dataUser,
               'employee': dataEmployee,
             };
           });
-
           if (mounted) {
-            // Navigator.pushReplacementNamed(context, '/home');
             Navigator.of(context).pushNamedAndRemoveUntil(
               AppRoutes.home,
               (route) => false,
             );
+          }
+        } else {
+          setState(() {
+            isLoading = false;
+            _errorMessage = 'User  data not found';
+          });
+          if (mounted) {
+            alertError(context, 'User  data not found');
           }
         }
       } else {
         setState(() {
           isLoading = false;
           _errorMessage = 'Invalid username or password';
+          isLoading = false;
         });
-
         if (mounted) {
-          alertError(context, 'Sepertinya akun atau passwordmu salah');
+          isLoading = false;
+          alertError(context, 'Invalid username or password');
         }
       }
     } catch (e) {
@@ -100,21 +130,45 @@ class _LoginPageState extends State<LoginPage> {
         isLoading = false;
         _errorMessage = 'Invalid username or password';
       });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  dynamic onCallCompany() async {
+    try {
+      final companyRequest = company.CompanyRequest(
+        cookie: AppState().cookieData,
+        fields: '["name"]',
+        limit: 50,
+      );
+
+      // onCallRoomStatus() async {
+      final response =
+          await company.requestCompany(requestQuery: companyRequest);
+
+      if (response.isNotEmpty) {
+        setState(() {
+          AppState().companylist = response;
+        });
+      }
+    } catch (error) {
       if (mounted) {
-        alertError(context, e.toString());
+        isLoading = false;
+        alertError(context, error.toString());
       }
     }
   }
 
-  onCallRoomStatus() async {
-    final roomStatus.RoomStatus requestCall = roomStatus.RoomStatus(
+  dynamic onCallRoomStatus() async {
+    final room_status.RoomStatus requestCall = room_status.RoomStatus(
       cookie: AppState().cookieData,
       fields: '["name","status_name"]',
     );
-
     try {
-      final request = await roomStatus.request(requestQuery: requestCall);
-
+      final request = await room_status.request(requestQuery: requestCall);
       if (request.isNotEmpty) {
         setState(() {
           AppState().roomStatus = request;
@@ -122,209 +176,198 @@ class _LoginPageState extends State<LoginPage> {
       }
     } catch (error) {
       print('error, ${error.toString()}');
-
       if (mounted) {
+        isLoading = false;
         alertError(context, error.toString());
       }
     }
   }
 
   @override
-  void dispose() {
-    _phoneController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Align(
-              alignment: Alignment.topRight,
-              child: Image.asset(
-                'assets/image/logo_housekeeping.png',
-                height: 200,
-                width: 200,
-              ),
-            ),
-            // Align(
-            //   alignment: Alignment.centerRight,
-            //   child: Text(
-            //     'House Keeping',
-            //     style: TextStyle(
-            //       fontSize: 10,
-            //       fontWeight: FontWeight.normal,
-            //       fontFamily: 'OpenSans',
-            //     ),
-            //     textAlign: TextAlign.left,
-            //   ),
-            // ),
-            SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(32.0),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer,
-                borderRadius: BorderRadius.circular(8),
-              ),
+    return GestureDetector(
+      onTap: () => unfocusNode.canRequestFocus
+          ? FocusScope.of(context).requestFocus(unfocusNode)
+          : FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        body: Center(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Padding(
+              padding:
+                  const EdgeInsetsDirectional.fromSTEB(0.0, 80.0, 0.0, 20.0),
               child: Column(
-                children: <Widget>[
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
                   Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Login',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'OpenSans',
-                      ),
-                      textAlign: TextAlign.left,
+                    alignment: Alignment.topRight,
+                    child: Image.asset(
+                      'assets/image/kontena-hk.png',
+                      height: 200,
+                      width: 200,
                     ),
                   ),
-                  SizedBox(height: 4),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Masukkan Username dan Password anda',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.normal,
-                        fontFamily: 'OpenSans',
-                      ),
-                      textAlign: TextAlign.left,
+                  SizedBox(height: 20),
+                  Container(
+                    padding: const EdgeInsets.all(32.0),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  ),
-                  SizedBox(height: 16),
-                  TextField(
-                    controller: _phoneController,
-                    decoration: InputDecoration(
-                      labelText: 'Enter email/username',
-                      labelStyle: TextStyle(
-                        fontFamily: 'OpenSans',
-                        color: theme.colorScheme.onPrimaryContainer,
-                      ),
-                      errorText: _errorMessage.isEmpty ? null : _errorMessage,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: theme.colorScheme.outline,
+                    child: Column(
+                      children: <Widget>[
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Login',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'OpenSans',
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
                         ),
-                      ),
-                    ),
-                    // keyboardType: TextInputType.,
-                  ),
-                  SizedBox(height: 10),
-                  TextField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                      labelText: 'Enter password',
-                      labelStyle: TextStyle(
-                        fontFamily: 'OpenSans',
-                        color: theme.colorScheme.onPrimaryContainer,
-                      ),
-                      errorText: _errorMessage.isEmpty ? null : _errorMessage,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: theme.colorScheme.outline,
+                        SizedBox(height: 4),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Masukkan Username dan Password anda',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.normal,
+                              fontFamily: 'OpenSans',
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
                         ),
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _isPasswordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _isPasswordVisible = !_isPasswordVisible;
-                          });
-                        },
-                      ),
-                    ),
-                    obscureText: !_isPasswordVisible,
-                  ),
-                  SizedBox(height: 40),
-                  if (isLoading)
-                    Container(
-                      width: double.infinity,
-                      height: 60.0,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsetsDirectional.fromSTEB(
-                            8.0, 0.0, 8.0, 0.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Center(
-                              child: SizedBox(
-                                width: 23,
-                                height: 23,
-                                child: const CircularProgressIndicator(
-                                  valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.white,
-                                  ),
-                                ),
+                        SizedBox(height: 16),
+                        TextField(
+                          controller: _phoneController,
+                          decoration: InputDecoration(
+                            labelText: 'Enter email/username',
+                            labelStyle: TextStyle(
+                              fontFamily: 'OpenSans',
+                              color: theme.colorScheme.onPrimaryContainer,
+                            ),
+                            errorText:
+                                _errorMessage.isEmpty ? null : _errorMessage,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: theme.colorScheme.outline,
                               ),
                             ),
-                            Padding(
+                          ),
+                          // keyboardType: TextInputType.,
+                        ),
+                        SizedBox(height: 10),
+                        TextField(
+                          controller: _passwordController,
+                          decoration: InputDecoration(
+                            labelText: 'Enter password',
+                            labelStyle: TextStyle(
+                              fontFamily: 'OpenSans',
+                              color: theme.colorScheme.onPrimaryContainer,
+                            ),
+                            errorText:
+                                _errorMessage.isEmpty ? null : _errorMessage,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide(
+                                color: theme.colorScheme.outline,
+                              ),
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
+                            ),
+                          ),
+                          obscureText: !_isPasswordVisible,
+                        ),
+                        SizedBox(height: 40),
+                        if (isLoading)
+                          Container(
+                            width: double.infinity,
+                            height: 60.0,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary,
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                            child: Padding(
                               padding: const EdgeInsetsDirectional.fromSTEB(
-                                  10.0, 0.0, 8.0, 0.0),
-                              child: Text(
-                                'Loading...',
-                                style: TextStyle(
-                                    color: theme.colorScheme.primaryContainer),
+                                  8.0, 0.0, 8.0, 0.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Center(
+                                    child: SizedBox(
+                                      width: 23,
+                                      height: 23,
+                                      child: const CircularProgressIndicator(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                          Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding:
+                                        const EdgeInsetsDirectional.fromSTEB(
+                                            10.0, 0.0, 8.0, 0.0),
+                                    child: Text(
+                                      'Loading...',
+                                      style: TextStyle(
+                                          color: theme
+                                              .colorScheme.primaryContainer),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        if (isLoading == false)
+                          CustomOutlinedButton(
+                            height: 60.0,
+                            text: "LOG IN",
+                            isDisabled: false,
+                            buttonTextStyle: TextStyle(
+                              color: theme.colorScheme.primaryContainer,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            buttonStyle: CustomButtonStyles.primary,
+                            onPressed: _handleLogin,
+                          ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                        8.0, 80.0, 8.0, 0.0),
+                    child: Text(
+                      'HK - Version ${AppState().version} ${(AppState().domain.contains('erp2')) ? ' - Testing' : ''}',
+                      style: TextStyle(
+                        color: theme.colorScheme.onPrimaryContainer,
                       ),
                     ),
-                  if (isLoading == false)
-                    CustomOutlinedButton(
-                      height: 60.0,
-                      text: "LOG IN",
-                      isDisabled: false,
-                      buttonTextStyle: TextStyle(
-                        color: theme.colorScheme.primaryContainer,
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      buttonStyle: CustomButtonStyles.primary,
-                      onPressed: _handleLogin,
-                    ),
-                  // SizedBox(
-                  //   width: double.infinity,
-                  //   child: ElevatedButton(
-                  //     style: ElevatedButton.styleFrom(
-                  //       backgroundColor: theme.colorScheme.primary,
-                  //       shape: RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(4),
-                  //       ),
-                  //     ),
-                  //     onPressed: _handleLogin,
-                  //     child: Text(
-                  //       'LOG IN',
-                  //       style: TextStyle(
-                  //         fontFamily: 'OpenSans',
-                  //         color: Colors.white,
-                  //         fontSize: 14,
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
+                  ),
                 ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );

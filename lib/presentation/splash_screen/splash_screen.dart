@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jc_housekeeping/routes/app_routes.dart';
+import 'package:kontena_hk/routes/app_routes.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreenPage extends StatefulWidget {

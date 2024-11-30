@@ -1,7 +1,7 @@
-name: jc_housekeeping
-description: "A new Flutter project."
+name: kontena_hk
+description: "Application House Keeping for Kontena Hotel managed by JC Coorporate"
 publish_to: 'none'
-version: 1.0.1
+version: 1.1.2
 
 environment:
   sdk: '>=3.3.0 <4.0.0'

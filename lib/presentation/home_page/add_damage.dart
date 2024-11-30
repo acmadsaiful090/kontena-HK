@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:jc_housekeeping/app_state.dart';
-import 'package:jc_housekeeping/utils/datetime.dart';
-import 'package:jc_housekeeping/utils/theme.helper.dart';
-import 'package:jc_housekeeping/api/create_room_inspect.dart'
-    as createRoomInspect;
-import 'package:jc_housekeeping/widget/alert.dart';
+import 'package:kontena_hk/app_state.dart';
+import 'package:kontena_hk/utils/theme.helper.dart';
+import 'package:kontena_hk/api/create_room_inspect.dart' as create_room_inspect;
+import 'package:kontena_hk/widget/alert.dart';
 
 class CreateDamageWidget extends StatefulWidget {
   final dynamic room;
   final VoidCallback? onComplete;
 
-  CreateDamageWidget({Key? key, this.room, this.onComplete,}) : super(key: key);
+  const CreateDamageWidget({
+    super.key,
+    this.room,
+    this.onComplete,
+  });
 
   @override
   _CreateDamageWidgetState createState() => _CreateDamageWidgetState();
@@ -140,23 +142,21 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Type ',
-                                      style: TextStyle(
-                                        color: theme.colorScheme.secondary,
-                                      ),
+                                Row(children: [
+                                  Text(
+                                    'Type ',
+                                    style: TextStyle(
+                                      color: theme.colorScheme.secondary,
                                     ),
-                                    Text(
-                                      '*',
-                                      style: TextStyle(
-                                        color: theme.colorScheme.error,
-                                        fontSize: 12.0,
-                                      ),
+                                  ),
+                                  Text(
+                                    '*',
+                                    style: TextStyle(
+                                      color: theme.colorScheme.error,
+                                      fontSize: 12.0,
                                     ),
-                                  ]
-                                ),
+                                  ),
+                                ]),
                                 const SizedBox(height: 6.0),
                                 Container(
                                   // width: 280.0,
@@ -206,23 +206,21 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Date ',
-                                      style: TextStyle(
-                                        color: theme.colorScheme.secondary,
-                                      ),
+                                Row(children: [
+                                  Text(
+                                    'Date ',
+                                    style: TextStyle(
+                                      color: theme.colorScheme.secondary,
                                     ),
-                                    Text(
-                                      '*',
-                                      style: TextStyle(
-                                        color: theme.colorScheme.error,
-                                        fontSize: 12.0,
-                                      ),
+                                  ),
+                                  Text(
+                                    '*',
+                                    style: TextStyle(
+                                      color: theme.colorScheme.error,
+                                      fontSize: 12.0,
                                     ),
-                                  ]
-                                ),
+                                  ),
+                                ]),
                                 const SizedBox(height: 6.0),
                                 Container(
                                   // width: 280.0,
@@ -264,7 +262,8 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
                                       if (pickedDate != null) {
                                         // Format and set the selected date
                                         setState(() {
-                                          datePick = "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+                                          datePick =
+                                              "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
                                           date.text =
                                               "${pickedDate.day.toString().padLeft(2, '0')}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.year}";
                                         });
@@ -282,24 +281,21 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Room ',
-                                      style: TextStyle(
-                                        color: theme.colorScheme.secondary,
-                                      ),
+                                Row(children: [
+                                  Text(
+                                    'Room ',
+                                    style: TextStyle(
+                                      color: theme.colorScheme.secondary,
                                     ),
-                                    Text(
-                                      '*',
-                                      style: TextStyle(
-                                        color: theme.colorScheme.error,
-                                        fontSize: 12.0,
-                                      ),
+                                  ),
+                                  Text(
+                                    '*',
+                                    style: TextStyle(
+                                      color: theme.colorScheme.error,
+                                      fontSize: 12.0,
                                     ),
-                                  ]
-                                ),
-                                
+                                  ),
+                                ]),
                                 const SizedBox(height: 6.0),
                                 Container(
                                   // width: 280.0,
@@ -340,23 +336,21 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Row(
-                                  children: [
-                                    Text(
-                                      'Current Status ',
-                                      style: TextStyle(
-                                        color: theme.colorScheme.secondary,
-                                      ),
+                                Row(children: [
+                                  Text(
+                                    'Current Status ',
+                                    style: TextStyle(
+                                      color: theme.colorScheme.secondary,
                                     ),
-                                    Text(
-                                      '*',
-                                      style: TextStyle(
-                                        color: theme.colorScheme.error,
-                                        fontSize: 12.0,
-                                      ),
+                                  ),
+                                  Text(
+                                    '*',
+                                    style: TextStyle(
+                                      color: theme.colorScheme.error,
+                                      fontSize: 12.0,
                                     ),
-                                  ]
-                                ),
+                                  ),
+                                ]),
                                 const SizedBox(height: 6.0),
                                 Container(
                                   // width: 280.0,
@@ -464,7 +458,7 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
                       color: theme.colorScheme.outline,
                     ),
                     //  Expanded(
-                    //     child: 
+                    //     child:
                     if (isLoading == false)
                       Padding(
                         padding: const EdgeInsetsDirectional.fromSTEB(
@@ -486,18 +480,15 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
                               color: theme.colorScheme.primary,
                               borderRadius: BorderRadius.circular(2.0),
                             ),
-                            alignment:
-                                const AlignmentDirectional(0.00, 0.00),
+                            alignment: const AlignmentDirectional(0.00, 0.00),
                             child: Padding(
-                              padding:
-                                  const EdgeInsetsDirectional.fromSTEB(
-                                      4.0, 4.0, 4.0, 4.0),
+                              padding: const EdgeInsetsDirectional.fromSTEB(
+                                  4.0, 4.0, 4.0, 4.0),
                               child: Text(
                                 'Submit',
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color:
-                                      theme.colorScheme.primaryContainer,
+                                  color: theme.colorScheme.primaryContainer,
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -511,50 +502,46 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
                         padding: const EdgeInsetsDirectional.fromSTEB(
                             8.0, 8.0, 8.0, 8.0),
                         child: Container(
-                        width: double.infinity,
-                        height: 60.0,
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primary,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Padding(
-                          padding:
-                              const EdgeInsetsDirectional.fromSTEB(
-                                  8.0, 0.0, 8.0, 0.0),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment:
-                                MainAxisAlignment.center,
-                            children: [
-                              Center(
-                                child: SizedBox(
-                                  width: 23,
-                                  height: 23,
-                                  child:
-                                      const CircularProgressIndicator(
-                                    valueColor:
-                                        AlwaysStoppedAnimation<Color>(
-                                      Colors.white,
+                          width: double.infinity,
+                          height: 60.0,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary,
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsetsDirectional.fromSTEB(
+                                8.0, 0.0, 8.0, 0.0),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Center(
+                                  child: SizedBox(
+                                    width: 23,
+                                    height: 23,
+                                    child: const CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsetsDirectional
-                                    .fromSTEB(10.0, 0.0, 8.0, 0.0),
-                                child: Text(
-                                  'Loading...',
-                                  style: TextStyle(
-                                      color: theme.colorScheme
-                                          .primaryContainer),
+                                Padding(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
+                                      10.0, 0.0, 8.0, 0.0),
+                                  child: Text(
+                                    'Loading...',
+                                    style: TextStyle(
+                                        color:
+                                            theme.colorScheme.primaryContainer),
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                      ),
-                      // ),
+                    // ),
                   ],
                 ),
               ),
@@ -566,11 +553,11 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
   }
 
   onTapSubmit() async {
-    setState((){
+    setState(() {
       isLoading = true;
     });
     await onCallCreateRoomInspect();
-    setState((){
+    setState(() {
       isLoading = false;
     });
   }
@@ -584,10 +571,8 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
       'until': datePick2,
     });
 
-    
-    print('check date, ${date.text}');
-    print('check date, ${dateTimeFormat('date', datePick)}');
-    final createRoomInspect.CreateRoomInspect request = createRoomInspect.CreateRoomInspect(
+    final create_room_inspect.CreateRoomInspect request =
+        create_room_inspect.CreateRoomInspect(
       cookie: AppState().cookieData,
       purpose: 'Damage',
       date: datePick,
@@ -595,8 +580,8 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
     );
 
     try {
-      print('check, ${request}');
-      final callRequest = await createRoomInspect.request(requestQuery: request);
+      final callRequest =
+          await create_room_inspect.request(requestQuery: request);
       if (callRequest.isNotEmpty) {
         if (mounted) {
           alertSuccess(context, 'Success, create room to maintence');

@@ -21,6 +21,56 @@ class AppState extends ChangeNotifier {
   Future<void> initializeState() async {
     prefs = await SharedPreferences.getInstance();
 
+    _safeInit(() {
+      if (prefs.containsKey('ff_cookieData')) {
+        try {
+          _cookieData = prefs.getString('ff_cookieData') ?? '';
+        } catch (e) {
+          print("Can't decode persisted json. Error: $e.");
+        }
+      }
+    });
+
+    _safeInit(() {
+      if (prefs.containsKey('ff_company_selected')) {
+        try {
+          _company = jsonDecode(prefs.getString('ff_company_selected') ?? '');
+        } catch (e) {
+          print("Can't decode persisted json. Error: $e.");
+        }
+      }
+    });
+
+    _safeInit(() {
+      if (prefs.containsKey('ff_user')) {
+        try {
+          _dataUser = jsonDecode(prefs.getString('ff_user') ?? '');
+        } catch (e) {
+          print("Can't decode persisted json. Error: $e.");
+        }
+      }
+    });
+
+    _safeInit(() {
+      if (prefs.containsKey('ff_room_list')) {
+        try {
+          _roomList = jsonDecode(prefs.getString('ff_room_list') ?? '');
+        } catch (e) {
+          print("Can't decode persisted json. Error: $e.");
+        }
+      }
+    });
+
+    _safeInit(() {
+      if (prefs.containsKey('ff_room_status')) {
+        try {
+          _roomStatus = jsonDecode(prefs.getString('ff_room_status') ?? '');
+        } catch (e) {
+          print("Can't decode persisted json. Error: $e.");
+        }
+      }
+    });
+
     notifyListeners();
   }
 
@@ -32,22 +82,31 @@ class AppState extends ChangeNotifier {
   // String _domain = 'https://erp.hotelkontena.com';
   String _domain = 'https://erp2.hotelkontena.com';
   String get domain => _domain;
-  set domain(String _value) {
-    _domain = _value;
-    prefs.setString('ff_domain', _value);
+  set domain(String value) {
+    _domain = value;
+    prefs.setString('ff_domain', value);
   }
 
-  String _version = '1.0.1';
+  String _company = '';
+  String get company => _company;
+  set company(String value) {
+    _company = value;
+    prefs.setString('ff_company_selected', value);
+  }
+
+  String _version = '1.1.2';
   String get version => _version;
-  set version(String _value) {
-    _version = _value;
-    prefs.setString('ff_version', _value);
+  set version(String value) {
+    _version = value;
+    prefs.setString('ff_version', value);
   }
 
   String _cookieData = '';
   String get cookieData => _cookieData;
   set cookieData(String value) {
     _cookieData = value;
+    prefs.setString('ff_cookieData', value);
+    notifyListeners();
   }
 
   Map<String, dynamic> _dataUser = {};
@@ -55,6 +114,14 @@ class AppState extends ChangeNotifier {
   set dataUser(Map<String, dynamic> value) {
     _dataUser = value;
     prefs.setString('ff_user', jsonEncode(value));
+    notifyListeners();
+  }
+
+  List<dynamic> _companylist = [];
+  List<dynamic> get companylist => _companylist;
+  set companylist(List<dynamic> value) {
+    _companylist = value;
+    prefs.setString('ff_company', jsonEncode(value));
     notifyListeners();
   }
 

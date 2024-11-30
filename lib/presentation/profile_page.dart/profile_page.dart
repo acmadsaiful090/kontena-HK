@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:jc_housekeeping/app_state.dart';
-import 'package:jc_housekeeping/routes/app_routes.dart';
-import 'package:jc_housekeeping/utils/custom_button_style.dart';
-import 'package:jc_housekeeping/utils/theme.helper.dart';
-import 'package:jc_housekeeping/widget/custom_outlined_button.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:kontena_hk/app_state.dart';
+import 'package:kontena_hk/routes/app_routes.dart';
+import 'package:kontena_hk/utils/custom_button_style.dart';
+import 'package:kontena_hk/utils/theme.helper.dart';
+import 'package:kontena_hk/widget/custom_outlined_button.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -24,7 +22,6 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> fetchUserData() async {
-    // final appState = Provider.of<AppState>(context, listen: false);
     String username = AppState().dataUser['user']['full_name'] ?? '';
     String phone = AppState().dataUser['user']['name'] ?? '';
 
@@ -35,8 +32,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   onLogout() async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState((){
+    setState(() {
       AppState().dataUser = {};
       AppState().cookieData = '';
     });
@@ -78,6 +74,14 @@ class _ProfilePageState extends State<ProfilePage> {
               Text(
                 phone,
                 style: TextStyle(
+                  fontSize: 18,
+                  color: theme.colorScheme.secondary,
+                ),
+              ),
+              Text(
+                AppState().company,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
                   fontSize: 18,
                   color: theme.colorScheme.secondary,
                 ),
