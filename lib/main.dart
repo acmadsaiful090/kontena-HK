@@ -37,13 +37,9 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<String> _checkStoredUser() async {
-    print('check user, ${AppState().cookieData != ''}');
-    print('check user, ${AppState().dataUser}');
     if (AppState().cookieData != '') {
-      print(1);
       return AppRoutes.home;
     }
-    print(2);
     // Adjust based on actual implementation
     // For now, we return the login screen as the initial route
     return AppRoutes.login;
