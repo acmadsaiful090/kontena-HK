@@ -33,7 +33,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _initialRouteFuture = _checkStoredUser();
-    print('check initial route, ${_initialRouteFuture}');
   }
 
   Future<String> _checkStoredUser() async {

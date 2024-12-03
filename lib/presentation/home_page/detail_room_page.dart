@@ -172,7 +172,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
-                                        getStatus(dataRoom['room_status']),
+                                        dataRoom['room_status'],
                                         style: TextStyle(
                                           fontSize: 20,
                                           color: getColorForLabel(
