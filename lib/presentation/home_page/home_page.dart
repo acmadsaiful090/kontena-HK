@@ -106,6 +106,8 @@ class _HomePageState extends State<HomePage> {
 }
 
 class HomeContent extends StatefulWidget {
+  static final GlobalKey<_HomeContentState> homeKey = GlobalKey<_HomeContentState>();
+
   const HomeContent({super.key});
 
   @override
@@ -222,6 +224,7 @@ class _HomeContentState extends State<HomeContent> {
   Future<void> fetchItems() async {
     setState(() {
       isLoading = true;
+      print('fetching data...');
     });
 
     try {
@@ -299,11 +302,6 @@ class _HomeContentState extends State<HomeContent> {
   void _clearSearch() {
     _searchController.clear();
   }
-
-  // String getRandomStatus() {
-  //   List<String> status = ['OC', 'OD', 'VD', 'VC', 'VR'];
-  //   return status[random.nextInt(5)];
-  // }
 
   List<dynamic> roomList(List<dynamic> room, String search, String filter) {
     return room
