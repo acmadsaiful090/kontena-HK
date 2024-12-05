@@ -106,7 +106,8 @@ class _HomePageState extends State<HomePage> {
 }
 
 class HomeContent extends StatefulWidget {
-  static final GlobalKey<_HomeContentState> homeKey = GlobalKey<_HomeContentState>();
+  static final GlobalKey<_HomeContentState> homeKey =
+      GlobalKey<_HomeContentState>();
 
   const HomeContent({super.key});
 
@@ -371,7 +372,22 @@ class _HomeContentState extends State<HomeContent> {
                           itemCount: room.length,
                           itemBuilder: (context, index) {
                             final roomItem = room[index];
-                            // final dataRm = room[index];
+                            DateTime parse;
+                            bool isCheckNow = false;
+                            print(1);
+                            if (room[index]['status'] == 'OD' &&
+                                room[index].containsKey('registration_start')) {
+                              print(2);
+                              print(
+                                  'room status, ${roomItem['registration_start']}');
+                              parse = DateTime.parse(
+                                  roomItem['registration_start']);
+                              print('parse, $parse');
+                              isCheckNow =
+                                  DateUtils.isSameDay(parse, DateTime.now());
+                              print('check now, $isCheckNow');
+                            }
+
                             return Column(
                               children: [
                                 Container(
@@ -394,12 +410,24 @@ class _HomeContentState extends State<HomeContent> {
                                   ),
                                   child: ListTile(
                                     contentPadding: const EdgeInsets.all(16),
-                                    title: Text(
-                                      '${roomItem['room_name']}',
-                                      textAlign: TextAlign.left,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20),
+                                    title: Row(
+                                      children: [
+                                        Text(
+                                          '${roomItem['room_name']}',
+                                          textAlign: TextAlign.left,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20),
+                                        ),
+                                        if (isCheckNow)
+                                          Text(
+                                            'Check-In Today',
+                                            textAlign: TextAlign.left,
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20),
+                                          ),
+                                      ],
                                     ),
                                     subtitle: Column(
                                       mainAxisAlignment:
