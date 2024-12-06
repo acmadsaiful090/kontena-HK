@@ -232,13 +232,14 @@ class _HomeContentState extends State<HomeContent> {
       final request = RoomRequest(
         cookie: AppState().cookieData,
         fields: '["*"]',
-        orderBy: 'room_type asc',
+        orderBy: 'room_name asc',
         limit: 200,
       );
       final response = await requestItem(requestQuery: request);
       setState(() {
         AppState().roomList = response;
         items = response.map((roomData) {
+          // print('check room data, $roomData');
           return {
             'name': roomData['name']?.toString() ?? '',
             'room_name': roomData['room_name']?.toString() ?? '',
@@ -247,6 +248,7 @@ class _HomeContentState extends State<HomeContent> {
             'can_clean': roomData['can_clean'] ?? 0,
             'can_check': roomData['can_check'] ?? 0,
             'is_damaged': roomData['is_damaged'] ?? 0,
+            'registration_start': roomData['registration_start'] ?? '',
           };
         }).toList();
         filteredItems = items;
@@ -374,18 +376,21 @@ class _HomeContentState extends State<HomeContent> {
                             final roomItem = room[index];
                             DateTime parse;
                             bool isCheckNow = false;
-                            print(1);
-                            if (room[index]['status'] == 'OD' &&
-                                room[index].containsKey('registration_start')) {
-                              print(2);
-                              print(
-                                  'room status, ${roomItem['registration_start']}');
+                            // print(1);
+                            // print('check ${room[index]['status']}');
+                            // print('check ${room[index]['room_name']}');
+                            // print('check ${room[index]['registration_start']}');
+                            if ((room[index]['status'] == 'OD') &&
+                                (room[index]['registration_start'] != '')) {
+                              // print(2);
+                              // print(
+                              //     'room status, ${roomItem['registration_start']}');
                               parse = DateTime.parse(
                                   roomItem['registration_start']);
-                              print('parse, $parse');
+                              // print('parse, $parse');
                               isCheckNow =
                                   DateUtils.isSameDay(parse, DateTime.now());
-                              print('check now, $isCheckNow');
+                              // print('check now, $isCheckNow');
                             }
 
                             return Column(
@@ -419,14 +424,7 @@ class _HomeContentState extends State<HomeContent> {
                                               fontWeight: FontWeight.bold,
                                               fontSize: 20),
                                         ),
-                                        if (isCheckNow)
-                                          Text(
-                                            'Check-In Today',
-                                            textAlign: TextAlign.left,
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20),
-                                          ),
+                                        
                                       ],
                                     ),
                                     subtitle: Column(
@@ -442,6 +440,16 @@ class _HomeContentState extends State<HomeContent> {
                                           ),
                                           textAlign: TextAlign.left,
                                         ),
+                                        if (roomItem['registration_start'] != '')
+                                          Text(
+                                            'CI Date ${dateTimeFormat('dateui', roomItem['registration_start'])}',
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(
+                                                color: isCheckNow ? theme.colorScheme.primary : theme.colorScheme.onPrimaryContainer,
+                                                fontWeight: FontWeight.w800,
+                                                fontSize: 18,
+                                              ),
+                                          ),
                                         // Text(
                                         //   filteredItems[index]['name'] !=
                                         //           null // Change this as per your data

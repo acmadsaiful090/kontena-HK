@@ -130,326 +130,331 @@ class _CreateDamageWidgetState extends State<CreateDamageWidget> {
                     Expanded(
                       // width: double.infinity,
                       // height: 48.0,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                16.0, 6.0, 16.0, 6.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(children: [
-                                  Text(
-                                    'Type ',
-                                    style: TextStyle(
-                                      color: theme.colorScheme.secondary,
+                      child: SizedBox(
+                        height: double.infinity,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(
+                                    16.0, 6.0, 16.0, 6.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(children: [
+                                      Text(
+                                        'Type ',
+                                        style: TextStyle(
+                                          color: theme.colorScheme.secondary,
+                                        ),
+                                      ),
+                                      Text(
+                                        '*',
+                                        style: TextStyle(
+                                          color: theme.colorScheme.error,
+                                          fontSize: 12.0,
+                                        ),
+                                      ),
+                                    ]),
+                                    const SizedBox(height: 6.0),
+                                    Container(
+                                      // width: 280.0,
+                                      height: 51.0,
+                                      decoration: BoxDecoration(
+                                        color: theme.colorScheme.primaryContainer,
+                                        border: Border.all(
+                                          color: theme.colorScheme.outline,
+                                          width: 2.0,
+                                        ),
+                                        borderRadius: BorderRadius.circular(4.0),
+                                      ),
+                                      child: DropdownButtonHideUnderline(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: DropdownButton<String>(
+                                            isExpanded: true,
+                                            hint: const Text("Select an Option"),
+                                            value: selectedType,
+                                            items: typeDamage.map((dynamic data) {
+                                              return DropdownMenuItem<String>(
+                                                value: data['value'],
+                                                child: Text(
+                                                  "${data['value']} - ${data['text']}",
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.normal,
+                                                  ),
+                                                ),
+                                              );
+                                            }).toList(),
+                                            onChanged: (String? newValue) {
+                                              setState(() {
+                                                selectedType = newValue!;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    '*',
-                                    style: TextStyle(
-                                      color: theme.colorScheme.error,
-                                      fontSize: 12.0,
-                                    ),
-                                  ),
-                                ]),
-                                const SizedBox(height: 6.0),
-                                Container(
-                                  // width: 280.0,
-                                  height: 51.0,
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.primaryContainer,
-                                    border: Border.all(
-                                      color: theme.colorScheme.outline,
-                                      width: 2.0,
-                                    ),
-                                    borderRadius: BorderRadius.circular(4.0),
-                                  ),
-                                  child: DropdownButtonHideUnderline(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: DropdownButton<String>(
-                                        isExpanded: true,
-                                        hint: const Text("Select an Option"),
-                                        value: selectedType,
-                                        items: typeDamage.map((dynamic data) {
-                                          return DropdownMenuItem<String>(
-                                            value: data['value'],
-                                            child: Text(
-                                              "${data['value']} - ${data['text']}",
-                                              style: const TextStyle(
-                                                fontWeight: FontWeight.normal,
-                                              ),
-                                            ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(
+                                    16.0, 6.0, 16.0, 6.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(children: [
+                                      Text(
+                                        'Date ',
+                                        style: TextStyle(
+                                          color: theme.colorScheme.secondary,
+                                        ),
+                                      ),
+                                      Text(
+                                        '*',
+                                        style: TextStyle(
+                                          color: theme.colorScheme.error,
+                                          fontSize: 12.0,
+                                        ),
+                                      ),
+                                    ]),
+                                    const SizedBox(height: 6.0),
+                                    Container(
+                                      // width: 280.0,
+                                      height: 51.0,
+                                      decoration: BoxDecoration(
+                                        color: theme.colorScheme.primaryContainer,
+                                        border: Border.all(
+                                          color: theme.colorScheme.outline,
+                                          width: 2.0,
+                                        ),
+                                        borderRadius: BorderRadius.circular(4.0),
+                                      ),
+                                      child: TextField(
+                                        controller: date,
+                                        decoration: InputDecoration(
+                                          hintText: 'Pick a Date',
+                                          hintStyle: TextStyle(
+                                            color: theme
+                                                .colorScheme.onPrimaryContainer,
+                                            fontSize: 14.0,
+                                          ),
+                                          // filled: true,
+                                          // fillColor: Colors.white,
+                                          border: InputBorder.none,
+                                          contentPadding:
+                                              const EdgeInsets.all(12.0),
+                                        ),
+                                        readOnly: true,
+                                        onTap: () async {
+                                          // Open date picker
+                                          DateTime? pickedDate =
+                                              await showDatePicker(
+                                            context: context,
+                                            initialDate: DateTime.now(),
+                                            firstDate: DateTime(2000),
+                                            lastDate: DateTime(2101),
                                           );
-                                        }).toList(),
-                                        onChanged: (String? newValue) {
-                                          setState(() {
-                                            selectedType = newValue!;
-                                          });
+
+                                          if (pickedDate != null) {
+                                            // Format and set the selected date
+                                            setState(() {
+                                              datePick =
+                                                  "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+                                              date.text =
+                                                  "${pickedDate.day.toString().padLeft(2, '0')}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.year}";
+                                            });
+                                          }
                                         },
                                       ),
                                     ),
-                                  ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                16.0, 6.0, 16.0, 6.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(children: [
-                                  Text(
-                                    'Date ',
-                                    style: TextStyle(
-                                      color: theme.colorScheme.secondary,
-                                    ),
-                                  ),
-                                  Text(
-                                    '*',
-                                    style: TextStyle(
-                                      color: theme.colorScheme.error,
-                                      fontSize: 12.0,
-                                    ),
-                                  ),
-                                ]),
-                                const SizedBox(height: 6.0),
-                                Container(
-                                  // width: 280.0,
-                                  height: 51.0,
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.primaryContainer,
-                                    border: Border.all(
-                                      color: theme.colorScheme.outline,
-                                      width: 2.0,
-                                    ),
-                                    borderRadius: BorderRadius.circular(4.0),
-                                  ),
-                                  child: TextField(
-                                    controller: date,
-                                    decoration: InputDecoration(
-                                      hintText: 'Pick a Date',
-                                      hintStyle: TextStyle(
-                                        color: theme
-                                            .colorScheme.onPrimaryContainer,
-                                        fontSize: 14.0,
+                              ),
+                              Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(
+                                    16.0, 6.0, 16.0, 6.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(children: [
+                                      Text(
+                                        'Room ',
+                                        style: TextStyle(
+                                          color: theme.colorScheme.secondary,
+                                        ),
                                       ),
-                                      // filled: true,
-                                      // fillColor: Colors.white,
-                                      border: InputBorder.none,
-                                      contentPadding:
-                                          const EdgeInsets.all(12.0),
+                                      Text(
+                                        '*',
+                                        style: TextStyle(
+                                          color: theme.colorScheme.error,
+                                          fontSize: 12.0,
+                                        ),
+                                      ),
+                                    ]),
+                                    const SizedBox(height: 6.0),
+                                    Container(
+                                      // width: 280.0,
+                                      height: 51.0,
+                                      decoration: BoxDecoration(
+                                        color: theme.colorScheme.primaryContainer,
+                                        border: Border.all(
+                                          color: theme.colorScheme.outline,
+                                          width: 2.0,
+                                        ),
+                                        borderRadius: BorderRadius.circular(4.0),
+                                      ),
+                                      child: TextField(
+                                        controller: room,
+                                        decoration: InputDecoration(
+                                          hintText: 'Room',
+                                          hintStyle: TextStyle(
+                                            color: theme
+                                                .colorScheme.onPrimaryContainer,
+                                            fontSize: 14.0,
+                                          ),
+                                          // filled: true,
+                                          // fillColor: Colors.white,
+                                          border: InputBorder.none,
+                                          contentPadding:
+                                              const EdgeInsets.all(12.0),
+                                        ),
+                                        readOnly: true,
+                                      ),
                                     ),
-                                    readOnly: true,
-                                    onTap: () async {
-                                      // Open date picker
-                                      DateTime? pickedDate =
-                                          await showDatePicker(
-                                        context: context,
-                                        initialDate: DateTime.now(),
-                                        firstDate: DateTime(2000),
-                                        lastDate: DateTime(2101),
-                                      );
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(
+                                    16.0, 6.0, 16.0, 6.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(children: [
+                                      Text(
+                                        'Current Status ',
+                                        style: TextStyle(
+                                          color: theme.colorScheme.secondary,
+                                        ),
+                                      ),
+                                      Text(
+                                        '*',
+                                        style: TextStyle(
+                                          color: theme.colorScheme.error,
+                                          fontSize: 12.0,
+                                        ),
+                                      ),
+                                    ]),
+                                    const SizedBox(height: 6.0),
+                                    Container(
+                                      // width: 280.0,
+                                      height: 51.0,
+                                      decoration: BoxDecoration(
+                                        color: theme.colorScheme.primaryContainer,
+                                        border: Border.all(
+                                          color: theme.colorScheme.outline,
+                                          width: 2.0,
+                                        ),
+                                        borderRadius: BorderRadius.circular(4.0),
+                                      ),
+                                      child: TextField(
+                                        controller: currentStatus,
+                                        decoration: InputDecoration(
+                                          hintText: 'Status',
+                                          hintStyle: TextStyle(
+                                            color: theme
+                                                .colorScheme.onPrimaryContainer,
+                                            fontSize: 14.0,
+                                          ),
+                                          // filled: true,
+                                          // fillColor: Colors.white,
+                                          border: InputBorder.none,
+                                          contentPadding:
+                                              const EdgeInsets.all(12.0),
+                                        ),
+                                        readOnly: true,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsetsDirectional.fromSTEB(
+                                    16.0, 6.0, 16.0, 6.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Until Date',
+                                      style: TextStyle(
+                                        color: theme.colorScheme.secondary,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 6.0),
+                                    Container(
+                                      // width: 280.0,
+                                      height: 51.0,
+                                      decoration: BoxDecoration(
+                                        color: theme.colorScheme.primaryContainer,
+                                        border: Border.all(
+                                          color: theme.colorScheme.outline,
+                                          width: 2.0,
+                                        ),
+                                        borderRadius: BorderRadius.circular(4.0),
+                                      ),
+                                      child: TextField(
+                                        controller: untilDate,
+                                        decoration: InputDecoration(
+                                          hintText: 'Pick a Date',
+                                          hintStyle: TextStyle(
+                                            color: theme
+                                                .colorScheme.onPrimaryContainer,
+                                            fontSize: 14.0,
+                                          ),
+                                          // filled: true,
+                                          // fillColor: Colors.white,
+                                          border: InputBorder.none,
+                                          contentPadding:
+                                              const EdgeInsets.all(12.0),
+                                        ),
+                                        readOnly: true,
+                                        onTap: () async {
+                                          // Open date picker
+                                          DateTime? pickedDate =
+                                              await showDatePicker(
+                                            context: context,
+                                            initialDate: DateTime.now(),
+                                            firstDate: DateTime(2000),
+                                            lastDate: DateTime(2101),
+                                          );
 
-                                      if (pickedDate != null) {
-                                        // Format and set the selected date
-                                        setState(() {
-                                          datePick =
-                                              "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
-                                          date.text =
-                                              "${pickedDate.day.toString().padLeft(2, '0')}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.year}";
-                                        });
-                                      }
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                16.0, 6.0, 16.0, 6.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(children: [
-                                  Text(
-                                    'Room ',
-                                    style: TextStyle(
-                                      color: theme.colorScheme.secondary,
-                                    ),
-                                  ),
-                                  Text(
-                                    '*',
-                                    style: TextStyle(
-                                      color: theme.colorScheme.error,
-                                      fontSize: 12.0,
-                                    ),
-                                  ),
-                                ]),
-                                const SizedBox(height: 6.0),
-                                Container(
-                                  // width: 280.0,
-                                  height: 51.0,
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.primaryContainer,
-                                    border: Border.all(
-                                      color: theme.colorScheme.outline,
-                                      width: 2.0,
-                                    ),
-                                    borderRadius: BorderRadius.circular(4.0),
-                                  ),
-                                  child: TextField(
-                                    controller: room,
-                                    decoration: InputDecoration(
-                                      hintText: 'Room',
-                                      hintStyle: TextStyle(
-                                        color: theme
-                                            .colorScheme.onPrimaryContainer,
-                                        fontSize: 14.0,
+                                          if (pickedDate != null) {
+                                            // Format and set the selected date
+                                            datePick2 = "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+                                            setState(() {
+                                              untilDate.text =
+                                                  "${pickedDate.day.toString().padLeft(2, '0')}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.year}";
+                                            });
+                                          }
+                                        },
                                       ),
-                                      // filled: true,
-                                      // fillColor: Colors.white,
-                                      border: InputBorder.none,
-                                      contentPadding:
-                                          const EdgeInsets.all(12.0),
                                     ),
-                                    readOnly: true,
-                                  ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                          Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                16.0, 6.0, 16.0, 6.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(children: [
-                                  Text(
-                                    'Current Status ',
-                                    style: TextStyle(
-                                      color: theme.colorScheme.secondary,
-                                    ),
-                                  ),
-                                  Text(
-                                    '*',
-                                    style: TextStyle(
-                                      color: theme.colorScheme.error,
-                                      fontSize: 12.0,
-                                    ),
-                                  ),
-                                ]),
-                                const SizedBox(height: 6.0),
-                                Container(
-                                  // width: 280.0,
-                                  height: 51.0,
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.primaryContainer,
-                                    border: Border.all(
-                                      color: theme.colorScheme.outline,
-                                      width: 2.0,
-                                    ),
-                                    borderRadius: BorderRadius.circular(4.0),
-                                  ),
-                                  child: TextField(
-                                    controller: currentStatus,
-                                    decoration: InputDecoration(
-                                      hintText: 'Status',
-                                      hintStyle: TextStyle(
-                                        color: theme
-                                            .colorScheme.onPrimaryContainer,
-                                        fontSize: 14.0,
-                                      ),
-                                      // filled: true,
-                                      // fillColor: Colors.white,
-                                      border: InputBorder.none,
-                                      contentPadding:
-                                          const EdgeInsets.all(12.0),
-                                    ),
-                                    readOnly: true,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsetsDirectional.fromSTEB(
-                                16.0, 6.0, 16.0, 6.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Until Date',
-                                  style: TextStyle(
-                                    color: theme.colorScheme.secondary,
-                                  ),
-                                ),
-                                const SizedBox(height: 6.0),
-                                Container(
-                                  // width: 280.0,
-                                  height: 51.0,
-                                  decoration: BoxDecoration(
-                                    color: theme.colorScheme.primaryContainer,
-                                    border: Border.all(
-                                      color: theme.colorScheme.outline,
-                                      width: 2.0,
-                                    ),
-                                    borderRadius: BorderRadius.circular(4.0),
-                                  ),
-                                  child: TextField(
-                                    controller: untilDate,
-                                    decoration: InputDecoration(
-                                      hintText: 'Pick a Date',
-                                      hintStyle: TextStyle(
-                                        color: theme
-                                            .colorScheme.onPrimaryContainer,
-                                        fontSize: 14.0,
-                                      ),
-                                      // filled: true,
-                                      // fillColor: Colors.white,
-                                      border: InputBorder.none,
-                                      contentPadding:
-                                          const EdgeInsets.all(12.0),
-                                    ),
-                                    readOnly: true,
-                                    onTap: () async {
-                                      // Open date picker
-                                      DateTime? pickedDate =
-                                          await showDatePicker(
-                                        context: context,
-                                        initialDate: DateTime.now(),
-                                        firstDate: DateTime(2000),
-                                        lastDate: DateTime(2101),
-                                      );
-
-                                      if (pickedDate != null) {
-                                        // Format and set the selected date
-                                        datePick2 = "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
-                                        setState(() {
-                                          untilDate.text =
-                                              "${pickedDate.day.toString().padLeft(2, '0')}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.year}";
-                                        });
-                                      }
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                     Divider(
