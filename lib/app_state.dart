@@ -94,7 +94,7 @@ class AppState extends ChangeNotifier {
     prefs.setString('ff_company_selected', value);
   }
 
-  String _version = '1.1.2';
+  String _version = '1.1.3';
   String get version => _version;
   set version(String value) {
     _version = value;

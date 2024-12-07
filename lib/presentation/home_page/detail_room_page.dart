@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:kontena_hk/functions/status_room_color.dart';
 import 'package:kontena_hk/presentation/home_page/add_damage.dart';
+import 'package:kontena_hk/presentation/home_page/change_status_custom.dart';
 import 'package:kontena_hk/presentation/home_page/home_page.dart';
 import 'package:kontena_hk/presentation/lost_found_page/lost_found_add_page.dart';
 import 'package:kontena_hk/routes/app_routes.dart';
@@ -72,6 +73,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
           : '';
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,7 +95,8 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                 ? _buildLoadingWidget()
                 : SingleChildScrollView(
                     child: ConstrainedBox(
-                      constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                      constraints:
+                          BoxConstraints(minHeight: constraints.maxHeight),
                       child: IntrinsicHeight(
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
@@ -117,6 +120,9 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                                   dataRoomTask.isEmpty &&
                                   dataRoom['is_occupied'] == 0)
                                 _buildMaintenanceButton(),
+                              const SizedBox(height: 12),
+                              if ((dataRoom['is_damaged'] == 0))
+                                _buildChangeStatusButton(),
                             ],
                           ),
                         ),
@@ -156,8 +162,50 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 24),
+                if ((dataRoom.containsKey('registration') &&
+                        dataRoom.containsKey('registration_start')) &&
+                    ((dataRoom['registration_start'] != '') &&
+                        (dataRoom['registration'] != ''))) ...[
+                  const SizedBox(height: 24),
+                  Text(
+                    'No Registration',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: theme.colorScheme.onPrimaryContainer,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    dataRoom['registration'],
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: theme.colorScheme.secondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    'CI Date',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: theme.colorScheme.onPrimaryContainer,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    dateTimeFormat('datetime', dataRoom['registration_start'])
+                        .toString(),
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: theme.colorScheme.secondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
                 if (dataRoomTask.isNotEmpty) ...[
+                  const SizedBox(height: 24),
                   Text(
                     'User is ${dataRoomTask[0]['purpose']}',
                     style: TextStyle(
@@ -198,14 +246,14 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
         dataRoom['is_occupied'] == 0) {
       return CustomOutlinedButton(
         height: 60.0,
-        text: dataRoom['can_check'] == 1 ? "Check Status" : "Update Status",
+        text: "Next Status",
         isDisabled: false,
         buttonTextStyle: TextStyle(
           color: theme.colorScheme.primaryContainer,
           fontSize: 16.0,
           fontWeight: FontWeight.w600,
         ),
-        buttonStyle: CustomButtonStyles.primary,
+        buttonStyle: CustomButtonStyles.onSecondary,
         onPressed: onTapUpdateStatus,
       );
     }
@@ -222,7 +270,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
           fontSize: 16.0,
           fontWeight: FontWeight.w600,
         ),
-        buttonStyle: CustomButtonStyles.primary,
+        buttonStyle: CustomButtonStyles.onSecondary,
         onPressed: onTapUpdateStatus,
       );
     }
@@ -245,26 +293,40 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
     );
   }
 
- Widget _buildLoadingWidget() {
-  return Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        SizedBox(
-          width: 23,
-          height: 23,
-          child: const CircularProgressIndicator(),
-        ),
-        const SizedBox(height: 16),
-        Text(
-          'Loading...',
-          style: TextStyle(color: theme.colorScheme.primaryContainer),
-        ),
-      ],
-    ),
-  );
-}
+  Widget _buildChangeStatusButton() {
+    return CustomOutlinedButton(
+      height: 60.0,
+      text: "Change Status",
+      isDisabled: false,
+      buttonTextStyle: TextStyle(
+        color: theme.colorScheme.primaryContainer,
+        fontSize: 16.0,
+        fontWeight: FontWeight.w600,
+      ),
+      buttonStyle: CustomButtonStyles.primary,
+      onPressed: onTapChangeStatus,
+    );
+  }
 
+  Widget _buildLoadingWidget() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: 23,
+            height: 23,
+            child: const CircularProgressIndicator(),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Loading...',
+            style: TextStyle(color: theme.colorScheme.primaryContainer),
+          ),
+        ],
+      ),
+    );
+  }
 
   onCallRoomDetail() async {
     final requestCall = call_room.RoomRequest(
@@ -285,8 +347,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
     final request = call_room_task.RoomTaskRequest(
       cookie: AppState().cookieData,
       fields: '["name","purpose","employee","employee_name"]',
-      filters:
-          '[["docstatus","=",0],["room","=","${dataRoom['name']}"]]',
+      filters: '[["docstatus","=",0],["room","=","${dataRoom['name']}"]]',
     );
 
     await _makeRequest(
@@ -308,7 +369,8 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
     );
 
     await _makeRequest(
-      requestFunction: () => call_create_room_task.request(requestQuery: request),
+      requestFunction: () =>
+          call_create_room_task.request(requestQuery: request),
       onSuccess: (_) => _showAlert(context, "Successfully updated room status"),
     );
   }
@@ -324,7 +386,8 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
     );
 
     await _makeRequest(
-      requestFunction: () => call_create_room_task.request(requestQuery: request),
+      requestFunction: () =>
+          call_create_room_task.request(requestQuery: request),
       onSuccess: (_) => _showAlert(context, "Successfully updated room status"),
     );
   }
@@ -354,7 +417,8 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
     );
 
     await _makeRequest(
-      requestFunction: () => call_create_room_inspect.request(requestQuery: request),
+      requestFunction: () =>
+          call_create_room_inspect.request(requestQuery: request),
       onSuccess: (_) => _showAlert(context, "Successfully updated room status"),
     );
   }
@@ -375,7 +439,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
     );
   }
 
-  void onCheckState() {
+  onCheckState() {
     if (dataRoom == null) return;
 
     setState(() {
@@ -390,7 +454,7 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
     setState(() => isLoading = true);
 
     await onCallRoomDetail();
-    onCheckState();
+    await onCheckState();
 
     if (dataRoom != null) {
       setState(() {
@@ -444,6 +508,25 @@ class _DetailRoomPageState extends State<DetailRoomPage> {
         child: CreateDamageWidget(
           room: dataRoom,
           onComplete: () => print("Maintenance complete"),
+        ),
+      ),
+    );
+    await onTapHistory();
+    HomeContent.homeKey.currentState?.fetchItems();
+  }
+
+  onTapChangeStatus() async {
+    await showModalBottomSheet(
+      isScrollControlled: true,
+      enableDrag: false,
+      backgroundColor: const Color(0x8A000000),
+      barrierColor: const Color(0x00000000),
+      context: context,
+      builder: (context) => Padding(
+        padding: MediaQuery.viewInsetsOf(context),
+        child: ChangeStatusCustomWidget(
+          room: dataRoom,
+          onComplete: () => print("Change status complete"),
         ),
       ),
     );

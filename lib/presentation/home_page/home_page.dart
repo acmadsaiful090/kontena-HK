@@ -137,71 +137,7 @@ class _HomeContentState extends State<HomeContent> {
   }
 
   Map<String, dynamic>? dataUser;
-  Future<void> fatchEmployee() async {
-// <<<<<<< HEAD
-    // final request = EmployeeDetailRequest(
-    //   cookie: AppState().cookieData,
-    //   fields: '["*"]',
-    // );
-    // final response = await requestEmployee(requestQuery: request);
-    // setState(() {
-    //   if (response is List) {
-    //     items = response.map((EmpData) {
-    //       return {
-    //         'name': EmpData['name']?.toString() ?? '',
-    //         'cell_number': EmpData['cell_number']?.toString() ?? '',
-    //         'first_name': EmpData['first_name']?.toString() ?? '',
-    //         'employee_name': EmpData['employee_name']?.toString() ?? '',
-    //         'prefered_email': EmpData['prefered_email']?.toString() ?? '',
-    //       };
-    //     }).toList();
-    //     var targetItem = items.firstWhere(
-    //         (item) => item['prefered_email'] == 'othkkontena@gmail.com');
-    //     if (targetItem.isNotEmpty) {
-    //       dataUser = targetItem;
-    //       // Provider.of<AppState>(context, listen: false).setDataUser(targetItem);
-    //     } else {
-    //       print(
-    //           'Data dengan prefered_email "othkkontena@gmail.com" tidak ditemukan.');
-    //     }
-    //   } else {
-    //     throw Exception('Unexpected response format');
-    //   }
-    //   isLoading = false;
-    // });
-// =======
-    // // final prefs = await SharedPreferences.getInstance();
-    // final request = EmployeeDetailRequest(
-    //   cookie: AppState().cookieData,
-    //   fields: '["*"]',
-    // );
-    // final response = await requestEmployee(requestQuery: request);
-    // setState(() {
-    //   if (response is List) {
-    //     items = response.map((EmpData) {
-    //       return {
-    //         'name': EmpData['name']?.toString() ?? '',
-    //         'cell_number': EmpData['cell_number']?.toString() ?? '',
-    //         'first_name': EmpData['first_name']?.toString() ?? '',
-    //         'employee_name': EmpData['employee_name']?.toString() ?? '',
-    //         'prefered_email': EmpData['prefered_email']?.toString() ?? '',
-    //       };
-    //     }).toList();
-    //     var targetItem = items.firstWhere(
-    //         (item) => item['prefered_email'] == 'othkkontena@gmail.com');
-    //     if (targetItem.isNotEmpty) {
-    //       dataUser = targetItem;
-    //     } else {
-    //       print(
-    //           'Data dengan prefered_email "othkkontena@gmail.com" tidak ditemukan.');
-    //     }
-    //   } else {
-    //     throw Exception('Unexpected response format');
-    //   }
-    //   isLoading = false;
-    // });
-// >>>>>>> 5e1f3505568e2dd7e731bdff5429a96c47bf2f01
-  }
+  Future<void> fatchEmployee() async {}
 
   reInit() {
     if (AppState().roomList.isNotEmpty) {
@@ -215,6 +151,8 @@ class _HomeContentState extends State<HomeContent> {
             'can_clean': roomData['can_clean'] ?? 0,
             'can_check': roomData['can_check'] ?? 0,
             'is_damaged': roomData['is_damaged'] ?? 0,
+            'registration_start': roomData['registration_start'] ?? '',
+            'registration': roomData['registration'] ?? '',
           };
         }).toList();
         filteredItems = items;
@@ -249,6 +187,7 @@ class _HomeContentState extends State<HomeContent> {
             'can_check': roomData['can_check'] ?? 0,
             'is_damaged': roomData['is_damaged'] ?? 0,
             'registration_start': roomData['registration_start'] ?? '',
+            'registration': roomData['registration'] ?? '',
           };
         }).toList();
         filteredItems = items;
@@ -376,21 +315,12 @@ class _HomeContentState extends State<HomeContent> {
                             final roomItem = room[index];
                             DateTime parse;
                             bool isCheckNow = false;
-                            // print(1);
-                            // print('check ${room[index]['status']}');
-                            // print('check ${room[index]['room_name']}');
-                            // print('check ${room[index]['registration_start']}');
                             if ((room[index]['status'] == 'OD') &&
                                 (room[index]['registration_start'] != '')) {
-                              // print(2);
-                              // print(
-                              //     'room status, ${roomItem['registration_start']}');
                               parse = DateTime.parse(
                                   roomItem['registration_start']);
-                              // print('parse, $parse');
                               isCheckNow =
                                   DateUtils.isSameDay(parse, DateTime.now());
-                              // print('check now, $isCheckNow');
                             }
 
                             return Column(
@@ -424,7 +354,6 @@ class _HomeContentState extends State<HomeContent> {
                                               fontWeight: FontWeight.bold,
                                               fontSize: 20),
                                         ),
-                                        
                                       ],
                                     ),
                                     subtitle: Column(
@@ -440,27 +369,20 @@ class _HomeContentState extends State<HomeContent> {
                                           ),
                                           textAlign: TextAlign.left,
                                         ),
-                                        if (roomItem['registration_start'] != '')
+                                        if (roomItem['registration_start'] !=
+                                            '')
                                           Text(
-                                            'CI Date ${dateTimeFormat('dateui', roomItem['registration_start'])}',
+                                            'CI Date ${dateTimeFormat('datetime', roomItem['registration_start'])}',
                                             textAlign: TextAlign.left,
                                             style: TextStyle(
-                                                color: isCheckNow ? theme.colorScheme.primary : theme.colorScheme.onPrimaryContainer,
-                                                fontWeight: FontWeight.w800,
-                                                fontSize: 18,
-                                              ),
+                                              color: isCheckNow
+                                                  ? theme.colorScheme.primary
+                                                  : theme.colorScheme
+                                                      .onPrimaryContainer,
+                                              fontWeight: FontWeight.w800,
+                                              fontSize: 18,
+                                            ),
                                           ),
-                                        // Text(
-                                        //   filteredItems[index]['name'] !=
-                                        //           null // Change this as per your data
-                                        //       ? filteredItems[index]['name']!
-                                        //           .toString()
-                                        //       : 'No Guest',
-                                        //   textAlign: TextAlign.left,
-                                        //   style: const TextStyle(
-                                        //       fontWeight: FontWeight.bold,
-                                        //       fontSize: 18),
-                                        // ),
                                       ],
                                     ),
                                     onTap: () {
